@@ -8,6 +8,7 @@ import { loanHeaders, advanceSalaryHeaders } from "../../../../data/dummy";
 import PaginationPages from "../paginations";
 import LoanDetail from "./loanDetail";
 
+
 function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setShowDetail, setSelectedLoanData}) {
   const { getLoan, loanData, loanDataByUuid, getLoanByUuid } = loanStoreManagements();
   const [showFormLoans, setShowFormLoans] = useState(false);

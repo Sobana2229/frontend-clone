@@ -1,4 +1,4 @@
-import { ArrowDown, CalendarBlankIcon, CaretDown, CurrencyDollarIcon, DotsThree, Funnel, GitBranch, MapPin, Notification, User, UserCircle, Users, WarningCircle, X } from "@phosphor-icons/react";
+import { ArrowDown, CalendarBlankIcon,CaretDown,Plus,Info ,CurrencyDollarIcon, DotsThree, Funnel, GitBranch, MapPin, Notification, User, UserCircle, Users, WarningCircle, X } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import organizationStoreManagements from "../../store/tdPayroll/setting/organization";
 import Select from "react-select";
@@ -8,6 +8,16 @@ import { EmployeeHeadersoptionFilter, employeeLoanEarningOptions, employeePageOp
 import employeeStoreManagements from "../../store/tdPayroll/employee";
 import dayjs from "dayjs";
 import PeriodPicker from "./employeePortal/PeriodPicker";
+import { 
+  Users2, 
+  FileText, 
+  Activity, 
+  Hash, 
+  PlusCircle, 
+  MoreVertical 
+} from "lucide-react";
+
+
 
 // ini ngambil dari page reimbursement employee
 const formatPeriodDisplay = (period) => {
@@ -32,6 +42,14 @@ function FilterPage({
     const { designationOptions, departementOptions, fetchOrganizationSetting, } = organizationStoreManagements();
     const { fetchWorkLocationOptions, workLocationOptions } = leaveAndAttendanceStoreManagements();
     const { getEmployeeOverview, dataEmployeesOptions } = employeeStoreManagements();
+    const handleViewLoanRepayment = () => {
+  console.log("View Loan Repayment clicked");
+};
+
+const handleCreateLoan = () => {
+  console.log("Create Loan clicked");
+};
+
     const [isOpen, setIsOpen] = useState(false);
     const options =
         filterFor === "employee" ? 
@@ -146,140 +164,73 @@ function FilterPage({
     };
 
     return (
-    <div className="w-full">
-    {/* Filter Bar - Matching Image 1 Design */}
-    <div className="w-full px-4 py-3 bg-gray-50 border-y border-gray-200">
-        <div className="flex items-center justify-between">
-            {/* Left Side - Filters */}
-            <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    FILTER BY :
-                </span>
-                
-                {/* Employee Filter Button */}
-                {filterFor === "Loans" && (
-                    <>
-                        <div className="relative" ref={dropdownRef}>
-                            <button 
-                                onClick={() => setIsOpenOptions(!isOpenOptions)}
-                                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                            >
-                                <User size={16} className="text-gray-500" />
-                                <span className="text-sm text-gray-700">
-                                    {filter.employeeUuid 
-                                        ? dataEmployeesOptions?.find(opt => opt.value === filter.employeeUuid)?.label 
-                                        : 'Employee'}
-                                </span>
-                                <CaretDown size={14} className="text-gray-400" />
-                            </button>
-                            
-                            {/* Dropdown Menu */}
-                            {isOpenOptions && (
-                                <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-64 overflow-y-auto">
-                                    {dataEmployeesOptions?.map((option) => (
-                                        <button
-                                            key={option.value}
-                                            onClick={() => {
-                                                handleEmployeeSelect(option);
-                                                setIsOpenOptions(false);
-                                            }}
-                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 transition-colors"
-                                        >
-                                            {option.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+  <div className="w-full">
+  <div className="w-full px-4 py-3 bg-gray-50 border-y border-gray-200">
+    <div className="w-full h-[60px] border border-neutral-200 rounded-md bg-white flex items-center px-5 relative">
 
-                        {/* Loan Name Filter (if isAll is true) */}
-                        {isAll && (
-                            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                                <span className="text-sm text-gray-700">Loan Name</span>
-                                <CaretDown size={14} className="text-gray-400" />
-                            </button>
-                        )}
+      <span className="text-[14px] font-medium text-neutral-600">
+        FILTER BY :
+      </span>
 
-                        {/* Loan Status Filter */}
-                        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                            <span className="text-sm text-gray-700">Loan Status</span>
-                            <CaretDown size={14} className="text-gray-400" />
-                        </button>
+      {/* Employee */}
+      <div className="flex items-center gap-2 ml-8 cursor-pointer">
+        <Users2 size={18} className="text-neutral-500" />
+        <span className="text-[14px] font-medium text-neutral-500">Employee</span>
+        <CaretDown size={14} className="text-neutral-500" />
+      </div>
 
-                        {/* Loan Number Filter */}
-                        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                            <span className="text-sm text-gray-700">Loan Number</span>
-                            <CaretDown size={14} className="text-gray-400" />
-                        </button>
-                    </>
-                )}
+      <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
 
-                {/* Filters for Claims */}
-                {filterFor === "claims" && (
-                    <>
-                        {/* Period */}
-                        <div className="relative text-gray-500 flex items-center">
-                            <CalendarBlankIcon size={20} />
-                            <input
-                                placeholder="Select Period"
-                                type="date"
-                                value={filter.period}
-                                name="dateFrom"
-                                onChange={(e) => {
-                                    setFilter(prev => ({
-                                        ...prev,
-                                        period: e.target.value
-                                    }))
-                                }}
-                                onClick={(e) => e.target.showPicker?.()}
-                                className="w-full px-2 py-2 [&::-webkit-calendar-picker-indicator]:hidden"
-                            />
-                        </div>
-                        
-                        <div className="flex items-center">
-                            <div className="h-8 border-l border-gray-300"></div>
-                        </div>
-                        
-                        {/* Employee */}
-                        <div className="relative text-gray-500 flex items-center">
-                            <User size={20} />
-                            <Select
-                                options={dataEmployeesOptions}
-                                onChange={handleEmployeeSelect}
-                                value={getSelectedValue(dataEmployeesOptions, 'employeeUuid')}
-                                className='w-full bg-transparent'
-                                placeholder="Select an Employee"
-                            />
-                        </div>
-                    </>
-                )}
-            </div>
+      {/* Loan Name */}
+      <div className="flex items-center gap-2 cursor-pointer">
+        <FileText size={18} className="text-neutral-400" />
+        <span className="text-[14px] font-medium text-neutral-500">Loan Name</span>
+        <CaretDown size={14} className="text-neutral-500" />
+      </div>
+
+      <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
+
+      {/* Loan Status */}
+      <div className="flex items-center gap-2 cursor-pointer">
+        <Activity size={18} className="text-neutral-400" />
+        <span className="text-[14px] font-medium text-neutral-500">Loan Status</span>
+        <CaretDown size={14} className="text-neutral-500" />
+      </div>
+
+      <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
+
+      {/* Loan Number */}
+      <div className="flex items-center gap-2 cursor-pointer">
+        <Hash size={18} className="text-neutral-400" />
+        <span className="text-[14px] font-medium text-neutral-500">Loan Number</span>
+        <CaretDown size={14} className="text-neutral-500" />
+      </div>
+
+      {/* View Loan Repayment */}
+      <button
+        onClick={handleViewLoanRepayment}
+        className="ml-auto w-[218px] h-[35px] border border-neutral-300 rounded-md flex items-center justify-center text-[14px] text-neutral-700 hover:bg-neutral-100"
+      >
+        View Loan Repayment
+      </button>
+
+      {/* Create Loan */}
+    <button
+  onClick={() => addData()}
+  className="ml-4 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700"
+>
+  <span className="text-[14px] font-medium">Create Loan</span>
+  <PlusCircle size={18} className="ml-2 text-white" />
+</button>
+
+      {/* 3 dots */}
+      <MoreVertical size={26} className="ml-4 text-neutral-600 cursor-pointer" />
+ 
+ 
 
             {/* Right Side - Action Buttons */}
-            <div className="flex items-center gap-3">
-                {filterFor === "Loans" && (
-                    <>
-                        <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                            View Loan Repayment
-                        </button>
-                        <button 
-                            onClick={() => addData()}
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-                        >
-                            <span>Create Loan</span>
-                        </button>
-                    </>
-                )}
-                
-                {filterFor !== "Loans" && (
-                    <button 
-                        onClick={() => addData()}
-                        className="px-4 py-2 text-white bg-blue-600 rounded-md"
-                    >
-                        Add {filterFor}
-                    </button>
-                )}
-            </div>
+           
+
         </div>
     </div>
 </div>

@@ -43,7 +43,7 @@ function LoanPages() {
       },
       {
         id: 'advance-salary',
-        title: 'Adve Salary',
+        title: 'Advance Salary', // Fixed typo
         icon: <Money size={20} />,
         permission: { module: 'Advance Salary', action: 'View' }
       }
@@ -131,12 +131,8 @@ function LoanPages() {
       };
     }
     
-    return {
-      title: `${activeSection === 'loans' ? 'All Loans' : 'All Advance Salary'}`,
-      isAddData: true,
-      addDataTitle: activeSection === "loans" ? "Create Loan" : "Create Advance Salary",
-      handleShowModal: addLoans
-    };
+    // Return null for cards view - no header needed
+    return null;
   };
 
   const renderSummaryCards = (cards) => {
@@ -151,17 +147,17 @@ function LoanPages() {
     return cards.map((card) => (
       <div
         key={card.id}
-        className={`bg-white h-[400px] w-full rounded-2xl p-4 border cursor-pointer`}
+        className={`bg-white h-[400px] w-full rounded-2xl p-4 border cursor-pointer hover:shadow-lg transition-shadow`}
         onClick={() => handleCardClick(card)}
       >
-        <div className={`w-full h-full rounded-xl flex flex-col justify-between p-5 relative bg-gray-td-50`}>
+        <div className={`w-full h-full rounded-xl flex flex-col justify-between p-5 relative bg-gray-50`}>
           <div className="w-3 h-3 border-2 rounded-full absolute top-2 left-2 bg-white"></div>
           <div className="w-3 h-3 border-2 rounded-full absolute top-2 right-2 bg-white"></div>
           <div className="w-3 h-3 border-2 rounded-full absolute bottom-2 left-2 bg-white"></div>
           <div className="w-3 h-3 border-2 rounded-full absolute bottom-2 right-2 bg-white"></div>
           
           <div className="flex justify-end items-start mb-4">
-            <ArrowUpRight size={70} className="" />hello
+            <ArrowUpRight size={70} className="text-gray-400" />
           </div>
 
           <div className="">
@@ -195,13 +191,14 @@ function LoanPages() {
   const headerProps = getHeaderProps();
 
   return (
-    <div className="w-full h-full flex flex-col items-start justify-start overflow-hidden pt-16">
-      {!showDetail && (
+    <div className="w-full h-full flex flex-col items-start justify-start overflow-hidden">
+      {/* Only show header when NOT in cards view */}
+      {!showDetail && headerProps && (
         <HeaderReusable {...headerProps} />
       )}
       
       {showFormLoans ? (
-        <div className="w-full flex-1 bg-gray-td-100">
+        <div className="w-full flex-1 bg-white">
           <div className="w-full p-5">
             <LoanForm 
               setShowForm={handleShowForm} 
@@ -221,18 +218,19 @@ function LoanPages() {
           setShowDetail={setShowDetail}
         />
       ) : (
-        <div className="flex w-full flex-1 items-start justify-start bg-gray-td-100">
-          <div className="w-64 flex flex-col p-5 h-full">
+        <div className="flex w-full flex-1 items-start justify-start bg-white">
+          {/* Sidebar */}
+          <div className="w-64 flex flex-col p-5 h-full border-r border-gray-200 bg-white">
             <div className="">
-              <h2 className="text-xl font-semibold text-gray-800 mb-6">Benef</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-6">Benefits</h2>
               <nav className="space-y-2">
                 {sidebarItems.map((item) => (
                   <div
                     key={item.id}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-lg duration-300 ease-in-out transition-all cursor-pointer ${
                       activeSection === item.id
-                        ? 'bg-blue-td-50 text-blue-td-600 border' 
-                        : 'text-gray-td-600 hover:bg-gray-td-50'
+                        ? 'bg-blue-50 text-blue-600 border border-blue-200' 
+                        : 'text-gray-600 hover:bg-gray-50'
                     }`}
                     onClick={() => {
                       setActiveSection(item.id);
@@ -248,7 +246,8 @@ function LoanPages() {
             </div>
           </div>
 
-          <div className="flex-1 h-full p-8 bg-gray-td-50 overflow-auto">
+          {/* Cards View */}
+          <div className="flex-1 h-full p-8 bg-white overflow-auto">
             {checkPermission(user, "Payslips", "View") ? (
               !currentData ? (
                 <div className="text-center text-gray-500">Loading...</div>
