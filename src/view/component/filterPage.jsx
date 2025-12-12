@@ -224,7 +224,10 @@ const handleCreateLoan = () => {
 </button>
 
       {/* 3 dots */}
-      <MoreVertical size={26} className="ml-4 text-neutral-600 cursor-pointer" />
+      <div className="ml-4 w-[35px] h-[35px] border border-neutral-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors">
+  <MoreVertical size={20} className="text-neutral-600" />
+</div>
+      
  
  
 

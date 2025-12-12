@@ -30,6 +30,7 @@ import ReuseableInput from "../reuseableInput";
 import { useLocation } from "react-router-dom";
 import ReimbursementTypeDropdown from "../employeePortal/ReimbursementTypeDropdown";
 
+
 function TableReusable({
   dataHeaders = [],
   objectHeaders = {},
@@ -1293,138 +1294,157 @@ function TableReusable({
             ))}
           </tbody>
         </table>
-      ) : tableFor === "loans" ? (
-         <div className="w-full h-full overflow-auto">
-      <table className="w-full table-auto">
-        <thead className="bg-gray-900 sticky top-0 z-10">
-          <tr>
-            {dataHeaders?.map((el, idx) => (
-              <th
-                key={idx}
-                scope="col"
-                className={`px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider border-b border-gray-300 ${
-                  idx >= 4 ? 'text-right' : 'text-left'
-                }`}
-              >
-                {el}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="bg-white">
-          {dataTable?.map((el, idx) => (
-            <tr
+      ) :tableFor === "loans" ? (
+  <div className="w-full h-full overflow-auto">
+    <table className="w-full table-auto">
+      <thead className="sticky top-0 z-10" style={{ background: '#1C1C1C', height: '78px' }}>
+        <tr>
+          {dataHeaders?.map((el, idx) => (
+            <th
               key={idx}
-              className="hover:bg-gray-50 cursor-pointer border-b border-dashed border-gray-200 transition-colors"
-
-              onClick={() => handleView?.(el?.uuid, "Loans", "loan")}
+              scope="col"
+              className={`text-xs font-medium uppercase tracking-wider ${
+                idx === 3 ? 'text-center' : idx >= 4 ? 'text-right' : 'text-left'
+              } ${idx === 0 ? 'pl-10' : ''} ${idx === dataHeaders.length - 1 ? 'pr-10' : ''}`}
+              style={{
+                color: '#ADADAD',
+                fontSize: '14px',
+                lineHeight: '20px',
+                fontFamily: 'Inter'
+              }}
             >
-              {/* Employee Name */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500">
-                <div className="font-medium">
-                  {el?.Employee?.firstName} {el?.Employee?.middleName}{" "}
-                  {el?.Employee?.lastName}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {el?.Employee?.employeeId || el?.employeeId}
-                </div>
-              </td>
-
-              {/* Loan Number */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500">
-                {el?.loanNumber}
-              </td>
-
-              {/* Loan Name */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500 capitalize">
-                {el?.LoanName?.name || el?.loanType}
-              </td>
-
-              {/* Status */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm">
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                    el?.loanAmount - el?.amountRepaid !== 0
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
-                </span>
-              </td>
-
-              {/* Loan Amount */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500 font-medium">
-                ${el?.loanAmount?.toLocaleString("en-US") || el?.totalAmount?.toLocaleString("en-US")}
-              </td>
-
-              {/* Amount Repaid */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500 font-medium">
-                ${el?.amountRepaid?.toLocaleString("en-US")}
-              </td>
-
-              {/* Remaining Amount */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-blue-600">
-                ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") || 
-                  el?.remainingAmount?.toLocaleString("en-US")}
-              </td>
-
-              {/* Actions Menu */}
-              <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                <div className="relative inline-block" ref={openMenu === el?.uuid ? menuRef : null}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenMenu(openMenu === el?.uuid ? null : el?.uuid);
-                    }}
-                    className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-                  >
-                    <DotsThreeOutlineVertical size={20} className="text-gray-600" weight="bold" />
-                  </button>
-
-                  {openMenu === el?.uuid && (
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleView?.(el?.uuid, "Loans", "loan");
-                          setOpenMenu(null);
-                        }}
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                      >
-                        View Details
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit?.(el?.uuid);
-                          setOpenMenu(null);
-                        }}
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                      >
-                        Edit Loan
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete?.(el?.uuid);
-                          setOpenMenu(null);
-                        }}
-                        className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 border-t border-gray-100"
-                      >
-                        Delete Loan
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </td>
-            </tr>
+              {el}
+            </th>
           ))}
-        </tbody>
-      </table>
-     
-    </div>
-      ) : tableFor === "loanDetails" ? (
+          <th className="w-16"></th>
+        </tr>
+      </thead>
+      <tbody className="bg-white">
+        {dataTable?.map((el, idx) => (
+          <tr
+            key={idx}
+            className="hover:bg-gray-50 cursor-pointer transition-colors border-b border-dashed"
+            style={{ 
+              height: '80px',
+              borderColor: 'rgba(28, 28, 28, 0.1)'
+            }}
+            onClick={() => handleView?.(el?.uuid, "Loans", "loan")}
+          >
+            {/* Employee Name */}
+            <td className="pl-10 whitespace-nowrap text-left" style={{ fontFamily: 'Inter' }}>
+              <div className="font-normal text-base" style={{ color: '#1C1C1C' }}>
+                {el?.Employee?.firstName} {el?.Employee?.middleName} {el?.Employee?.lastName}
+              </div>
+              <div className="text-sm" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                ({el?.Employee?.employeeId || el?.employeeId})
+              </div>
+            </td>
+
+            {/* Loan Number */}
+            <td className="whitespace-nowrap text-left text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
+              {el?.loanNumber}
+            </td>
+
+            {/* Loan Name */}
+            <td className="whitespace-nowrap text-left text-base capitalize" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
+              {el?.LoanName?.name || el?.loanType}
+            </td>
+
+            {/* Status */}
+            <td className="whitespace-nowrap text-center">
+              <span
+                className="inline-flex items-center justify-center rounded-full"
+                style={{
+                  width: '90px',
+                  height: '30px',
+                  background: el?.loanAmount - el?.amountRepaid === 0 ? 'rgba(28, 28, 28, 0.1)' : '#F5FAFF',
+                  color: el?.loanAmount - el?.amountRepaid === 0 ? 'rgba(28, 28, 28, 0.6)' : '#0066FE',
+                  fontFamily: 'Inter',
+                  fontSize: '16px'
+                }}
+              >
+                {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
+              </span>
+            </td>
+
+            {/* Loan Amount */}
+            <td className="whitespace-nowrap text-right text-base" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
+              ${el?.loanAmount?.toLocaleString("en-US") || el?.totalAmount?.toLocaleString("en-US")}
+            </td>
+
+            {/* Amount Repaid */}
+            <td className="whitespace-nowrap text-right text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
+              ${el?.amountRepaid?.toLocaleString("en-US")}.0
+            </td>
+
+            {/* Remaining Amount */}
+            <td className="pr-10 whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
+              ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") || 
+                el?.remainingAmount?.toLocaleString("en-US")}
+            </td>
+
+            {/* Actions Menu */}
+            <td className="whitespace-nowrap text-center">
+              <div className="relative inline-block" ref={openMenu === el?.uuid ? menuRef : null}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenMenu(openMenu === el?.uuid ? null : el?.uuid);
+                  }}
+                  className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors mx-auto"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="4" r="1.5" fill="rgba(28, 28, 28, 0.6)"/>
+                    <circle cx="10" cy="10" r="1.5" fill="rgba(28, 28, 28, 0.6)"/>
+                    <circle cx="10" cy="16" r="1.5" fill="rgba(28, 28, 28, 0.6)"/>
+                  </svg>
+                </button>
+
+                {openMenu === el?.uuid && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border py-1 z-50" style={{ borderColor: 'rgba(162, 161, 168, 0.2)' }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleView?.(el?.uuid, "Loans", "loan");
+                        setOpenMenu(null);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                      style={{ color: '#1C1C1C' }}
+                    >
+                      View Details
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit?.(el?.uuid);
+                        setOpenMenu(null);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                      style={{ color: '#1C1C1C' }}
+                    >
+                      Edit Loan
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete?.(el?.uuid);
+                        setOpenMenu(null);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 flex items-center gap-2 border-t"
+                      style={{ color: '#EF4444', borderColor: 'rgba(162, 161, 168, 0.1)' }}
+                    >
+                      Delete Loan
+                    </button>
+                  </div>
+                )}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+): tableFor === "loanDetails" ? (
        <table className="w-full">
         <thead>
           <tr>
