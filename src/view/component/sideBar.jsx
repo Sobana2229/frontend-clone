@@ -33,7 +33,7 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
     { title: "Approvals", 
       to: "/reimbursement", 
       icon: <CheckCircle size={20} />, 
-      isDropdown: false, 
+      isDropdown: true, 
       subMenu: SideBarApprovals 
     },
     // { title: "Form 16", to: "/form-six-teen", icon: <Article size={20} />},

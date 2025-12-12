@@ -2685,123 +2685,171 @@ function TableReusable({
           </tbody>
         </table>
       ) : tableFor === "reimbursementEmployeeApproval" ? (
-        /* TABLE REIMBURSEMENT */
-        // the table bg is blue bcs there is problem when trying to add bg on header
-        <table className="w-full table-fixed rounded-lg bg-blue-50">
-          <thead>
-            <tr>
-              {dataHeaders?.map((el, idx) => (
-                <th
-                  key={idx}
-                  scope="col"
-                  className="px-6 py-4 text-left text-sm font-semibold text-blue-500 uppercase tracking-wide"
+  <div className="w-full h-full overflow-auto">
+    <table className="w-full table-auto">
+      
+      {/* HEADER */}
+      <thead
+        className="sticky top-0 z-10"
+        style={{ background: "#1C1C1C", height: "78px" }}
+      >
+        <tr>
+          {dataHeaders?.map((el, idx) => (
+            <th
+              key={idx}
+              scope="col"
+              className={`text-xs font-medium uppercase tracking-wider 
+                ${idx === 3 ? "text-center" : idx >= 4 ? "text-right" : "text-left"}
+                ${idx === 0 ? "pl-10" : ""} 
+                ${idx === dataHeaders.length - 1 ? "pr-10" : ""}
+              `}
+              style={{
+                color: "#ADADAD",
+                fontSize: "14px",
+                lineHeight: "20px",
+                fontFamily: "Inter",
+              }}
+            >
+              {el}
+            </th>
+          ))}
+        </tr>
+      </thead>
+
+      {/* BODY */}
+      <tbody className="bg-white">
+        {dataTable?.map((el, idx) => (
+          <tr
+            key={idx}
+            className="hover:bg-gray-50 cursor-pointer transition-colors border-b border-dashed"
+            style={{
+              height: "80px",
+              borderColor: "rgba(28, 28, 28, 0.1)",
+            }}
+          >
+            {/* Claim Number */}
+            <td
+              className="pl-10 whitespace-nowrap text-left"
+              style={{ fontFamily: "Inter", color: "#1C1C1C" }}
+            >
+              <div className="font-normal text-base">
+                {el?.claimNumber}
+              </div>
+            </td>
+
+            {/* Employee Name */}
+            <td
+              className="whitespace-nowrap text-left"
+              style={{ fontFamily: "Inter" }}
+            >
+              <div className="font-normal text-base" style={{ color: "#0066FE" }}>
+                {el?.Employee?.firstName} {el?.Employee?.lastName}
+              </div>
+            </td>
+
+            {/* Submitted Date */}
+            <td
+              className="whitespace-nowrap text-left text-base"
+              style={{ color: "rgba(28, 28, 28, 0.6)", fontFamily: "Inter" }}
+            >
+              {dayjs(el?.claimDate).format("DD/MM/YYYY")}
+            </td>
+
+            {/* Claim Amount */}
+            <td
+              className="whitespace-nowrap text-right text-base"
+              style={{ color: "rgba(28, 28, 28, 0.6)", fontFamily: "Inter" }}
+            >
+              {formatFunction(Number(el?.totalAmount || 0))}
+            </td>
+
+            {/* Approve / Approved Amount */}
+            <td className="whitespace-nowrap text-center">
+              {el?.status !== "approve" && el?.status !== "reject" ? (
+                <ReuseableInput
+                  id={`approveAmount-${el.uuid}`}
+                  name="approveAmount"
+                  placeholder="Approve Amount..."
+                  value={approveAmount[el.uuid]?.approveAmount || ""}
+                  onChange={(e) => handleInputChange(e, el.uuid)}
+                  type="number"
+                />
+              ) : (
+                <div
+                  className="text-base font-normal"
+                  style={{ fontFamily: "Inter", color: "#1C1C1C" }}
                 >
-                  {el}
-                </th>
-              ))}
-            </tr>
-          </thead>
+                  {formatFunction(Number(el?.approvedAmount || 0))}
+                </div>
+              )}
+            </td>
 
-          <tbody className="bg-white">
-            {dataTable?.map((el, idx) => (
-              <tr
-                key={idx}
-                className="hover:bg-gray-100 cursor-pointer border-b border-gray-200"
-              >  
-                {/* claim number */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm">
-                  <p className="text-gray-800 text-sm font-normal">
-                    {el?.claimNumber}
-                  </p>
-                </td>
+            {/* STATUS + ACTIONS */}
+            <td className="pr-10 whitespace-nowrap text-center">
+              {el?.status !== "approve" && el?.status !== "reject" ? (
+                <div className="flex items-center justify-center gap-3">
 
-                {/* employee name */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm">
-                  <p className="text-blue-500 text-sm font-normal">
-                    {el?.Employee.firstName} {el?.Employee.lastName}
-                  </p>
-                </td>
+                  {/* Approve Button */}
+                  <button
+                    onClick={() =>
+                      handleEdit(
+                        el.uuid,
+                        "approve",
+                        approveAmount[el.uuid]?.approveAmount || ""
+                      )
+                    }
+                    className="h-8 w-8 rounded-full border flex items-center justify-center bg-white hover:bg-gray-100"
+                    style={{ borderColor: "rgba(28,28,28,0.3)" }}
+                  >
+                    <CheckFat size={16} className="text-gray-600" />
+                  </button>
 
-                {/* submitted date */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm">
-                  <p className="text-gray-800 text-sm font-normal">
-                    {dayjs(el?.claimDate).format("DD/MM/YYYY")}
-                  </p>
-                </td>
+                  {/* Reject Button */}
+                  <button
+                    onClick={() => handleEdit(el.uuid, "reject")}
+                    className="h-8 w-8 rounded-full border flex items-center justify-center bg-white hover:bg-gray-100"
+                    style={{ borderColor: "rgba(28,28,28,0.3)" }}
+                  >
+                    <X size={16} className="text-gray-600" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                  <span
+                    className="px-4 py-1.5 rounded-full"
+                    style={{
+                      background:
+                        el?.status === "approve"
+                          ? "rgba(0, 200, 0, 0.15)"
+                          : "rgba(255, 0, 0, 0.15)",
+                      color: el?.status === "approve" ? "#0F9D58" : "#EF4444",
+                      fontFamily: "Inter",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {el?.status === "approve" ? "Approved" : "Rejected"}
+                  </span>
 
-                {/* claim amount */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black text-sm font-normal">
-                      {formatFunction(Number(el?.totalAmount || 0))}
-                    </p>
-                  </div>
-                </td>
-
-                {/* status */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm">
-                  {el?.status !== "approve" && el?.status !== "reject" ? (
-                    <ReuseableInput
-                      id={`approveAmount-${el.uuid}`}
-                      name="approveAmount"
-                      placeholder="Approve Amount..."
-                      value={approveAmount[el.uuid]?.approveAmount || ""}
-                      onChange={(e) => handleInputChange(e, el.uuid)}
-                      type="number"
-                    />
-                  ) : (
-                    <p className="text-gray-800 text-sm font-normal">
-                      {formatFunction(Number(el?.approvedAmount || 0))}
-                    </p>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm">
-                  {el?.status !== "approve" && el?.status !== "reject" ? (
-                    <div className="flex items-center justify-start space-x-2">
-                      <button
-                        onClick={() =>
-                          handleEdit(
-                            el.uuid,
-                            "approve",
-                            approveAmount[el.uuid]?.approveAmount || ""
-                          )
-                        }
-                        className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center bg-white hover:bg-gray-100 transition-colors"
-                      >
-                        <CheckFat size={16} className="text-gray-600" />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(el.uuid, "reject")}
-                        className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center bg-white hover:bg-gray-100 transition-colors"
-                      >
-                        <X size={16} className="text-gray-600" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-start">
-                      <span
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium ${
-                          el?.status === "approve"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {el?.status === "approve" ? "Approved" : "Rejected"}
-                      </span>
-                      <button
-                        onClick={() => handleEdit(el.uuid, "edit")}
-                        className="ml-2 h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center bg-white hover:bg-gray-100 transition-colors"
-                      >
-                        <PenIcon size={16} className="text-gray-600" />
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : tableFor === "employeePortalLeave" ? (
+                  {/* Edit Button */}
+                  <button
+                    onClick={() => handleEdit(el.uuid, "edit")}
+                    className="h-8 w-8 rounded-full border flex items-center justify-center bg-white hover:bg-gray-100"
+                    style={{ borderColor: "rgba(28,28,28,0.3)" }}
+                  >
+                    <PenIcon size={16} className="text-gray-600" />
+                  </button>
+                </div>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    
+  </div>
+  
+) : 
+  tableFor === "employeePortalLeave" ? (
         /* TABLE LEAVE EMPLOYEE AND LEAVE APPROVAL */
         <table className="w-full table-fixed rounded-lg bg-blue-50 border border-gray-td-100">
           <thead>

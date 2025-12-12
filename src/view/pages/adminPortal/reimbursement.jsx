@@ -131,7 +131,7 @@ function Reimbursement() {
       className="
         w-full h-full 
         flex flex-col items-start justify-start 
-        bg-gray-td-100
+        bg-white
       "
     >
       {checkPermission(user, "Reimbursements", "View") ? (
@@ -159,7 +159,7 @@ function Reimbursement() {
             </div>
 
             {/* PAGINATION */}
-            <div className="absolute bottom-5 right-10 flex items-center justify-end">
+            <div className="absolute bottom-5 right-10 left-10 flex items-center justify-end">
               <PaginationPages
                 totalPages={reimbursementEmployeeList?.totalPage}
                 currentPage={currentPage}

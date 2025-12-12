@@ -349,7 +349,7 @@ function ReimbursementEmployeePortal() {
               <div className="flex items-center gap-3 text-[#111827] px-8">
                 <Scroll size={24} weight="bold" className="text-[#1F87FF]" />
 
-                <h1 className="text-xl font-medium">All Claims</h1>
+                <h1 className="text-xl font-medium">All </h1>
               </div>
 
               <div className="mt-6 overflow-hidden flex-1">

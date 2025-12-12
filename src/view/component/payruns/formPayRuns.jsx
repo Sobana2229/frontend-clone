@@ -253,7 +253,7 @@ function FormPayRuns({ handleBack }) {
         />
       ) : (
         <>
-          <HeaderReusable 
+          <usable 
             title="Regular Payroll" 
             handleBack={handleBack} 
             status={currentPayrunData?.checkPayrun?.status ?? "draft"} 
