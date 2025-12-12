@@ -438,10 +438,10 @@ export const loanHeaders = [
   "LOAN AMOUNT", 
   "AMOUNT REPAID", 
   "REMAINING AMOUNT",
-  "" // For actions column
+  "             " // For actions column
 ];
 
-export const advanceSalaryHeaders = ["Empee Name", "Advance Salary Number", "Advance Salary Name", "Status", "Advance Salary Amount", "", "Remaining Amount"]
+export const advanceSalaryHeaders = ["Employee Name", "Advance Salary Number", "Advance Salary Name", "Status", "Advance Salary Amount", "", "Remaining Amount"]
 
 export const loanDetailHeaders = ["INSTALMENT STATUS", "INSTALMENT DATE", "AMOUNREPAID", "TOTAL AMOUNT REPAID", "REMAINING AMOUNT"]
 

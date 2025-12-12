@@ -1,82 +1,89 @@
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { useState } from "react";
 
-function PaginationPages({ totalPages = 0, currentPage = 1, setCurrentPage }) {
+function TablePagination({ totalRecords = 100, rowsPerPageOptions = [10, 20, 50, 100] }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
+
+  const totalPages = Math.ceil(totalRecords / rowsPerPage);
+  const startRecord = (currentPage - 1) * rowsPerPage + 1;
+  const endRecord = Math.min(currentPage * rowsPerPage, totalRecords);
+
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-        setCurrentPage(page);
-    }
-  };
-
-  const renderPageNumbers = () => {
-    const pageNumbers = [];
-    const maxPages = 7;
-    const range = 1;
-    let startPage = Math.max(1, currentPage - range);
-    let endPage = Math.min(totalPages, currentPage + range);
-
-    if (totalPages <= maxPages) {
-        for (let i = 1; i <= totalPages; i++) {
-            pageNumbers.push(i);
-        }
-
-        return pageNumbers;
-    }
-
-    if (startPage > 1) {
-        pageNumbers.push(1);
-        if (startPage > 2) {
-            pageNumbers.push("...");
-        }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
-    }
-
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            pageNumbers.push("...");
-        }
-        pageNumbers.push(totalPages);
-    }
-
-    return pageNumbers;
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
   return (
-    <div 
-        className="h-7 w-fit flex rounded-lg overflow-hidden space-x-2"
-    >
+    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 w-full">
+      {/* Left side: Rows per page */}
+      <div className="flex items-center space-x-2">
+        <span className="text-gray-600 text-sm">Showing</span>
+        <select
+          value={rowsPerPage}
+          onChange={(e) => {
+            setRowsPerPage(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded px-2 py-1 text-sm"
+        >
+          {rowsPerPageOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Center: Showing X to Y of Z records */}
+      <div className="text-gray-600 text-sm text-center">
+        Showing {startRecord} to {endRecord} of {totalRecords} records
+      </div>
+
+      {/* Right side: Pagination buttons */}
+      <div className="flex items-center space-x-1">
         {/* Previous button */}
         <button
-            className={`w-7 h-full shadow-sm flex items-center justify-center rounded-md`}
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`w-8 h-8 flex items-center justify-center rounded border ${
+            currentPage === 1
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-white text-gray-600 hover:bg-gray-50"
+          }`}
         >
-            <CaretLeft size={15} weight="fill" className={`${currentPage === 1 ? "text-white" : "text-gray-300"}`} />
+          <CaretLeft size={15} weight="bold" />
         </button>
 
         {/* Page numbers */}
-        {renderPageNumbers().map((page, index) => (
-            <button
-                key={index}
-                className={`w-7 h-full shadow-sm flex items-center justify-center rounded-md ${currentPage == page ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                onClick={() => typeof page === "number" && handlePageChange(page)}
-            >
-                {page}
-            </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`w-8 h-8 flex items-center justify-center rounded border text-sm ${
+              currentPage === page
+                ? "bg-grey-300 text-grey-500 border-grey-500"
+                : "bg-white text-gray-600 hover:bg-gray-50 border-gray-300"
+            }`}
+          >
+            {page}
+          </button>
         ))}
 
         {/* Next button */}
         <button
-            className="w-7 h-full shadow-sm flex items-center justify-center rounded-md"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`w-8 h-8 flex items-center justify-center rounded border ${
+            currentPage === totalPages
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-white text-gray-600 hover:bg-gray-50"
+          }`}
         >
-            <CaretRight size={15} weight="fill" className={`${currentPage !== totalPages ? "text-white" : "text-gray-300"}`} />
+          <CaretRight size={15} weight="bold" />
         </button>
+      </div>
     </div>
   );
 }
 
-export default PaginationPages;
+export default TablePagination;

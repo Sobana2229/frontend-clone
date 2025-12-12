@@ -1302,7 +1302,7 @@ function TableReusable({
               <th
                 key={idx}
                 scope="col"
-                className={`px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider border-b border-gray-700 ${
+                className={`px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider border-b border-gray-300 ${
                   idx >= 4 ? 'text-right' : 'text-left'
                 }`}
               >
@@ -1315,11 +1315,12 @@ function TableReusable({
           {dataTable?.map((el, idx) => (
             <tr
               key={idx}
-              className="hover:bg-gray-50 cursor-pointer border-b border-gray-200 transition-colors"
+              className="hover:bg-gray-50 cursor-pointer border-b border-dashed border-gray-200 transition-colors"
+
               onClick={() => handleView?.(el?.uuid, "Loans", "loan")}
             >
               {/* Employee Name */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-900">
+              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500">
                 <div className="font-medium">
                   {el?.Employee?.firstName} {el?.Employee?.middleName}{" "}
                   {el?.Employee?.lastName}
@@ -1330,12 +1331,12 @@ function TableReusable({
               </td>
 
               {/* Loan Number */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-700">
+              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500">
                 {el?.loanNumber}
               </td>
 
               {/* Loan Name */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-700 capitalize">
+              <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-500 capitalize">
                 {el?.LoanName?.name || el?.loanType}
               </td>
 
@@ -1345,7 +1346,7 @@ function TableReusable({
                   className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                     el?.loanAmount - el?.amountRepaid !== 0
                       ? "bg-blue-100 text-blue-700"
-                      : "bg-gray-200 text-gray-600"
+                      : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
@@ -1353,12 +1354,12 @@ function TableReusable({
               </td>
 
               {/* Loan Amount */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 font-medium">
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500 font-medium">
                 ${el?.loanAmount?.toLocaleString("en-US") || el?.totalAmount?.toLocaleString("en-US")}
               </td>
 
               {/* Amount Repaid */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 font-medium">
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500 font-medium">
                 ${el?.amountRepaid?.toLocaleString("en-US")}
               </td>
 
@@ -1421,39 +1422,7 @@ function TableReusable({
           ))}
         </tbody>
       </table>
-      {dataTable?.length > 0 && (
-  <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-200">
-    <div className="flex items-center gap-2 text-sm text-gray-600">
-      <span>Showing</span>
-      <select 
-        className="border border-gray-300 rounded px-2 py-1"
-        defaultValue="20"
-      >
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-      </select>
-    </div>
-    
-    <div className="flex items-center gap-1 text-sm text-gray-600">
-      <span>Showing 1 to 20 out of 100 records</span>
-    </div>
-    
-    <div className="flex items-center gap-1">
-      <button className="px-3 py-1 rounded hover:bg-gray-100">
-        &lt;
-      </button>
-      <button className="px-3 py-1 rounded bg-blue-600 text-white">1</button>
-      <button className="px-3 py-1 rounded hover:bg-gray-100">2</button>
-      <button className="px-3 py-1 rounded hover:bg-gray-100">...</button>
-      <button className="px-3 py-1 rounded hover:bg-gray-100">10</button>
-      <button className="px-3 py-1 rounded hover:bg-gray-100">
-        &gt;
-      </button>
-    </div>
-  </div>
-)}
+     
     </div>
       ) : tableFor === "loanDetails" ? (
        <table className="w-full">

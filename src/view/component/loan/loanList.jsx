@@ -92,7 +92,8 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
   }
 
   return (
-    <div className={`w-full h-screen flex flex-col items-start justify-start relative bg-gray-td-100`}>
+<div className={`w-full h-screen flex flex-col items-start justify-start relative bg-white`}>
+
       {showDetail ? (
         <LoanDetail 
           setShowDetail={setShowDetail} 

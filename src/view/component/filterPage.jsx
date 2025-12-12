@@ -165,7 +165,7 @@ const handleCreateLoan = () => {
 
     return (
   <div className="w-full">
-  <div className="w-full px-4 py-3 bg-gray-50 border-y border-gray-200">
+  <div className="w-full px-4 py-3 bg-white border-y border-gray-200">
     <div className="w-full h-[60px] border border-neutral-200 rounded-md bg-white flex items-center px-5 relative">
 
       <span className="text-[14px] font-medium text-neutral-600">
