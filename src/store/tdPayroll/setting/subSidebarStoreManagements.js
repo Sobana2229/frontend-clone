@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const subSidebarStoreManagements = create((set, get) => ({
     activeTab: "",
-    showSubSidebar: true,
+    showSubSidebar: false,
     showX: false,
     showAddButton: false,
     showThreeDots: false,
@@ -19,7 +19,7 @@ const subSidebarStoreManagements = create((set, get) => ({
     resetSubSidebarState: async () => {
         set({
             activeTab: "",
-            showSubSidebar: true,
+            showSubSidebar: false,
             showX: false,
             showAddButton: false,
             showThreeDots: false,

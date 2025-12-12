@@ -142,7 +142,7 @@ function Reimbursement() {
             <FilterPage
               isHeader={false}
               filterFor="claims"
-              addData={null}
+              addData={addReimbursement}
               setFilter={setFilter}
               filter={filter}
             />

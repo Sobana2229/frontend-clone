@@ -447,7 +447,7 @@ export const loanDetailHeaders = ["INSTALMENT STATUS", "INSTALMENT DATE", "AMOUN
 
 export const regulationEmployeeHeaders = ["Employee Nae", "From", "To", "status", ""]
 
-export const leaveEmployeeHeaders = ["employee name", "leave dates", "no. of days", "leave type", "reason for leave", "status"]
+export const leaveEmployeeHeaders = ["employee name", "leave dates"," units ", "no. of days", "leave type", "reason for leave", "status"]
 
 export const loanPaymentModeList = ["Cheque", "Cash", "Bank Transfer", "Others"]
 

@@ -9,13 +9,13 @@ import PaginationPages from "../paginations";
 import LoanDetail from "./loanDetail";
 
 
-function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setShowDetail, setSelectedLoanData}) {
+function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setShowDetail, setSelectedLoanData, addData,addLoans }) {
   const { getLoan, loanData, loanDataByUuid, getLoanByUuid } = loanStoreManagements();
   const [showFormLoans, setShowFormLoans] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [tempUuid, setTempUuid] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
-  
+  const [activeSection, setActiveSection] = useState("");
   // Dynamic initial filter berdasarkan props
   const [filter, setFilter] = useState({
     employeeUuid: "",
@@ -110,14 +110,15 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
       ) : (
         !showFormLoans ? (
           <>
-            <FilterPage 
-              filterFor={"Loans"} 
-              onlyAll={true} 
-              setFilter={setFilter} 
-              filter={filter} 
-              isAll={true} 
-              isHeader={false}
-            />
+          <FilterPage 
+  filterFor={"Loans"} 
+  onlyAll={true} 
+  setFilter={setFilter} 
+  filter={filter}
+  isAll={true} 
+  isHeader={false}
+  addData={addData}    // <-- pass the function from LoanPages
+/>
 
             <div className="w-full px-10 py-2">
               <div className="w-full h-[700px] bg-white relative overflow-y-auto rounded-xl overflow-hidden">

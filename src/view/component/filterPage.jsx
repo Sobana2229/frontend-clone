@@ -8,6 +8,7 @@ import { EmployeeHeadersoptionFilter, employeeLoanEarningOptions, employeePageOp
 import employeeStoreManagements from "../../store/tdPayroll/employee";
 import dayjs from "dayjs";
 import PeriodPicker from "./employeePortal/PeriodPicker";
+import LoanList from "./loan/loanList";
 import { 
   Users2, 
   FileText, 
@@ -28,6 +29,7 @@ const formatPeriodDisplay = (period) => {
 function FilterPage({
     filterFor,
     addData,
+    addLoans,
     setFilter = undefined,
     filter = {},
     onlyAll = false,
@@ -143,7 +145,7 @@ function FilterPage({
     const selectedEmployee = getSelectedValue(dataEmployeesOptions, "employeeUuid");
 
     return (
-        <div className="w-full bg-white px-5 py-4 border-b border-gray-200">
+        <div className="w-[97%] bg-white px-8 py-4 border-b border-gray-200">
             <div className="flex items-center gap-4 w-full">
 
                 {/* FILTER BY */}
@@ -152,16 +154,12 @@ function FilterPage({
                 {/* Employee Dropdown */}
                 <div className="relative" ref={employeeDropdownRef}>
                     <button
-                        onClick={() =>
-                            setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)
-                        }
+                        onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
                         className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 min-w-[180px]"
                     >
                         <Users size={18} className="text-gray-500" />
                         <span className="text-sm text-gray-700 flex-1 text-left">
-                            {filter.employeeUuid
-                                ? selectedEmployee?.label
-                                : "Employee"}
+                            {filter.employeeUuid ? selectedEmployee?.label : "Employee"}
                         </span>
                         <CaretDown size={14} className="text-gray-500" />
                     </button>
@@ -184,16 +182,12 @@ function FilterPage({
                 {/* Period Picker */}
                 <div className="relative" ref={periodDropdownRef}>
                     <button
-                        onClick={() =>
-                            setIsPeriodDropdownOpen(!isPeriodDropdownOpen)
-                        }
+                        onClick={() => setIsPeriodDropdownOpen(!isPeriodDropdownOpen)}
                         className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 min-w-[180px]"
                     >
                         <CalendarBlankIcon size={18} className="text-gray-500" />
                         <span className="text-sm text-gray-700 flex-1 text-left">
-                            {filter.period
-                                ? formatPeriodDisplay(filter.period)
-                                : "Select Period"}
+                            {filter.period ? formatPeriodDisplay(filter.period) : "Select Period"}
                         </span>
                         <CaretDown size={14} className="text-gray-500" />
                     </button>
@@ -204,10 +198,7 @@ function FilterPage({
                                 type="month"
                                 value={filter.period || ""}
                                 onChange={(e) =>
-                                    setFilter((prev) => ({
-                                        ...prev,
-                                        period: e.target.value,
-                                    }))
+                                    setFilter((prev) => ({ ...prev, period: e.target.value }))
                                 }
                                 className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
                             />
@@ -218,52 +209,48 @@ function FilterPage({
                 {/* Status Dropdown */}
                 <div className="relative" ref={statusDropdownRef}>
                     <button
-                        onClick={() =>
-                            setIsStatusDropdownOpen(!isStatusDropdownOpen)
-                        }
+                        onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
                         className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 min-w-[160px]"
                     >
                         <Activity size={18} className="text-gray-500" />
-                        <span className="text-sm text-gray-700 flex-1 capitalize text-left">
-                            {filter.status ? filter.status : "All"}
+                        <span className="text-sm text-[rgba(28,28,28,0.5)] flex-1 text-left capitalize">
+                            {filter.status ? filter.status : "Status"}
                         </span>
                         <CaretDown size={14} className="text-gray-500" />
                     </button>
 
                     {isStatusDropdownOpen && (
                         <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                            {["all", "pending", "approved", "rejected"].map(
-                                (status) => (
-                                    <button
-                                        key={status}
-                                        onClick={() =>
-                                            handleOptionSelect(status)
-                                        }
-                                        className="w-full px-3 py-2 text-sm text-left hover:bg-gray-50 capitalize"
-                                    >
-                                        {status}
-                                    </button>
-                                )
-                            )}
+                            {["all", "pending", "approved", "rejected"].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => handleOptionSelect(status)}
+                                    className="w-full px-3 py-2 text-sm text-left hover:bg-gray-50 capitalize"
+                                >
+                                    {status}
+                                </button>
+                            ))}
                         </div>
                     )}
                 </div>
 
-                {/* ---- RIGHT SIDE BUTTONS ---- */}
+                {/* RIGHT SIDE BUTTONS */}
                 <div className="flex items-center gap-3 ml-auto">
 
                     {/* Add Claim Button */}
-                     
-                        <button
-                            onClick={() => addData()}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2"
-                        >
-                            <Plus size={16} weight="bold" />
-                            Add Claim
-                        </button>
-                    
+                    <button
+                        onClick={() => addData()}
+                        className="px-4 py-2 bg-[#0066FE] text-white rounded-md hover:bg-blue-700 flex items-center gap-2 drop-shadow-[0_5px_4px_rgba(0,102,221,0.15)]"
+                    >
+                        <span>Add Claim</span>
 
-                    {/* THREE DOTS MENU */}
+                        {/* Plus inside circle */}
+                        <span className="w-5 h-5 flex items-center justify-center rounded-full border border-white">
+                            <Plus size={12} weight="bold" />
+                        </span>
+                    </button>
+
+                    {/* Three Dots */}
                     <div className="relative" ref={dropdownRef}>
                         <button
                             onClick={() => setIsOpenOptions(!isOpenOptions)}
@@ -286,12 +273,12 @@ function FilterPage({
                             </div>
                         )}
                     </div>
-
                 </div>
             </div>
         </div>
     );
 }
+
 
     
     // ============================================================
@@ -348,13 +335,14 @@ function FilterPage({
                         </button>
 
                         {/* Create Loan */}
-                        <button
-                            onClick={() => addData()}
-                            className="ml-4 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700"
-                        >
-                            <span className="text-[14px] font-medium">Create Loan</span>
-                            <PlusCircle size={18} className="ml-2 text-white" />
-                        </button>
+                       <button
+  onClick={() => addData(null,false)}
+  className="ml-4 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700"
+>
+  <span className="text-[14px] font-medium">Create Loan</span>
+  <PlusCircle size={18} className="ml-2 text-white" />
+</button>
+
 
                         {/* 3 dots menu */}
                         <div className="ml-4 w-[35px] h-[35px] border border-neutral-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors">
@@ -369,27 +357,32 @@ function FilterPage({
     // ============================================================
     // DEFAULT RENDER FOR OTHER SECTIONS (employee, leave-approval, etc.)
     // ============================================================
-    return (
+       return (
         <div className="w-full">
+
+            {/* ====================== HEADER SECTION ======================= */}
             {isHeader && (
-                <div className="flex items-center justify-between p-4 bg-white">
+                <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+
+                    {/* LEFT — STATUS DROPDOWN */}
                     <div className="relative">
-                        <div 
+                        <div
                             className="flex items-center space-x-2 cursor-pointer"
                             onClick={() => setIsOpen(!isOpen)}
                         >
                             <h2 className="text-xl font-medium text-gray-800 capitalize">
                                 {onlyAll ? "All" : filter?.status} {filterFor}
                             </h2>
+
                             {!onlyAll && (
-                                <CaretDown 
-                                    weight="fill" 
-                                    className={`text-lg transition-transform duration-200 ${
-                                        isOpen ? "rotate-180" : ""
-                                    }`} 
+                                <CaretDown
+                                    weight="fill"
+                                    className={`text-lg transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                                 />
                             )}
                         </div>
+
+                        {/* STATUS DROPDOWN MENU */}
                         {(isOpen && !onlyAll) && (
                             <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                                 {options?.map((option) => (
@@ -404,69 +397,140 @@ function FilterPage({
                             </div>
                         )}
                     </div>
-                    
+
+                    {/* RIGHT SECTION — Incomplete Employee + Add Button + 3 Dots */}
                     <div className="flex items-center space-x-5">
-                        <div className="flex items-center justify-center space-x-3">
-                            {filterFor == "employee" && (
-                                <div className={`flex items-center justify-center text-orange-500 relative rounded-md ${
-                                showIncompleteOnly ? 'bg-orange-100' : 'bg-white border border-orange-500'
-                                }`}>
-                                <button 
+
+                        {/* INCOMPLETE EMPLOYEE BUTTON */}
+                        {filterFor === "employee" && (
+                            <div
+                                className={`flex items-center justify-center text-orange-500 relative rounded-md ${
+                                    showIncompleteOnly ? "bg-orange-100" : "bg-white border border-orange-500"
+                                }`}
+                            >
+                                <button
                                     className="text-lg flex items-center justify-between"
                                     onClick={() => setShowIncompleteOnly?.(!showIncompleteOnly)}
                                 >
                                     <p className="px-4 py-2 capitalize">Incomplete Employee</p>
                                     <div className="flex items-center justify-center px-2 py-1 border-l-2 border-l-orange-200">
-                                    <CaretDown 
-                                        size={20} 
-                                        className={`transition-transform ${showIncompleteOnly ? 'rotate-180' : ''}`}
-                                    />
+                                        <CaretDown
+                                            size={20}
+                                            className={`transition-transform ${showIncompleteOnly ? "rotate-180" : ""}`}
+                                        />
                                     </div>
                                 </button>
+                            </div>
+                        )}
+
+                        {/* BLUE BUTTON (Leave Request / Add Claims etc.) */}
+                        <button
+                            onClick={() => addData()}
+                            className="flex items-center gap-2 bg-blue-600 text-white rounded-md px-5 py-2 text-sm font-medium"
+                        >
+                            {filterFor === "leave-approval" ? "Leave Request" : `Add ${filterFor}`}
+                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-blue-600 font-bold text-sm">
+                                +
+                            </span>
+                        </button>
+
+                        {/* 3 DOT MENU */}
+                        <div className="relative" ref={dropdownRef}>
+                            <button
+                                onClick={() => setIsOpenOptions(!isOpenOptions)}
+                                className="text-gray-500 rounded-md border-2 hover:bg-gray-50 p-1"
+                            >
+                                <DotsThree size={32} />
+                            </button>
+
+                            {isOpenOptions && (
+                                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200 z-50">
+                                    {employeePageOptions?.map((el) => (
+                                        <button
+                                            key={el}
+                                            onClick={() => setIsOpenOptions(false)}
+                                            className="w-full px-4 py-3 text-left font-medium hover:bg-blue-td-50 flex items-center space-x-2 transition-colors duration-200 hover:border-l-4 border-blue-600"
+                                        >
+                                            <span>{el}</span>
+                                        </button>
+                                    ))}
                                 </div>
                             )}
-
-                            <div className="flex items-center text-lg justify-center bg-blue-600 text-white relative rounded-md">
-                                <button onClick={() => addData()} className="px-4 py-2">
-                                    <p className="capitalize">
-                                        Add {filterFor}
-                                    </p>
-                                </button>
-                            </div>
-                            
-                            <div className="relative" ref={dropdownRef}>
-                                <button 
-                                    onClick={() => setIsOpenOptions(!isOpenOptions)}
-                                    className="text-gray-500 rounded-md border-2 hover:bg-gray-50"
-                                >
-                                    <DotsThree className="text-[40px]" />
-                                </button>
-
-                                {isOpenOptions && (
-                                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200 z-50">
-                                        {employeePageOptions?.map(el => (
-                                            <button
-                                                key={el}
-                                                onClick={() => setIsOpenOptions(false)}
-                                                className="w-full px-4 py-3 text-left font-medium hover:bg-blue-td-50 flex items-center space-x-2 transition-colors duration-200 hover:border-l-4 border-blue-600"
-                                            >
-                                                <span>{el}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Existing filter section for employee and leave-approval remains unchanged */}
+            {/* ====================== FILTER BAR SECTION ======================= */}
             <div className="w-full my-5 px-10">
-                <div className="flex items-center w-full px-5 py-2 border-t border-gray-200 bg-white rounded-md">
+
+                <div className="flex items-center w-full px-5 py-3 border border-gray-200 bg-white rounded-md">
+
                     <span className="text-sm text-gray-500 mr-4">FILTER BY :</span>
-                    {/* Rest of your existing filter code for employee, leave-approval etc. */}
+
+                    {/* LEAVE APPROVAL ADMIN — Your existing logic inserted into UI */}
+                    {filterFor === "leave-approval" && (
+                        <>
+
+                            {/* PERIOD PICKER */}
+                            <div className="relative text-gray-500 w-[22%] flex items-center gap-2">
+                                <CalendarBlankIcon size={20} />
+                                <PeriodPicker
+                                    selectedPeriod={filter.period}
+                                    onPeriodSelect={(period) =>
+                                        setFilter((prev) => ({ ...prev, period }))
+                                    }
+                                    formatPeriodDisplay={formatPeriodDisplay}
+                                />
+                            </div>
+
+                            {/* PIPE */}
+                            <div className="flex items-center">
+                                <div className="h-8 border-l border-gray-300 mx-4"></div>
+                            </div>
+
+                            {/* EMPLOYEE SELECT */}
+                            <div className="relative text-gray-500 w-[30%] flex items-center gap-2">
+                                <User size={20} />
+                                <Select
+                                    options={dataEmployeesOptions}
+                                    onChange={handleEmployeeSelect}
+                                    value={getSelectedValue(dataEmployeesOptions, "employeeUuid")}
+                                    placeholder="Select an Employee"
+                                    className="w-full"
+                                    classNames={{
+                                        control: () =>
+                                            "!rounded-lg !border !border-gray-300 !shadow-none",
+                                        valueContainer: () => "!px-2 !py-1",
+                                        indicatorsContainer: () => "!px-1",
+                                    }}
+                                    styles={{
+                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                    }}
+                                    components={{
+                                        Option: (props) => (
+                                            <CustomOption
+                                                props={props}
+                                                onCreateNew={() => setModalDesignation(true)}
+                                                createNewLabel="New Designation"
+                                            />
+                                        ),
+                                    }}
+                                    menuPortalTarget={document.body}
+                                    filterOption={(option, rawInput) => {
+                                        if (option.value === "create-new-data") return true;
+                                        return option.label
+                                            .toLowerCase()
+                                            .includes(rawInput.toLowerCase());
+                                    }}
+                                />
+                            </div>
+
+                        </>
+                    )}
+
                 </div>
+
             </div>
         </div>
     );

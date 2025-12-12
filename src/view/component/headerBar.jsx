@@ -131,7 +131,7 @@ function HeaderBar({ setIsSidebarOpen, isSidebarOpen }) {
     
     return (
         <div className={`
-                w-full h-16 flex items-center justify-between fixed top-0 right-0 z-10
+                w-[88%] h-16 flex items-center justify-between fixed top-0 right-0 z-10
                 bg-white border-b border-gray-200
                 ${isEmployeePortal ? "md:left-[14.5%] left-0" : isSidebarOpen ? "left-[14.5%]" : "left-14"}
                 px-3 sm:px-4 md:px-6

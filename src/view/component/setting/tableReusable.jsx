@@ -1148,154 +1148,200 @@ function TableReusable({
         </table>
       ) : 
       /* Reimbursements Claims Table */
-      tableFor === "Reimbursements" ? (
-        <table className="w-full table-auto">
-          <thead>
-            <tr>
-              {dataHeaders?.map((el, idx) => (
-                <th
-                  key={idx}
-                  scope="col"
-                  className={`px-6 py-4 bg-blue-td-50 text-blue-td-500 ${
-                    el == "Consider for SPK" ? "text-center" : "text-left"
-                  } text-lg font-medium uppercase tracking-wider border-b-[1px]`}
-                >
-                  {el}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable?.map((el, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex items-center justify-start space-x-2">
-                    <p className="text-lg font-normal">{el?.nameInPayslip}</p>
-                    {el?.includeFlexibleBenefit && (
-                      <div className="bg-orange-50 text-orange-500 border-l-2 border-orange-500 flex items-center justify-center px-2">
-                        <p className="text-xs font-normal">FBP</p>
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-lg text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black font-normal">
-                      {el?.ReimbursementType?.name}
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-lg text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black font-normal">
-                      {el?.amount} per month
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-lg text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <div
-                      className={`flex items-center justify-center px-4 py-1 ${
-                        el?.markAsActive ? "bg-green-td-50" : "bg-gray-td-50"
-                      } rounded-full`}
-                    >
-                      <p
-                        className={`${
-                          el?.markAsActive
-                            ? "text-green-td-600"
-                            : "text-gray-td-600"
-                        } text-sm font-normal`}
-                      >
-                        {el?.markAsActive ? "Active" : "Inactive"}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-black border-b-[1px]">
-                  <div
-                    className="relative"
-                    ref={openMenu === el?.uuid ? menuRef : null}
-                  >
-                    <button
-                      onClick={() =>
-                        setOpenMenu(openMenu === el?.uuid ? null : el?.uuid)
-                      }
-                      className="h-6 w-6 rounded-full border-[2px] flex items-center justify-center border-gray-td-500"
-                    >
-                      <DotsThreeOutlineVertical
-                        size={16}
-                        className="text-gray-td-500"
-                      />
-                    </button>
+     tableFor === "Reimbursements" ? (
+  <table className="w-[200%] table-auto px-2 bg-white border border-dashed border-[rgba(28,28,28,0.1)] rounded-t-[10px]">
+    <thead>
+      <tr className="bg-[#1C1C1C] h-20">
+        {dataHeaders?.map((el, idx) => (
+          <th
+            key={idx}
+            scope="col"
+            className="px-6 py-5 text-left text-[14px] font-medium leading-5 text-[#ADADAD] uppercase"
+            style={{ fontFamily: 'Inter', fontWeight: 500 }}
+          >
+            {el}
+          </th>
+        ))}
+        <th className="py-5 text-center w-[60px]"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {dataTable?.map((el, idx) => (
+        <tr 
+          key={idx} 
+          className="border-b border-dashed border-[rgba(28,28,28,0.1)] h-[86px] hover:bg-gray-50"
+        >
+          {/* Claim Number */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {el?.claimNumber}
+            </p>
+          </td>
 
-                    {openMenu === el?.uuid && (
-                      <div className="absolute right-16 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50 font-medium overflow-hidden">
-                        <button
-                          onClick={() => {
-                            if (!el?.isUsed) {
-                              handleDelete(
-                                el?.uuid,
-                                "Reimbursements",
-                                "reimbursement",
-                                "delete"
-                              );
-                              setOpenMenu(null);
-                            }
-                          }}
-                          disabled={el?.isUsed}
-                          className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                            el?.isUsed
-                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                              : "text-red-600 hover:bg-red-50"
-                          }`}
-                          title={el?.isUsed ? "Cannot delete: This component is already assigned to one or more employees" : ""}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleEdit(
-                              el?.uuid,
-                              "Reimbursements",
-                              "reimbursement"
-                            );
-                            setOpenMenu(null);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (!el?.isUsed) {
-                              handleChangeActiveStatus(
-                                el?.uuid,
-                                "Reimbursements",
-                                "reimbursement"
-                              );
-                              setOpenMenu(null);
-                            }
-                          }}
-                          disabled={el?.isUsed}
-                          className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                            el?.isUsed
-                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                              : "text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-50"
-                          }`}
-                          title={el?.isUsed ? "Cannot change status: This component is already assigned to one or more employees" : ""}
-                        >
-                          Mark as {el?.markAsActive ? "Inactive" : "Active"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) :tableFor === "loans" ? (
-  <div className="w-full h-full overflow-auto">
+          {/* Employee Name */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[rgba(28,28,28,0.5)]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {el?.employeeName}
+            </p>
+          </td>
+
+          {/* Submitted Date */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {el?.submittedDate}
+            </p>
+          </td>
+
+          {/* Claim Amount */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              ${el?.claimAmount}
+            </p>
+          </td>
+
+          {/* Approved Amount */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              ${el?.approvedAmount}
+            </p>
+          </td>
+
+          {/* Status - Approve/Reject buttons or Approved/Rejected badge */}
+          <td className="px-6 text-left">
+            <div className="flex items-center gap-2">
+              {el?.status?.toLowerCase() === "pending" ? (
+                <>
+                  <button 
+                    onClick={() => handleApprove(el?.uuid)}
+                    className="h-[30px] px-4 bg-[#D5FAF2] text-[#014F45] text-[14px] leading-6 font-normal rounded-[25px] hover:opacity-80"
+                    style={{ fontFamily: 'Inter' }}
+                  >
+                    Approve
+                  </button>
+                  <button 
+                    onClick={() => handleReject(el?.uuid)}
+                    className="h-[30px] px-4 bg-[#FEE2E2] text-[#991B1B] text-[14px] leading-6 font-normal rounded-[25px] hover:opacity-80"
+                    style={{ fontFamily: 'Inter' }}
+                  >
+                    Reject
+                  </button>
+                </>
+              ) : (
+                <span 
+                  className={`inline-flex items-center justify-center h-[30px] px-6 text-[14px] leading-6 font-normal rounded-[25px] ${
+                    el?.status?.toLowerCase() === "approved" 
+                      ? 'bg-[#D5FAF2] text-[#014F45]' 
+                      : 'bg-[#FEE2E2] text-[#991B1B]'
+                  }`}
+                  style={{ fontFamily: 'Inter' }}
+                >
+                  {el?.status}
+                </span>
+              )}
+            </div>
+          </td>
+
+          {/* Three dots menu - SEPARATE COLUMN */}
+          <td className="text-center">
+            <div
+              className="relative inline-block"
+              ref={openMenu === el?.uuid ? menuRef : null}
+            >
+              <button
+                onClick={() =>
+                  setOpenMenu(openMenu === el?.uuid ? null : el?.uuid)
+                }
+                className="h-8 w-8 rounded-full border-[1px] flex items-center justify-center border-gray-400 hover:bg-gray-100 transition-colors"
+              >
+                <DotsThreeOutlineVertical
+                  size={16}
+                  className="text-gray-500"
+                />
+              </button>
+
+              {openMenu === el?.uuid && (
+                <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50 font-medium">
+                  <button
+                    onClick={() => {
+                      handleEdit(
+                        el?.uuid,
+                        "Reimbursements",
+                        "reimbursement"
+                      );
+                      setOpenMenu(null);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 text-gray-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (!el?.isUsed) {
+                        handleDelete(
+                          el?.uuid,
+                          "Reimbursements",
+                          "reimbursement",
+                          "delete"
+                        );
+                        setOpenMenu(null);
+                      }
+                    }}
+                    disabled={el?.isUsed}
+                    className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                      el?.isUsed
+                        ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                        : "text-red-600 hover:bg-red-50"
+                    }`}
+                    title={el?.isUsed ? "Cannot delete: This component is already assigned to one or more employees" : ""}
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (!el?.isUsed) {
+                        handleChangeActiveStatus(
+                          el?.uuid,
+                          "Reimbursements",
+                          "reimbursement"
+                        );
+                        setOpenMenu(null);
+                      }
+                    }}
+                    disabled={el?.isUsed}
+                    className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                      el?.isUsed
+                        ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                        : "text-gray-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                    }`}
+                    title={el?.isUsed ? "Cannot change status: This component is already assigned to one or more employees" : ""}
+                  >
+                    Mark as {el?.markAsActive ? "Inactive" : "Active"}
+                  </button>
+                </div>
+              )}
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+):tableFor === "loans" ? (
+  <div className="w-full h-full overflow-visible">
     <table className="w-full table-auto">
       <thead className="sticky top-0 z-10" style={{ background: '#1C1C1C', height: '78px' }}>
         <tr>
@@ -1378,13 +1424,13 @@ function TableReusable({
             </td>
 
             {/* Remaining Amount */}
-            <td className="pr-10 whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
+            <td className="pr-20  whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
               ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") || 
                 el?.remainingAmount?.toLocaleString("en-US")}
             </td>
 
             {/* Actions Menu */}
-            <td className="whitespace-nowrap text-center">
+            <td className="whitespace-nowrap text-right " >
               <div className="relative inline-block" ref={openMenu === el?.uuid ? menuRef : null}>
                 <button
                   onClick={(e) => {
@@ -1393,10 +1439,10 @@ function TableReusable({
                   }}
                   className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors mx-auto"
                 >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <circle cx="10" cy="4" r="1.5" fill="rgba(28, 28, 28, 0.6)"/>
-                    <circle cx="10" cy="10" r="1.5" fill="rgba(28, 28, 28, 0.6)"/>
-                    <circle cx="10" cy="16" r="1.5" fill="rgba(28, 28, 28, 0.6)"/>
+                  <svg width="50" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="4" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
+                    <circle cx="10" cy="10" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
+                    <circle cx="10" cy="16" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
                   </svg>
                 </button>
 
@@ -2850,142 +2896,173 @@ function TableReusable({
   
 ) : 
   tableFor === "employeePortalLeave" ? (
-        /* TABLE LEAVE EMPLOYEE AND LEAVE APPROVAL */
-        <table className="w-full table-fixed rounded-lg bg-blue-50 border border-gray-td-100">
-          <thead>
-            <tr>
-              {dataHeaders?.map(
-                (el, idx) => (
-                  // idx !== dataHeaders?.length - 1 && (
-                  <th
-                    key={idx}
-                    scope="col"
-                    className="px-6 py-4 text-left text-sm font-semibold text-blue-500 uppercase tracking-wide"
+  /* TABLE LEAVE EMPLOYEE AND LEAVE APPROVAL */
+  <table className="w-full table-auto bg-white border border-dashed border-[rgba(28,28,28,0.1)] rounded-t-[10px]">
+    <thead>
+      <tr className="bg-[#1C1C1C] h-20">
+        <th className="text-center w-[33px] py-5">
+          <input 
+            type="checkbox" 
+            className="w-[18px] h-[18px] rounded-[4px] border border-[#ADADAD]" 
+          />
+        </th>
+        {dataHeaders?.map((el, idx) => (
+          
+          <th
+            key={idx}
+            scope="col"
+            className="px-6 py-5 text-left text-[14px] font-medium leading-5 text-[#ADADAD] uppercase"
+            style={{ fontFamily: 'Inter', fontWeight: 500 }}
+          >
+            {el}
+          </th>
+        ))}
+      </tr>
+    </thead>
+
+    <tbody className="bg-white">
+      {dataTable?.map((el, idx) => (
+        <tr 
+          key={idx} 
+          className="border-b border-dashed border-[rgba(28,28,28,0.1)] h-[86px]"
+        >
+          {/* Checkbox */}
+          <td className="text-center">
+            <input 
+              type="checkbox" 
+              className="w-[18px] h-[18px] rounded-[4px] border border-[rgba(28,28,28,0.3)]" 
+            />
+          </td>
+
+          {/* employee name */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[rgba(28,28,28,0.5)]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {el?.employeeName}
+            </p>
+          </td>
+
+          {/* date from - to */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {dayjs(el?.dateFrom).format("DD/MM/YYYY")} -{" "}
+              {dayjs(el?.dateTo).format("DD/MM/YYYY")}
+            </p>
+          </td>
+
+          {/* no of days (units) */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {el?.dayCount} Days
+            </p>
+          </td>
+
+          {/* leave type */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[rgba(28,28,28,0.5)]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {el?.LeaveType.leaveName}
+            </p>
+          </td>
+
+          {/* leave status (Paid/Unpaid) */}
+          <td className="px-6 text-left">
+            <span 
+              className={`inline-flex items-center justify-center h-[30px] px-4 text-[16px] leading-6 font-normal rounded-[25px] ${
+                el?.leaveStatus === 'Paid' 
+                  ? 'bg-[#D5FAF2] text-[#014F45]' 
+                  : 'bg-[rgba(28,28,28,0.1)] text-[#1C1C1C]'
+              }`}
+              style={{ fontFamily: 'Inter', minWidth: '80px' }}
+            >
+              {el?.leaveStatus || 'Paid'}
+            </span>
+          </td>
+
+          {/* reason */}
+          <td className="px-6 text-left">
+            <p 
+              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
+              style={{ fontFamily: 'Inter' }}
+            >
+              {el?.reason}
+            </p>
+          </td>
+
+          {/* status (Approve/Approved/Rejected) */}
+          <td className="px-6 text-left">
+            <div className="flex items-center gap-2">
+              {el?.status === "pending" || el?.status === "draft" ? (
+                <>
+                  <button 
+                    onClick={() => handleEdit(el.uuid, "approved")}
+                    className="h-[30px] px-4 bg-[#D5FAF2] text-[#014F45] text-[16px] leading-6 font-normal rounded-[25px] hover:opacity-80"
+                    style={{ fontFamily: 'Inter', minWidth: '80px' }}
                   >
-                    {el}
-                  </th>
-                )
-                // )
+                    Approve
+                  </button>
+                  <button 
+                    onClick={() => handleEdit(el.uuid, "rejected")}
+                    className="h-[30px] px-4 bg-[#FEE2E2] text-[#991B1B] text-[16px] leading-6 font-normal rounded-[25px] hover:opacity-80"
+                    style={{ fontFamily: 'Inter', minWidth: '80px' }}
+                  >
+                    Reject
+                  </button>
+                </>
+              ) : (
+                <span 
+                  className={`inline-flex items-center justify-center h-[30px] px-4 text-[16px] leading-6 font-normal rounded-[25px] ${
+                    el?.status?.toLowerCase() === "approved" 
+                      ? 'bg-[#D5FAF2] text-[#014F45]' 
+                      : 'bg-[#FEE2E2] text-[#991B1B]'
+                  }`}
+                  style={{ fontFamily: 'Inter', minWidth: '100px' }}
+                >
+                  {el?.status}
+                </span>
               )}
-            </tr>
-          </thead>
+            </div>
+          </td>
 
-          <tbody className="bg-white">
-            {dataTable?.map((el, idx) => (
-              <tr key={idx} className="hover:bg-gray-50 cursor-pointer">
-                {/* employee name */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-blue-500 text-sm font-normal">
-                      {el?.employeeName}
-                    </p>
-                  </div>
-                </td>
-
-                {/* date from - to */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black text-sm font-normal">
-                      {dayjs(el?.dateFrom).format("DD/MM/YYYY")} -{" "}
-                      {dayjs(el?.dateTo).format("DD/MM/YYYY")}
-                    </p>
-                  </div>
-                </td>
-
-                {/* no of days */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black text-sm font-normal">
-                      {el?.dayCount}
-                    </p>
-                  </div>
-                </td>
-
-                {/* leave type */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black text-sm font-normal capitalize">
-                      {el?.LeaveType.leaveName}
-                    </p>
-                  </div>
-                </td>
-
-                {/* reason */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black text-sm font-normal">
-                      {el?.reason}
-                    </p>
-                  </div>
-                </td>
-
-                {/* status */}
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <span
-                      className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize ${
-                        (el?.status).toLowerCase() === "approved" ? "bg-green-100 text-green-700" :
-                          (el?.status).toLowerCase() === "pending"? "bg-[#FFF3E0] text-[#DB6E00]"
-                          : "bg-red-100 text-red-700"
-                        }`}
-                    >
-                      {el?.status}
-                    </span>
-                  </div>
-                </td>
-
-                {!pathname?.includes("employee-portal") ? (
-                  <td
-                    className={`text-black flex items-center justify-center ${
-                      (el?.status !== "pending" || el?.status !== "draft") &&
-                      "border-b-[1px]"
-                    } py-2.5 space-x-2`}
-                  >
-                    <>
-                      {el?.status === "pending" || el?.status === "draft" ? (
-                        <div className="py-[6%] flex items-center space-x-5">
-                          <button
-                            onClick={() => handleEdit(el.uuid, "approved")}
-                            className="h-8 w-8 rounded-full border-[1px] flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                          >
-                            <CheckFat size={16} className="text-gray-600" />
-                          </button>
-                          <button
-                            onClick={() => handleEdit(el.uuid, "rejected")}
-                            className="h-8 w-8 rounded-full border-[1px] flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                          >
-                            <X size={16} className="text-gray-600" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="px-6 py-[5%] whitespace-nowrap text-left text-sm text-blue-500">
-                          <button
-                            onClick={() => handleEdit(el.uuid, "edit")}
-                            className="h-8 w-8 rounded-full border-[1px] flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                          >
-                            <PenIcon size={16} className="text-gray-600" />
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  </td>
-                ) : (
-                  <td className="px-6 py-4 whitespace-nowrap text-left border-b-[1px]">
-                    {(el?.status === "pending" || el?.status === "draft") && (
-                      <button
-                        onClick={() => handleEdit(el.uuid, "canceled")}
-                        className="rounded-full border-[1px] px-3 py-1 flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : tableFor === "payslipEmployeePortal" ? (
+          {!pathname?.includes("employee-portal") ? (
+            <td className="text-black text-center py-2.5">
+              {el?.status !== "pending" && el?.status !== "draft" && (
+                <button
+                  onClick={() => handleEdit(el.uuid, "edit")}
+                  className="h-8 w-8 rounded-full border-[1px] flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors mx-auto"
+                >
+                  <PenIcon size={16} className="text-gray-600" />
+                </button>
+              )}
+            </td>
+          ) : (
+            <td className="px-6 text-left">
+              {(el?.status === "pending" || el?.status === "draft") && (
+                <button
+                  onClick={() => handleEdit(el.uuid, "canceled")}
+                  className="h-[30px] px-4 bg-[#FEE2E2] text-[#991B1B] text-[16px] leading-6 font-normal rounded-[25px] hover:opacity-80"
+                  style={{ fontFamily: 'Inter' }}
+                >
+                  Cancel
+                </button>
+              )}
+            </td>
+          )}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+): tableFor === "payslipEmployeePortal" ? (
         <table className="min-w-full border-collapse">
           <thead className="bg-[#F5FAFF]">
             <tr>

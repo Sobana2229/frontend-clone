@@ -92,13 +92,13 @@ function LeaveEmployeeDetail({}) {
             </button>
             <button
               className={`px-4 py-2 rounded-full font-medium focus:outline-none ${
-                activeTab === "Leave Request"
+                activeTab === "t"
                   ? "bg-blue-500 text-white"
                   : "text-gray-700 bg-gray-100"
               }`}
-              onClick={() => setActiveTab("Leave Request")}
+              onClick={() => setActiveTab("t")}
             >
-              Leave Request
+              t
             </button>
             <button
               className={`px-4 py-2 rounded-full font-medium focus:outline-none ${
