@@ -12,7 +12,7 @@ import CheckInCheckOut from "./employeePortal/checkInCheckOut.jsx";
 
 // Import SVG icons from assets
 import Logo from "../../assets/Logo.svg";
-import DashboardIcon from "../../assets/Home.svg";
+import DashboardIcon from "../../assets/home.svg";
 import EmployeeIcon from "../../assets/employee.svg";
 import PayRunIcon from "../../assets/Frame.svg";
 import ApprovalIcon from "../../assets/approval.svg";
