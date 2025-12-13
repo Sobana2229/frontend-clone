@@ -120,26 +120,27 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
   addData={addData}    // <-- pass the function from LoanPages
 />
 
-            <div className="w-full px-10 py-2">
-              <div className="w-full h-[700px] bg-white relative overflow-y-auto rounded-xl overflow-hidden">
+            <div className="w-full px-1 py-2">
+               <div className={`w-full h-screen flex flex-col items-start justify-start relative bg-white`}>
                 <TableReusable 
                   dataHeaders={isAdvance ? advanceSalaryHeaders : loanHeaders} 
                   dataTable={loanData?.list} 
                   tableFor="loans" 
                   handleView={handleView} 
                 />
-                <div className="w-full absolute bottom-5 flex items-center justify-end">
-                  <PaginationPages 
-                    totalPages={loanData?.totalPage} 
-                    currentPage={currentPage} 
-                    setCurrentPage={setCurrentPage} 
-                  />
+                
                 </div>
-              </div>
+                 <div className="w-full h-25 px-1 py-2 bg-white border-t border-gray-200 flex items-center justify-end sticky bottom-0 z-10">
+              <PaginationPages 
+                totalPages={loanData?.totalPage} 
+                currentPage={currentPage} 
+                setCurrentPage={setCurrentPage} 
+              />
+            </div>
             </div>
           </>
         ) : (
-          <div className="w-full p-5">
+          <div className="w-full h-full flex p-5">
             <LoanForm 
               setShowForm={handleShowForm} 
               isAdvance={isAdvance}

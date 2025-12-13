@@ -184,595 +184,424 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
 
     return (
         <div className="w-full flex-col h-screen bg-gray-50 flex">
-            {!isLoanEmployeePortal ?(<div className="w-full flex items-center justify-between border-b border-gray-200 bg-white"
-        >
-                <div className="p-4 h-16 w-[23.9%] flex items-center justify-between border-r">
-                    <div className="flex items-center space-x-2">
-                        <h2 className="text-sm font-medium text-gray-700">All {loanLabelPlural}</h2>
-                        <CaretDown size={16} className="text-gray-500" />
-                    </div>
-                    <button onClick={setShowFormLoans} className="w-8 h-8 rounded bg-blue-td-500 flex items-center justify-center hover:bg-blue-td-600">
-                        <Plus size={16} className="text-white" />
-                    </button>
-                </div>
-
-                {/* Header */}
-                <div className="p-4 w-full h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
-                        <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
-                            {loanData.status}
-                        </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <button 
-                            onClick={handleRecordRepayment}
-                            className="bg-blue-td-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-td-600"
-                        >
-                            Record Repayment
-                        </button>
-                        <div className="relative">
-                            <button onClick={() => setOpenMenu(!openMenu)} className="p-2 border hover:bg-gray-100 rounded">
-                                <DotsThree size={20} className="text-gray-500" />
-                            </button>
-                            {openMenu && (
-                                <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
-                                    <button
-                                        onClick={() => {
-                                            handleShowForm("edit");
-                                            setOpenMenu(false);
-                                        }}
-                                        className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
-                                    >
-                                        Edit {loanLabel}
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            handleShowForm("pause");
-                                            setOpenMenu(false);
-                                        }}
-                                        className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
-                                    >
-                                        Pause Instalment Deduction
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            handleShowForm("delete");
-                                            setOpenMenu(false);
-                                        }}
-                                        className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            )}
+            {!isLoanEmployeePortal ? (
+                <div className="w-full flex items-center justify-between border-b border-gray-200 bg-white">
+                    <div className="p-4 h-16 w-[23.9%] flex items-center justify-between border-r bg-[#1C1C1C]">
+                        <div className="flex items-center space-x-2">
+                            <h2 className="text-xs font-normal text-[#ADADAD]">All {loanLabelPlural}</h2>
+                            <CaretDown size={16} className="text-[#ADADAD]" />
                         </div>
+                        <button onClick={setShowFormLoans} className="w-8 h-8 rounded bg-blue-td-500 flex items-center justify-center hover:bg-blue-td-600">
+                            <Plus size={16} className="text-white" />
+                        </button>
                     </div>
-                </div>
-            </div>) :
-                (
-                    <div className="w-full flex items-center justify-between border-b border-gray-200 bg-white"
-                    >
 
-                        {/* Header */}
-                        <div className="p-4 w-full h-16 flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
-                                <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                    {loanData.status}
-                                </span>
+                    {/* Header */}
+                    <div className="p-4 w-full h-16 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
+                            <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                {loanData.status}
+                            </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <button 
+                                onClick={handleRecordRepayment}
+                                className="bg-blue-td-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-td-600"
+                            >
+                                Record Repayment
+                            </button>
+                            <div className="relative">
+                                <button onClick={() => setOpenMenu(!openMenu)} className="p-2 border hover:bg-gray-100 rounded">
+                                    <DotsThree size={20} className="text-gray-500" />
+                                </button>
+                                {openMenu && (
+                                    <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
+                                        <button
+                                            onClick={() => {
+                                                handleShowForm("edit");
+                                                setOpenMenu(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
+                                        >
+                                            Edit {loanLabel}
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                handleShowForm("pause");
+                                                setOpenMenu(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
+                                        >
+                                            Pause Instalment Deduction
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                handleShowForm("delete");
+                                                setOpenMenu(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
-                )}
+                </div>
+            ) : (
+                <div className="w-full flex items-center justify-between border-b border-gray-200 bg-white">
+                    {/* Header */}
+                    <div className="p-4 w-full h-16 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
+                            <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                {loanData.status}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {!isLoanEmployeePortal ? (
-            <div className="w-full flex-1 flex overflow-y-auto bg-gray-td-300 p-5 overflow-hidden">
-                <div className="w-full flex h-full bg-white rounded-xl overflow-hidden">
-                    {/* Left Sidebar */}
-                    <div className="w-[23.5%] border-r border-gray-200 flex flex-col">    
-                        {/* Employee Filter - UPDATED */}
-                        <div className="p-3 border-b border-gray-200 flex-shrink-0 relative">
-                            <button
-                                onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
-                                className="w-full flex items-center justify-between space-x-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 p-2 rounded-md transition-colors"
-                            >
-                                <div className="flex items-center space-x-2">
-                                    <User />
-                                    <span className="truncate">{getSelectedEmployeeInfo()}</span>
-                                </div>
-                                <CaretDown 
-                                    size={12} 
-                                    className={`text-gray-400 transition-transform ${isEmployeeDropdownOpen ? 'rotate-180' : ''}`} 
-                                />
-                            </button>
-                            
-                            {/* Employee Dropdown */}
-                            {isEmployeeDropdownOpen && (
-                                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-                                    {/* All Employees Option */}
-                                    <button
-                                        onClick={() => handleEmployeeSelect("all")}
-                                        className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 border-b border-gray-100 ${
-                                            selectedEmployeeUuid === "all" || !selectedEmployeeUuid ? 'bg-blue-td-50 text-blue-td-600' : 'text-gray-700'
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <span>All Employees</span>
-                                            <span className="text-xs text-gray-500">({dataList?.length || 0} {loanLabelLowercase}s)</span>
-                                        </div>
-                                    </button>
-                                    
-                                    {/* Individual Employee Options */}
-                                    {employeeOptions.map((employee) => (
-                                        <button
-                                            key={employee.uuid}
-                                            onClick={() => handleEmployeeSelect(employee.uuid)}
-                                            className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 ${
-                                                selectedEmployeeUuid === employee.uuid ? 'bg-blue-td-50 text-blue-td-600' : 'text-gray-700'
-                                            }`}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <div className="font-medium">{employee.name}</div>
-                                                    <div className="text-xs text-gray-500">{employee.employeeId}</div>
-                                                </div>
-                                                <span className="text-xs text-gray-500">({employee.loanCount} {loanLabelLowercase}s)</span>
-                                            </div>
-                                        </button>
-                                    ))}
-                                    
-                                    {employeeOptions.length === 0 && (
-                                        <div className="px-3 py-2 text-sm text-gray-500 text-center">
-                                            No employees found
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                        
-                        {/* Filter Info */}
-                        {selectedEmployeeUuid && selectedEmployeeUuid !== "all" && (
-                            <div className="px-3 py-2 bg-blue-td-50 border-b border-gray-200 flex-shrink-0">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="text-blue-td-600">Filtered by employee</span>
-                                    <button
-                                        onClick={() => handleEmployeeSelect("all")}
-                                        className="text-blue-td-600 hover:text-blue-td-800 font-medium"
-                                    >
-                                        Clear filter
-                                    </button>
-                                </div>
+                
+                <div className="w-full flex-1 flex overflow-y-auto bg-white-td-300 p-5 overflow-hidden">
+                    <div className="w-full flex h-full bg-white rounded-xl overflow-hidden">
+                        {/* Left Sidebar - DARK THEME */}
+                        <div className="w-[24.5%] bg-[#fffefe] flex flex-col">    
+                            {/* Header Section */}
+                            <div className="px-4 py-7 bg-[#1C1C1C] flex-shrink-0 rounded-t-lg">
+                                <h2 className="text-l font-normal text-[#a9a9a9f3] uppercase tracking-wide">EMPLOYEE LIST</h2>
                             </div>
-                        )}
-                        
-                        {/* Loan Items - Scrollable - FILTERED */}
-                        <div className="flex-1 overflow-y-auto">
-                            {filteredDataList.length === 0 ? (
-                                <div className="p-4 text-center text-gray-500 text-sm">
-                                    {selectedEmployeeUuid && selectedEmployeeUuid !== "all" 
-                                        ? `No ${loanLabelLowercase}s found for selected employee`
-                                        : `No ${loanLabelLowercase}s available`
-                                    }
-                                </div>
-                            ) : (
-                                filteredDataList.map((el, idx) => {
-                                    return(
-                                        <button 
-                                            onClick={() => handleView(el?.uuid, loanLabelPlural, loanLabelLowercase)} 
-                                            key={el?.uuid} 
-                                            className={`w-full p-4 border-b border-gray-100 hover:bg-gray-50 text-left ${el?.uuid === tempUuid ? "bg-blue-td-50 border-l-4 border-blue-td-500" : ""}`}
-                                        >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-sm font-medium text-gray-900">
-                                                    {`${el?.Employee?.firstName} ${el?.Employee?.middleName} ${el?.Employee?.lastName}`} ({el?.Employee?.employeeId})
-                                                </span>
-                                                <span className="text-sm font-semibold text-gray-900">
-                                                    {formatCurrency(el?.loanAmount)}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs text-gray-600">
-                                                <div className="flex items-center space-x-2">
-                                                    <span>{el?.LoanName?.name}</span>
-                                                    <span>|</span>
-                                                    <span>{el?.loanNumber}</span>
+                            
+                            <div className="flex-1 overflow-y-auto scrollbar-verythin scrollbar-thumb-gray-300 scrollbar-track-gray-200 max-h-[600px]">
+
+                                {filteredDataList.length === 0 ? (
+                                    <div className="p-4 text-center text-gray-900 text-sm">
+                                        {selectedEmployeeUuid && selectedEmployeeUuid !== "all" 
+                                            ? `No ${loanLabelLowercase}s found for selected employee`
+                                            : `No ${loanLabelLowercase}s available`
+                                        }
+                                    </div>
+                                ) : (
+                                    filteredDataList.map((el, idx) => {
+                                        return(
+                                            <button 
+                                                onClick={() => handleView(el?.uuid, loanLabelPlural, loanLabelLowercase)} 
+                                                key={el?.uuid} 
+                                                className={`w-full p-4 border-b border-white hover:bg-gray-100 text-left transition-colors ${el?.uuid === tempUuid ? "bg-gray-100 border-l-4 border-blue-td-500" : ""}`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="text-sm font-normal text-black">
+                                                        {`${el?.Employee?.firstName} ${el?.Employee?.middleName} ${el?.Employee?.lastName}`} ({el?.Employee?.employeeId})
+                                                    </span>
+                                                    <span className="text-sm font-semibold text-black">
+                                                        {formatCurrency(el?.loanAmount)}
+                                                    </span>
                                                 </div>
-                                                <span className="text-blue-td-500 px-2 py-1 rounded text-xs font-medium">
-                                                    {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
-                                                </span>
-                                            </div>
-                                        </button>
-                                    );
-                                })
-                            )}
+                                                <div className="flex items-center justify-between text-xs">
+                                                    <div className="flex items-center space-x-2 text-gray-400">
+                                                        <span>{el?.LoanName?.name}</span>
+                                                        <span>|</span>
+                                                        <span>{el?.loanNumber}</span>
+                                                    </div>
+                                                    <span className="bg-blue-td-100 text-blue-td-600 px-2 py-1 rounded text-xs font-normal">
+                                                        {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })
+                                )}
+                            </div>
+
+                            {/* Scrollbar Indicator */}
+                           
                         </div>
-                    </div>
 
-                    {/* Main Content - Same as before */}
-                    <div className="w-full flex flex-col min-h-0 flex-1">
-                        <div className="flex-1 overflow-y-auto p-5 space-y-10">
-                            <div className="w-full grid grid-cols-4 auto-rows-[170px] gap-3">
-                                {/* ini span 2 row */}
-                                <div className="bg-[#FFE2B8] rounded-2xl row-span-2 flex items-center justify-center flex-col space-y-5">
-                                    <div className="w-40 h-40 rounded-full bg-[#FFF3E0] flex items-center justify-center text-6xl font-medium">
-                                    {loanData?.employeeName?.charAt(0).toUpperCase()}
+                        {/* Main Content */}
+                        <div className="w-full flex flex-col min-h-0 flex-1">
+                            <div className="flex-1 overflow-y-auto p-5 space-y-10">
+                                <div className="w-full grid grid-cols-4 auto-rows-[130px] gap-3">
+                                    {/* Employee Card - spans 2 rows */}
+                                    <div className="bg-[#FFE2B8] rounded-2xl row-span-2 flex items-center justify-center flex-col space-y-5">
+                                        <div className="w-30 h-30 rounded-full bg-[#FFF3E0] flex items-center justify-center text-6xl font-normal text-[#FF8800]">
+                                            {loanData?.employeeName?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <h1 className="text-xl font-medium capitalize text-[#1C1C1C]">{loanData?.employeeName}</h1>
+                                        <p className="text-sm font-normal text-[#1C1C1C99]">{data?.LoanName?.name}</p>
                                     </div>
-                                    <h1 className="text-2xl font-bold capitalize">{loanData?.employeeName}</h1>
-                                    <p className="text-2xl font-normal">{data?.LoanName?.name}</p>
-                                </div>
 
-                                <div className="bg-gray-td-50 flex p-12 flex-col rounded-tl-2xl">
-                                    <h2 className="text-gray-td-400 font-medium text-lg text-left">{loanLabel} Amount</h2>
-                                    <h2 className="font-normal text-4xl text-left">
-                                        {new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        }).format(data?.loanAmount ?? 0)}
-                                    </h2>
-                                </div>
-                                <div className="bg-gray-td-50 flex p-12 flex-col rounded-tr-2xl">
-                                    <h2 className="text-gray-td-400 font-medium text-lg text-left">Remaining Amount</h2>
-                                    <h2 className="font-normal text-4xl text-left text-red-td-500">
-                                        {new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
-                                    </h2>
-                                </div>
-                                <div className="bg-gray-td-50 flex p-12 flex-col">
-                                    <div className="w-full flex items-center justify-start space-x-2">
-                                        <h2 className="text-gray-td-400 font-medium text-base text-left">Instalment(s) Remaining</h2>
-                                        <Info className="mt-1" size={20} />
-                                    </div>
-                                    <h2 className="font-normal text-4xl text-left">
-                                        {loanPaymentHistory?.paymentSchedule 
-                                            ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length 
-                                            : 0
-                                        } / {data?.paidOffInstalment + (
-                                            loanPaymentHistory?.paymentSchedule 
-                                            ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length 
-                                            : 0
-                                        )}
-                                    </h2>
-                                </div>
-                                <div className="bg-gray-td-50 flex p-12 flex-col rounded-bl-2xl">
-                                    <h2 className="text-gray-td-400 font-medium text-lg text-left">Instalment Amount</h2>
-                                    <h2 className="font-normal text-4xl text-left">
-                                        {new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        }).format(data?.instalmentAmount ?? 0)}
-                                    </h2>
-                                </div>
-
-                                {/* ini span 2 kolom */}
-                                <div className="bg-gray-td-50 col-span-2 flex p-12 flex-col rounded-br-2xl relative">
-                                    <div className="flex-1">
-                                        <h2 className="text-gray-td-400 font-medium text-lg text-left">Amount Prepaid</h2>
-                                        <h2 className="font-normal text-4xl text-left text-green-td-400">
+                                    {/* Loan Amount */}
+                                    <div className="bg-white-td-50 flex p-8 flex-col rounded-tl-2xl border border-white-200">
+                                        <h2 className="text-gray-td-400 font-normal text-xs mb-2">{loanLabel} Amount</h2>
+                                        <h2 className="font-normal text-2xl text-[#1C1C1C]">
                                             {new Intl.NumberFormat("en-US", {
                                                 style: "currency",
                                                 currency: "USD",
-                                            }).format(data?.amountRepaid ?? 0)}
+                                            }).format(data?.loanAmount ?? 0)}
                                         </h2>
-                                        <p className="text-gray-td-400">
-                                            Next Instalment Date: <span className="text-black">{loanData?.nextInstalmentDate}</span>
-                                        </p>
                                     </div>
-                                    
-                                    <div className="flex items-center justify-center absolute right-0 top-1/5">
-                                        {/* Semicircle Progress Diagram */}
-                                        <div className="relative">
-                                            <svg
-                                                width="200"
-                                                height="120"
-                                                viewBox="0 0 200 120"
-                                                className="transform"
-                                            >
-                                                {/* Background semicircle */}
-                                                <path
-                                                    d="M 20 100 A 80 80 0 0 1 180 100"
-                                                    fill="none"
-                                                    stroke="#e5e7eb"
-                                                    strokeWidth="16"
-                                                    strokeLinecap="round"
-                                                />
-                                                
-                                                {/* Progress semicircle */}
-                                                <path
-                                                    d="M 20 100 A 80 80 0 0 1 180 100"
-                                                    fill="none"
-                                                    stroke="#f97316"
-                                                    strokeWidth="16"
-                                                    strokeLinecap="round"
-                                                    strokeDasharray={`${Math.PI * 80}`}
-                                                    strokeDashoffset={`${Math.PI * 80 * (1 - (
-                                                        ((data?.amountRepaid || 0) / (data?.loanAmount || 1)) || 0
-                                                    ))}`}
-                                                    className="transition-all duration-1000 ease-out"
-                                                />
-                                            </svg>
-                                            
-                                            {/* Percentage text in center */}
-                                            <div className="absolute inset-0 flex items-end justify-center pb-4">
-                                                <span className="text-3xl font-bold text-gray-900">
-                                                    {Math.round(((data?.amountRepaid || 0) / (data?.loanAmount || 1)) * 100)}%
-                                                </span>
-                                            </div>
-                                        </div>
+
+                                    {/* Remaining Amount */}
+                                    <div className="bg-white-td-50 flex p-8 flex-col border border-gray-200">
+                                        <h2 className="text-gray-td-400 font-normal text-xs mb-2">Remaining Amount</h2>
+                                        <h2 className="font-normal text-2xl text-red-600">
+                                            {new Intl.NumberFormat("en-US", {
+                                                style: "currency",
+                                                currency: "USD",
+                                            }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
+                                        </h2>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <div className="w-full flex flex-col items-start justify-start space-y-5">
-                                <h1 className="text-xl font-normal">{loanLabel} Repayment Summary</h1>
-                                <div className="w-full flex flex-col items-start justify-start">
-                                    <div className="w-1/4 h-40 bg-[#D9FBEA] rounded-xl">
-                                        <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                            <p>{disbursementLabel} Date</p>
-                                            <p>{loanData?.disbursementDate}</p>
+
+                                    {/* Instalments Remaining */}
+                                    <div className="bg-white-td-50 flex p-8 flex-col rounded-tr-2xl border border-gray-200">
+                                        <div className="w-full flex items-center justify-start space-x-2 mb-2">
+                                            <h2 className="text-gray-td-400 font-normal text-xs">Instalment(s) Remaining</h2>
+                                            <Info size={14} className="text-gray-td-400" />
                                         </div>
-                                        <div className="w-full h-0.5 bg-white"></div>
-                                        <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                            <p>{disbursementLabel} Date</p>
-                                            <p>
-                                                {dayjs(data?.disbursementDate)
-                                                    .add(data?.paidOffInstalment ?? 0, "month")
-                                                    .format("DD/MM/YYYY")}
+                                        <h2 className="font-normal text-3xl text-[#1C1C1C]">
+                                            {loanPaymentHistory?.paymentSchedule 
+                                                ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length 
+                                                : 0
+                                            } <span className="text-xl">/ {data?.paidOffInstalment}</span>
+                                        </h2>
+                                    </div>
+
+                                    {/* Instalment Amount */}
+                                    <div className="bg-white-td-50 flex p-8 flex-col rounded-bl-2xl border border-gray-200">
+                                        <h2 className="text-gray-td-400 font-normal text-xs mb-2">Instalment Amount</h2>
+                                        <h2 className="font-normal text-2xl text-[#1C1C1C]">
+                                            {new Intl.NumberFormat("en-US", {
+                                                style: "currency",
+                                                currency: "USD",
+                                            }).format(data?.instalmentAmount ?? 0)}
+                                        </h2>
+                                    </div>
+
+                                    {/* Amount Prepaid - spans 2 columns */}
+                                    <div className="bg-white-td-50 col-span-2 flex p-8 flex-col rounded-br-2xl relative border border-gray-200">
+                                        <div className="flex-1">
+                                            <h2 className="text-gray-td-400 font-normal text-xs mb-2">Amount Prepaid</h2>
+                                            <h2 className="font-normal text-2xl text-[#0FA38B]">
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.amountRepaid ?? 0)}
+                                            </h2>
+                                            <p className="text-xs text-gray-td-400 mt-2">
+                                                Next Instalment Date: <span className="text-black">{loanData?.nextInstalmentDate}</span>
                                             </p>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* table history */}
-                            <div className="w-full h-fit p-5">
-                                <TableReusable 
-                                    dataHeaders={loanDetailHeaders} 
-                                    tableFor="loanDetails" 
-                                    dataTable={loanPaymentHistory?.paymentSchedule ? loanPaymentHistory?.paymentSchedule : []}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            ) : (
-                    <div className="w-full flex-1 flex overflow-y-auto bg-gray-td-100 p-5 overflow-hidden">
-                        <div className="w-full flex h-full bg-white rounded-xl overflow-hidden">
-
-                            {/* Main Content - Same as before */}
-                            <div className="w-full flex flex-col min-h-0 flex-1">
-                                <div className="flex-1 overflow-y-auto p-5 space-y-10">
-                                    
-                                    {/* Dashboard or Chart Section */}
-                                    <div className="w-full flex gap-3">
                                         
-                                        {/* Left side - Pie Chart Container*/}
-                                        <div className="flex items-center justify-center bg-gray-td-50 rounded-lg p-8 flex-shrink-0">
-                                            <div className="relative w-48 h-48">
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <PieChart>
-                                                        <Pie
-                                                            data={pieChartData}
-                                                            cx="50%"
-                                                            cy="50%"
-                                                            innerRadius={50}
-                                                            outerRadius={90}
-                                                            paddingAngle={2}
-                                                            dataKey="value"
-                                                            startAngle={90}
-                                                            endAngle={-270}
-                                                        >
-                                                            {pieChartData.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                                            ))}
-                                                        </Pie>
-                                                    </PieChart>
-                                                </ResponsiveContainer>
-                                                <div className="absolute inset-0 flex items-center justify-center">
+                                        {/* Progress Circle */}
+                                        <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                                            <div className="relative w-32 h-20">
+                                                <svg width="160" height="88" viewBox="0 0 160 88" className="transform">
+                                                    {/* Background semicircle */}
+                                                    <path
+                                                        d="M 20 80 A 60 60 0 0 1 140 80"
+                                                        fill="none"
+                                                        stroke="#F6FFFB"
+                                                        strokeWidth="16"
+                                                        strokeLinecap="round"
+                                                    />
+                                                    {/* Progress semicircle */}
+                                                    <path
+                                                        d="M 20 80 A 60 60 0 0 1 140 80"
+                                                        fill="none"
+                                                        stroke="#0FA38B"
+                                                        strokeWidth="16"
+                                                        strokeLinecap="round"
+                                                        strokeDasharray={`${Math.PI * 60}`}
+                                                        strokeDashoffset={`${Math.PI * 60 * (1 - ((data?.amountRepaid || 0) / (data?.loanAmount || 1)))}`}
+                                                        className="transition-all duration-1000"
+                                                    />
+                                                </svg>
+                                                <div className="absolute inset-0 flex items-end justify-center pb-2">
                                                     <span className="text-2xl font-semibold text-gray-900">
                                                         {Math.round(((data?.amountRepaid || 0) / (data?.loanAmount || 1)) * 100)}%
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {/* Right side - Grid of cards */}
-                                        <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-3">
-                                            
-                                            {/* Row 1 - Three cards */}
-                                            
-                                            {/* Loan Amount */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tl-2xl">
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">{loanLabel} Amount</h2>
-                                                <h2 className="text-gray-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format(data?.loanAmount ?? 0)}
-                                                </h2>
-                                            </div>
-
-                                            {/* Remaining Amount */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6">
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">Remaining Amount</h2>
-                                                <h2 className="text-red-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
-                                                </h2>
-                                            </div>
-
-                                            {/* Instalments Remaining */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tr-2xl">
-                                                <div className="flex items-center space-x-2 mb-1">
-                                                    <h2 className="text-gray-td-400 font-normal text-sm mb-1">Instalment(s) Remaining</h2>
-                                                    <Info size={16} className="text-gray-td-400" />
-                                                </div>
-                                                <h2 className="text-gray-td-400 font-normal text-3xl">
-                                                    {loanPaymentHistory?.paymentSchedule
-                                                        ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length
-                                                        : 0}
-                                                    <span className="text-gray-td-400 font-normal text-xl"> / {data?.paidOffInstalment}</span>
-                                                </h2>
-                                            </div>
-
-                                            {/* Row 2 - Two cards */}
-                                            
-                                            {/* Instalment Amount */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-bl-2xl">
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">Instalment Amount</h2>
-                                                <h2 className="text-gray-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format(data?.instalmentAmount ?? 0)}
-                                                </h2>
-                                            </div>
-
-                                            {/* Amount Prepaid - Spans 2 columns */}
-                                            <div className="bg-gray-td-50 col-span-2 flex flex-col justify-center p-6 rounded-br-2xl">                                               
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">Amount Prepaid</h2>
-                                                <h2 className="text-green-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format(data?.amountRepaid ?? 0)}
-                                                </h2>
-                                                <h2 className="text-gray-td-400 font-normal text-sm mt-1">
-                                                    Next Instalment Date: <span className="text-black">{loanData?.nextInstalmentDate}</span>
-                                                </h2>
-                                            </div>
-                                        </div>
                                     </div>
-
-                                    <div className="w-full flex flex-col items-start justify-start space-y-5">
-                                        <h1 className="text-xl font-normal">{loanLabel} Repayment Summary</h1>
-                                        <div className="w-full flex flex-col items-start justify-start">
-                                            <div className="w-1/4 h-40 bg-[#D9FBEA] rounded-xl">
-                                                <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                                    <p>{disbursementLabel} Date</p>
-                                                    <p>{loanData?.disbursementDate}</p>
-                                                </div>
-                                                <div className="w-full h-0.5 bg-white"></div>
-                                                <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                                    <p>{disbursementLabel} Date</p>
-                                                    <p>
-                                                        {dayjs(data?.disbursementDate)
-                                                            .add(data?.paidOffInstalment ?? 0, "month")
-                                                            .format("DD/MM/YYYY")}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* table history */}
-                                    <div className="w-full h-fit p-5">
-                                        <TableReusable
-                                            dataHeaders={loanDetailHeaders}
-                                            tableFor="loanDetails"
-                                            dataTable={loanPaymentHistory?.paymentSchedule ? loanPaymentHistory?.paymentSchedule : []}
-                                        />
-                                    </div>
+                                </div>
+                                
+                                {/* Table History */}
+                                <div className="w-full">
+                                    <TableReusable 
+                                        dataHeaders={loanDetailHeaders} 
+                                        tableFor="loanDetails" 
+                                        dataTable={loanPaymentHistory?.paymentSchedule ? loanPaymentHistory?.paymentSchedule : []}
+                                    />
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            ) : (
+                <div className="w-full flex-1 flex overflow-y-auto bg-gray-td-100 p-5 overflow-hidden">
+                    <div className="w-full flex h-full bg-black rounded-xl overflow-hidden">
+                        {/* Main Content - Employee Portal View */}
+                        <div className="w-full flex flex-col min-h-0 flex-1">
+                            <div className="flex-1 overflow-y-auto p-5 space-y-10">
+                                {/* Dashboard Section */}
+                                <div className="w-full flex gap-3">
+                                    {/* Pie Chart */}
+                                    <div className="flex items-center justify-center bg-gray-td-50 rounded-lg p-8 flex-shrink-0">
+                                        <div className="relative w-48 h-48">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart>
+                                                    <Pie
+                                                        data={pieChartData}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        innerRadius={50}
+                                                        outerRadius={90}
+                                                        paddingAngle={2}
+                                                        dataKey="value"
+                                                        startAngle={90}
+                                                        endAngle={-270}
+                                                    >
+                                                        {pieChartData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                                        ))}
+                                                    </Pie>
+                                                </PieChart>
+                                            </ResponsiveContainer>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className="text-2xl font-semibold text-gray-900">
+                                                    {Math.round(((data?.amountRepaid || 0) / (data?.loanAmount || 1)) * 100)}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Grid of cards */}
+                                    <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-3">
+                                        {/* Loan Amount */}
+                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tl-2xl">
+                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">{loanLabel} Amount</h2>
+                                            <h2 className="text-gray-td-400 font-normal text-2xl">
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.loanAmount ?? 0)}
+                                            </h2>
+                                        </div>
+
+                                        {/* Remaining Amount */}
+                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6">
+                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">Remaining Amount</h2>
+                                            <h2 className="text-red-td-400 font-normal text-2xl">
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
+                                            </h2>
+                                        </div>
+
+                                        {/* Instalments Remaining */}
+                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tr-2xl">
+                                            <div className="flex items-center space-x-2 mb-1">
+                                                <h2 className="text-gray-td-400 font-normal text-xs">Instalment(s) Remaining</h2>
+                                                <Info size={14} className="text-gray-td-400" />
+                                            </div>
+                                            <h2 className="text-gray-td-400 font-normal text-2xl">
+                                                {loanPaymentHistory?.paymentSchedule
+                                                    ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length
+                                                    : 0}
+                                                <span className="text-lg"> / {data?.paidOffInstalment}</span>
+                                            </h2>
+                                        </div>
+
+                                        {/* Instalment Amount */}
+                                                                               {/* Instalment Amount */}
+                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-bl-2xl">
+                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">
+                                                Instalment Amount
+                                            </h2>
+                                            <h2 className="text-gray-td-400 font-normal text-2xl">
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.instalmentAmount ?? 0)}
+                                            </h2>
+                                        </div>
+
+                                        {/* Amount Prepaid */}
+                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6">
+                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">
+                                                Amount Prepaid
+                                            </h2>
+                                            <h2 className="text-green-td-400 font-normal text-2xl">
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.amountRepaid ?? 0)}
+                                            </h2>
+                                        </div>
+
+                                        {/* Next Instalment Date */}
+                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-br-2xl">
+                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">
+                                                Next Instalment Date
+                                            </h2>
+                                            <h2 className="text-gray-td-400 font-normal text-lg">
+                                                {loanData?.nextInstalmentDate}
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Loan Repayment Summary */}
+                                <div className="w-full flex flex-col items-start justify-start space-y-4">
+                                    <div className="flex items-center space-x-2">
+                                        <h1 className="text-base font-normal text-gray-600">
+                                            {loanLabel} Repayment Summary
+                                        </h1>
+                                        <Info size={14} className="text-gray-600" />
+                                    </div>
+
+                                    {/* Disbursement & Closing Card */}
+                                    <div className="w-full max-w-sm bg-[#D9FBEA] rounded-xl overflow-hidden">
+                                        <div className="flex items-center justify-between px-5 py-4">
+                                            <p className="text-sm">{disbursementLabel} Date</p>
+                                            <p className="text-sm font-medium">
+                                                {loanData?.disbursementDate}
+                                            </p>
+                                        </div>
+                                        <div className="w-full h-px bg-white" />
+                                        <div className="flex items-center justify-between px-5 py-4">
+                                            <p className="text-sm">Loan Closing Date</p>
+                                            <p className="text-sm font-medium">
+                                                {loanData?.loanClosingDate}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Repayment Table */}
+                                <div className="w-full">
+                                    <TableReusable
+                                        dataHeaders={loanDetailHeaders}
+                                        tableFor="loanDetails"
+                                        dataTable={
+                                            loanPaymentHistory?.paymentSchedule
+                                                ? loanPaymentHistory.paymentSchedule
+                                                : []
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             )}
-
-            <Modal
-                isOpen={showModalRecordPayment}
-                contentLabel="Full Screen Modal"
-                ariaHideApp={false}
-                style={{
-                    overlay: {
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1000,
-                    },
-                    content: {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    border: "none",
-                    backgroundColor: "transparent",
-                    padding: 0,
-                    margin: 0,
-                    overflow: "hidden",
-                    },
-                }}>
-                <FormModal
-                    setShowModal={setShowModalRecordPayment} 
-                    formFor="recordPaymentLoan"
-                    titleForm="Record Repayment"
-                    data={data}
-                />
-            </Modal>
-
-            <Modal
-                isOpen={modalPauseLoans}
-                contentLabel="Full Screen Modal"
-                ariaHideApp={false}
-                style={{
-                    overlay: {
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1000,
-                    },
-                    content: {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    border: "none",
-                    backgroundColor: "transparent",
-                    padding: 0,
-                    margin: 0,
-                    overflow: "hidden",
-                    },
-                }}>
-                <FormModal
-                    setShowModal={setModalPauseLoans} 
-                    formFor="pauseLoans"
-                    titleForm="pauseLoans"
-                    data={tempUuid}
-                />
-            </Modal>
-
-            <Modal
-                isOpen={showModalConfirm}
-                contentLabel="Full Screen Modal"
-                ariaHideApp={false}
-                style={{
-                overlay: {
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1000,
-                },
-                content: {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    border: "none",
-                    backgroundColor: "transparent",
-                    padding: 0,
-                    margin: 0,
-                    overflow: "hidden",
-                },
-            }}>
-            <SimpleModalMessage
-                setShowModal={setShowModalConfirm} 
-                showModal={showModalConfirm}
-                message={`Are you sure you want to delete ${data?.LoanName?.name} ${loanLabelLowercase} for ${loanData?.employeeName}?`}
-                isDelete={true}
-                modalFor={"loan"}
-                handleConfirm={handleDelete}
-            />
-            </Modal>
         </div>
-    );
+    );  
 }
-
-export default LoanDetail;
+    export default LoanDetail;

@@ -222,15 +222,15 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
     const loanLabelLowercase = currentIsAdvance ? "advance salary" : "loan";
 
     return (
-        <div className="w-full h-full overflow-y-auto flex-col flex items-start justify-start bg-white rounded-xl">
+        <div className=" w-screen h-full overflow-y-auto flex-col flex items-start justify-start bg-white rounded-xl">
             {/* <HeaderReusable 
                 title={isUpdate ? `Edit ${loanLabel}` : `Create ${loanLabel}`} 
                 handleCancel={handleCancel} 
             /> */}
             
-            <div className="w-full p-6 items-start justify-start bg-white">                
-                <div className="overflow-y-auto h-[600px] space-y-10 pb-10">
-                    <div className="w-1/2 space-y-6">
+            <div className="w-[100%] p-6 items-start justify-start bg-white">                
+                 <div className="max-w-screen-xl mx-auto px-8 py-8">
+                    <div className="w-full space-y-6 pr-50">
                         <div className="grid grid-cols-1 gap-6">
                              {/* Loan Name */}
                              <div className="space-y-2">

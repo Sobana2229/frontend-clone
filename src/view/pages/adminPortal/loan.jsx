@@ -167,108 +167,77 @@ function LoanPages() {
     };
   };
 
-  const renderSummaryCards = (cards) => {
-    if (!cards.length) {
-      return (
-        <div className="col-span-full text-center py-12">
-          <div className="text-gray-400 mb-4">
-            {activeSection === 'loans' ? (
-              <CreditCard size={64} className="mx-auto mb-4" />
-            ) : (
-              <Money size={64} className="mx-auto mb-4" />
-            )}
-          </div>
-          <div className="text-xl font-medium text-gray-700 mb-2">
-            No {activeSection === 'advance-salary' ? 'advance salary' : 'loan'} records found
-          </div>
-          <p className="text-sm text-gray-500">
-            Click "Create {activeSection === 'advance-salary' ? 'Advance Salary' : 'Loan'}" to add new records
-          </p>
-        </div>
-      );
-    }
-    
-    return cards.map((card) => (
-      <div
-        key={card.id}
-        className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-blue-400"
-        onClick={() => handleCardClick(card)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            handleCardClick(card);
-          }
-        }}
-        role="button"
-        tabIndex={0}
-      >
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              {activeSection === 'loans' ? (
-                <CreditCard size={24} className="text-blue-600" />
-              ) : (
-                <Money size={24} className="text-green-600" />
-              )}
-            </div>
-            <h3 className="text-lg font-semibold text-gray-800">
-              {card.name.replace(/ Loan$/, '')}
-            </h3>
-          </div>
-          <ArrowUpRight size={20} className="text-gray-400" />
-        </div>
+ const renderSummaryCards = (cards) => {
+  if (!cards.length) {
+    return (
+      <div className="text-center text-gray-500 py-8">
+        No {activeSection === 'advance-salary' ? 'advance salary' : 'loan'} data found
+      </div>
+    );
+  }
+
+  return cards.map((card) => (
+    <div
+      key={card.id}
+      className="relative bg-white cursor-pointer transition-all duration-300 hover:shadow-2xl"
+      style={{
+        borderRadius: '22.47px',
+        padding: '14.98px',
+        boxShadow: '0px 53.03px 21.37px rgba(194, 194, 194, 0.01), 0px 29.86px 18.02px rgba(194, 194, 194, 0.05), 0px 13.39px 13.39px rgba(194, 194, 194, 0.09), 0px 3.35px 7.21px rgba(194, 194, 194, 0.1)',
+        width: '250px',
+        height: '200px'
+      }}
+      onClick={() => handleCardClick(card)}
+    >
+      {/* Top Left Screw */}
+      <div className="absolute" style={{ width: '12.36px', height: '12.36px', left: '9.36px', top: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }}>
+        <div style={{ position: 'absolute', width: '5.41px', height: '5.41px', left: '1.93px', top: '1.16px', background: '#FFFFFF', filter: 'blur(1.54px)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', width: '5.62px', height: '5.62px', left: '3.38px', top: '3.37px', background: '#F3F4F6', boxShadow: 'inset 0px 0.51px 0.51px rgba(0, 0, 0, 0.6)', borderRadius: '50%' }} />
+      </div>
+
+      {/* Top Right Screw */}
+      <div className="absolute" style={{ width: '12.36px', height: '12.36px', right: '9.36px', top: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }}>
+        <div style={{ position: 'absolute', width: '5.41px', height: '5.41px', left: '1.93px', top: '1.16px', background: '#FFFFFF', filter: 'blur(1.54px)', borderRadius: '50%' }} />
+      </div>
+
+      {/* Bottom Left Screw */}
+      <div className="absolute" style={{ width: '12.36px', height: '12.36px', left: '9.36px', bottom: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }} />
+
+      {/* Bottom Right Screw */}
+      <div className="absolute" style={{ width: '12.36px', height: '12.36px', right: '9.36px', bottom: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }} />
+
+      {/* Inner Container */}
+      <div style={{ padding: '26.21px', width: '220.04px', height: '170.04px', background: 'rgba(28, 28, 28, 0.05)', border: '0.26px solid rgba(28, 28, 28, 0.05)', boxShadow: '0px 5.15px 10.3px rgba(189, 188, 188, 0.25), -1.03px 1.03px 2.57px rgba(224, 224, 224, 0.2)', backdropFilter: 'blur(5.47px)', borderRadius: '10.81px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
         
-        <div className="space-y-3">
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-sm text-gray-600">Total Amount</span>
-            <span className="font-semibold text-gray-900">
-              ₹{card.totalAmount?.toLocaleString('en-IN') || '0'}
-            </span>
-          </div>
-          
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-sm text-gray-600">Outstanding</span>
-            <span className="font-semibold text-orange-600">
-              ₹{card.outstandingAmount?.toLocaleString('en-IN') || '0'}
-            </span>
-          </div>
-          
-          <div className="flex justify-between items-center py-2">
-            <span className="text-sm text-gray-600">Paid Amount</span>
-            <span className="font-semibold text-green-600">
-              ₹{((card.totalAmount || 0) - (card.outstandingAmount || 0))?.toLocaleString('en-IN') || '0'}
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
-            <span className="text-sm text-gray-600">Employees:</span>
-            <div className="flex -space-x-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium border-2 border-white">
-                {card.employeeCount > 0 ? '👤' : '0'}
+        {/* Arrow */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <ArrowUpRight size={24} strokeWidth={3} color="#1C1C1C" />
+        </div>
+
+        {/* Title */}
+        <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '24px', lineHeight: '32px', color: '#1C1C1C' }}>
+          {card.name.replace(/ Loan$/, '')}
+        </h3>
+
+        {/* Avatars */}
+        <div className="flex -space-x-2">
+          {[0, 1, 2].map((index) => (
+            index < Math.min(card.employeeCount, 3) && (
+              <div key={index} style={{ width: '24px', height: '24px', borderRadius: '50%', background: index === 1 ? '#CFE5FF' : '#3B82F6', border: '2px solid #FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: '#0066FE' }}>
+                {index === 1 ? 'SL' : ''}
               </div>
-              {card.employeeCount > 1 && (
-                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-medium border-2 border-white">
-                  👤
-                </div>
-              )}
-              {card.employeeCount > 2 && (
-                <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-medium border-2 border-white">
-                  👤
-                </div>
-              )}
-              {card.employeeCount > 3 && (
-                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-medium border-2 border-white">
-                  +{card.employeeCount - 3}
-                </div>
-              )}
+            )
+          ))}
+          {card.employeeCount > 3 && (
+            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(28, 28, 28, 0.1)', border: '2px solid #FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600, color: '#0066FE' }}>
+              +{card.employeeCount - 3}
             </div>
-            <span className="text-sm font-medium text-gray-700 ml-2">
-              {card.employeeCount} {card.employeeCount === 1 ? 'employee' : 'employees'}
-            </span>
-          </div>
+          )}
         </div>
       </div>
-    ));
-  };
+    </div>
+  ));
+};
 
   const currentData = getCurrentData();
   const headerProps = getHeaderProps();
@@ -298,7 +267,7 @@ function LoanPages() {
       {/* Content area */}
       {showFormLoans ? (
         // CREATE FORM VIEW
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 w-full">
           <LoanForm
             selectedLoanData={selectedLoanData}
             setShowFormLoans={setShowFormLoans}
@@ -307,14 +276,21 @@ function LoanPages() {
         </div>
       ) : selectedLoanData ? (
         // DETAIL LIST VIEW (when a card is clicked)
-        <LoanList
-          selectedLoanData={selectedLoanData}
-          addData={addLoans}
-          setShowDetail={setShowDetail}
-        />
+    <div className="flex-1 w-full">
+    <LoanList
+      isAdvance={selectedLoanData.isSalaryAdvance}
+      loanNameUuid={selectedLoanData.loanNameUuid}
+      loanName={selectedLoanData.loanName}
+      setSelectedLoanData={setSelectedLoanData}
+      onBack={handleBackToSummary}
+      showDetail={showDetail} 
+      setShowDetail={setShowDetail}
+      addData={addLoans}
+    />
+  </div>
       ) : (
         // CARDS VIEW (default view showing all cards)
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 ">
           <div className="p-6">
             {!currentData ? (
               <div className="flex items-center justify-center h-64">
@@ -329,9 +305,7 @@ function LoanPages() {
                   <h2 className="text-2xl font-bold text-gray-800 mb-2">
                     {activeSection === 'loans' ? 'Loan Types' : 'Advance Salary Types'}
                   </h2>
-                  <p className="text-gray-600">
-                    Click on any card to view detailed information and manage records
-                  </p>
+                  
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {renderSummaryCards(getFilteredSummaryCards())}

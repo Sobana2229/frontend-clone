@@ -588,8 +588,8 @@ function TableReusable({
           "overflow-y-auto h-[85%]" :
           tableFor !== "epfContributionEmployeePortal" &&
           tableFor !== "loanEmployeePortal" ?
-          "overflow-y-auto h-[85%]" :
-          "overflow-y-auto flex-grow" 
+          " h-[85%]" :
+          " flex-grow" 
       }`}
     >
       {tableFor === "Departments" ? (
@@ -1308,7 +1308,7 @@ function TableReusable({
   </div>
 ) : 
 tableFor === "loans" ? (
-  <div className="w-full h-full overflow-visible">
+  <div className="w-full h-full">
     <table className="w-full table-auto">
       <thead className="sticky top-0 z-10" style={{ background: '#1C1C1C', height: '78px' }}>
         <tr>
@@ -1458,151 +1458,90 @@ tableFor === "loans" ? (
     </table>
   </div>
 ): tableFor === "loanDetails" ? (
-       <table className="w-full">
-        <thead>
-          <tr>
-            {dataHeaders?.map((el, idx) => (
-              <th
-                key={idx}
-                scope="col"
-                className={`px-6 py-3 text-base font-normal text-blue-td-500 uppercase tracking-wider border-b-[1px] ${
-                  idx === 0 ? 'text-center' : idx === 1 ? 'text-left' : 'text-right'
-                }`}
-              >
-                {el}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {dataTable?.map((el, idx) => (
-            <tr key={idx} className="hover:bg-gray-50 cursor-pointer">
-              {/* Step/Status Column - Centered */}
-              <td className="px-6 py-4 whitespace-nowrap text-center text-base text-black">
-                <div className="flex items-center justify-center relative">
-                  <div
-                    className={`flex-col h-9 w-9 rounded-full ${
-                      el?.status === "paid"
-                        ? "bg-blue-td-500"
-                        : "bg-white border border-black"
-                    } space-y-2 flex items-center justify-center z-20`}
-                  >
-                    {el?.status === "paid" ? (
-                      <CheckFat className="text-white text-lg" weight="fill" />
-                    ) : (
-                      <h1 className="text-xl">{idx + 1}</h1>
-                    )}
-                  </div>
+  <div className="relative max-h-[420px] overflow-y-auto custom-scroll">
+  <table className="w-full border-separate border-spacing-y-2">
 
-                  {idx !== dataTable?.length - 1 && (
-                    <div className="w-0.5 h-16 absolute -bottom-[70%] left-1/2 -translate-x-1/2 bg-blue-td-500 z-10"></div>
-                  )}
-                </div>
-              </td>
+  <thead className="sticky top-0 z-20">
 
-              {/* Date Column - Left Aligned */}
-              <td className="px-6 py-4 whitespace-nowrap text-left text-base text-black">
-                {dayjs(el?.date).format("DD/MM/YYYY")}
-              </td>
+    <tr className="bg-[#1F1F1F]">
+      {dataHeaders?.map((el, idx) => (
+        <th
+          key={idx}
+          scope="col"
+          className={`px-6 py-4 text-sm font-medium text-gray-300 uppercase tracking-wide
+            ${idx === 0 ? "text-center rounded-l-lg" : ""}
+            ${idx === 1 ? "text-left" : ""}
+            ${idx > 1 ? "text-right" : ""}
+            ${idx === dataHeaders.length - 1 ? "rounded-r-lg" : ""}
+          `}
+        >
+          {el}
+        </th>
+      ))}
+    </tr>
+  </thead>
 
-              {/* Amount Paid Column - Right Aligned */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-base text-black">
-                {el?.status === "paid"
-                  ? `$${el?.amountRepaid?.toLocaleString("en-US")}`
-                  : `$${el?.expectedAmount?.toLocaleString("en-US")}`}
-              </td>
+  <tbody>
+    {dataTable?.map((el, idx) => (
+      <tr
+        key={idx}
+        className="bg-white hover:bg-gray-50 transition"
+      >
+        {/* STATUS COLUMN */}
+        <td className="px-6 py-4 text-center">
+          <div className="flex items-center justify-center relative">
+            <div
+              className={`h-9 w-9 rounded-full flex items-center justify-center z-20
+                ${el?.status === "paid"
+                  ? "bg-blue-td-500"
+                  : "bg-white border border-gray-400"}
+              `}
+            >
+              {el?.status === "paid" ? (
+                <CheckFat className="text-white" weight="fill" />
+              ) : (
+                <span className="text-sm font-medium">{idx + 1}</span>
+              )}
+            </div>
 
-              {/* Total Amount Repaid Column - Right Aligned */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-base text-black">
-                $
-                {idx == dataTable?.length - 1
-                  ? `${el?.expectedAmount?.toLocaleString("en-US")}`
-                  : el?.totalAmountRepaid?.toLocaleString("en-US")}
-              </td>
+            {idx !== dataTable.length - 1 && (
+              <div className="absolute w-0.5 h-16 bg-blue-td-500 top-full"></div>
+            )}
+          </div>
+        </td>
 
-              {/* Remaining Amount Column - Right Aligned */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-base text-red-td-400">
-                ${el?.remainingAmount?.toLocaleString("en-US")}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      ) : tableFor === "shift" ? (
-        <table className="w-full table-auto">
-          <thead>
-            <tr>
-              {dataHeaders?.map((el, idx) => (
-                <th
-                  key={idx}
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider border-b-[1px]"
-                >
-                  {el}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable?.map((el, idx) => (
-              <tr key={el?.uuid} className="hover:bg-gray-50 cursor-pointer">
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex items-center justify-start space-x-2">
-                    <div
-                      className="h-5 w-5"
-                      style={{ backgroundColor: el?.color }}
-                    ></div>
-                    <p className="text-black text-sm font-normal">
-                      {el?.shiftName}
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black text-sm font-normal">
-                      {el?.fromTime} - {el?.toTime}
-                    </p>
-                  </div>
-                </td>
-                <td className="text-black flex items-center justify-center border-b-[1px] py-2">
-                  <div
-                    className="relative"
-                    ref={openMenu === el?.uuid ? menuRef : null}
-                  >
-                    <button
-                      onClick={() =>
-                        setOpenMenu(openMenu === el?.uuid ? null : el?.uuid)
-                      }
-                      className="h-8 w-8 rounded-full border-[1px] flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                    >
-                      <Pencil size={16} className="text-gray-600" />
-                    </button>
+        {/* DATE */}
+        <td className="px-6 py-4 text-left text-sm text-gray-700">
+          {dayjs(el?.date).format("DD/MM/YYYY")}
+        </td>
 
-                    {openMenu === el?.uuid && (
-                      <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                        <button
-                          onClick={() => handleDelete(el?.uuid)}
-                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleEdit(el?.uuid);
-                            setOpenMenu(null);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* AMOUNT PAID */}
+        <td className="px-6 py-4 text-right text-sm text-gray-700">
+          $
+          {(el?.status === "paid"
+            ? el?.amountRepaid
+            : el?.expectedAmount
+          )?.toLocaleString("en-US")}
+        </td>
+
+        {/* TOTAL PAID */}
+        <td className="px-6 py-4 text-right text-sm text-gray-700">
+          $
+          {(idx === dataTable.length - 1
+            ? el?.expectedAmount
+            : el?.totalAmountRepaid
+          )?.toLocaleString("en-US")}
+        </td>
+
+        {/* REMAINING */}
+        <td className="px-6 py-4 text-right text-sm text-red-td-400">
+          ${el?.remainingAmount?.toLocaleString("en-US")}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+</div>
       ) : tableFor === "attendance-break" ? (
         <table className="w-full table-auto">
           <thead>
@@ -2698,7 +2637,7 @@ tableFor === "loans" ? (
           </tbody>
         </table>
       ) : tableFor === "reimbursementEmployeeApproval" ? (
-  <div className="w-full h-full overflow-auto">
+  <div className="w-full h-full ">
     <table className="w-full table-auto">
       
       {/* HEADER */}
