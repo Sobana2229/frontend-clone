@@ -14,14 +14,14 @@ import CheckInCheckOut from "./employeePortal/checkInCheckOut.jsx";
 import Logo from "../../assets/Logo.svg";
 import DashboardIcon from "../../assets/Home.svg";
 import EmployeeIcon from "../../assets/employee.svg";
-import PayRunIcon from "../../assets/Frame.svg";
+import PayRunIcon from "../../assets/frame.svg";
 import ApprovalIcon from "../../assets/approval.svg";
 import Arrow from "../../assets/arrow.svg";
 import BenefitIcon from "../../assets/benefit.svg";
 import DocumentIcon from "../../assets/Frame 2.svg";
 import ReportsIcon from "../../assets/Reports.svg";
 import SettingsIcon from "../../assets/Settings.svg";
-import HelpIcon from "../../assets/help-circle.svg";
+import HelpIcon from "../../assets/Help-circle.svg";
 
 function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
   const { logout, user } = authStoreManagements();
