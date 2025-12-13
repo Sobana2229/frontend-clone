@@ -9,7 +9,7 @@ function Approvals() {
     const [activeTab, setActiveTab] = useState(tabApprovalSettings[0]);
 
     return (
-        <div className="w-[80%] h-full flex-col flex items-start justify-start">
+        <div className="w-full h-full flex-col flex items-start justify-start">
             <HeaderReusable title="Approvals" tabs={tabApprovalSettings} activeTab={activeTab} setActiveTab={setActiveTab} needTabs={true} />
             {activeTab === "Pay Run" ? (
                 <PayRunApprovals />

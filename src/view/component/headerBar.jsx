@@ -131,7 +131,7 @@ function HeaderBar({ setIsSidebarOpen, isSidebarOpen }) {
     
     return (
         <div className={`
-                w-[88%] h-16 flex items-center justify-between fixed top-0 right-0 z-10
+                w-[86%] h-20 flex items-center justify-between fixed top-0 right-0 z-10
                 bg-white border-b border-gray-200
                 ${isEmployeePortal ? "md:left-[14.5%] left-0" : isSidebarOpen ? "left-[14.5%]" : "left-14"}
                 px-3 sm:px-4 md:px-6
@@ -217,31 +217,43 @@ function HeaderBar({ setIsSidebarOpen, isSidebarOpen }) {
                         onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
                         className="hidden md:flex items-center justify-between h-9 px-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors bg-white w-[145px] lg:w-[160px] xl:w-[180px] 2xl:w-[200px]"
                     >
-                        <span className="text-[13px] font-medium text-gray-900 truncate flex-1 text-left leading-tight">
-                            {user?.organization?.organizationDetail?.name || "TEKYDOCT SDN BHD"}
+                        <span className="text-[13px] font-medium text-gray-900 flex-1 text-left leading-tight whitespace-nowrap">
+
+                            {user?.organization?.organizationDetail?.name || " TEKYDOCT SDN BHD"}
                         </span>
                         <CaretDown className="text-gray-500 text-xs ml-1 flex-shrink-0" />
                     </button>
 
                     {/* Dropdown Menu */}
                     {showCompanyDropdown && (
-                        <div className="absolute right-0 top-full mt-2 w-56 sm:w-64 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-50">
-                            <div className="px-4 py-3 border-b border-gray-100">
-                                <p className="text-xs text-gray-500 mb-1">Current Organization</p>
-                                <p className="text-sm font-medium text-gray-900 break-words">
-                                    {user?.organization?.organizationDetail?.name || "TEKYDOCT SDN BHD"}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-2">Org ID: {user?.organization?.organizationDetail?.organizationId || user?.organizationDetail?.organizationId || "N/A"}</p>
-                            </div>
-                            <div className="px-2 py-1">
-                                <button 
-                                    onClick={handleLogout}
-                                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                >
-                                    Sign Out
-                                </button>
-                            </div>
-                        </div>
+                      <div className="relative company-dropdown">
+    <button
+        onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
+        className="hidden md:flex items-center h-9 px-3 border rounded-lg"
+    >
+        <span className="text-gray-600 truncate">
+            {user?.organization?.organizationDetail?.name || "TEKYDOCT SDN BHD"}
+        </span>
+        <CaretDown className="ml-1 text-xs" />
+    </button>
+
+    {showCompanyDropdown && (
+        <div className="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow">
+            <div className="p-3 border-b">
+                <p className="text-sm font-medium text-gray-600">
+                    {user?.organization?.organizationDetail?.name || "TEKYDOCT SDN BHD"}
+                </p>
+            </div>
+            <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            >
+                Sign Out
+            </button>
+        </div>
+    )}
+</div>
+
                     )}
                 </div>
 
@@ -251,7 +263,7 @@ function HeaderBar({ setIsSidebarOpen, isSidebarOpen }) {
                     className="md:hidden flex items-center justify-center w-9 h-9 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors bg-white relative"
                 >
                     <span className="text-xs font-semibold text-gray-700">
-                        {(user?.organization?.organizationDetail?.name || "TEKYDOCT SDN BHD").substring(0, 2).toUpperCase()}
+                        {(user?.organization?.organizationDetail?.name || " TEKYDOCT SHD BHD").substring(0, 2).toUpperCase()}
                     </span>
                 </button>
             </div>

@@ -161,6 +161,8 @@ const adminRoutes = [
   // { path: "leave-approval", element: <LeaveApproval /> },
   { path: "form-six-teen", element: <FormSixTeen /> },
   { path: "loan", element: <LoanPages /> },
+   { path: "loan", element: <LoanPages /> },
+  { path: "loan/advance-salary", element: <LoanPages /> },
   { path: "giving", element: <GivingPages /> },
   { path: "documents", element: <DocumentPages /> },
   { path: "reports/payroll-journal-summary", element: <PayrollJournalSummary /> },

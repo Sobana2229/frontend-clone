@@ -1,19 +1,33 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, Fragment } from "react";
-import { AddressBook, ArrowLeft, Article, CaretDown, CaretUp, ChartDonut, CheckCircle, CurrencyDollar, DoorOpen, File, Folder, Gear, Heart, HouseIcon, InvoiceIcon, Money, MoneyIcon, PresentationChart, SignOut, Timer, Users, Wallet, X } from "@phosphor-icons/react";
-import SideBarSubList from "./subButtonSideBar/sideBarSubList.jsx";
-import { SideBarApprovals } from "../../../data/subSidebar.js";
+import { useState, useEffect, Fragment, useMemo, useCallback } from "react";
+import { 
+  AddressBook, ArrowLeft, CaretDown, CaretLeft, CaretRight,
+  ChartDonut, CheckCircle, CurrencyDollar, DoorOpen, 
+  File, Folder, Gear, HouseIcon, Question,
+  Money, MoneyIcon, PresentationChart, Users, X 
+} from "@phosphor-icons/react";
+import { SideBarApprovals, SideBarBenefits } from "../../../data/subSidebar.js";
 import authStoreManagements from "../../store/tdPayroll/auth.js";
 import CheckInCheckOut from "./employeePortal/checkInCheckOut.jsx";
+
+// Import SVG icons from assets
+import Logo from "../../assets/Logo.svg";
+import DashboardIcon from "../../assets/home.svg";
+import EmployeeIcon from "../../assets/employee.svg";
+import PayRunIcon from "../../assets/Frame.svg";
+import ApprovalIcon from "../../assets/approval.svg";
+import Arrow from "../../assets/arrow.svg";
+import BenefitIcon from "../../assets/benefit.svg";
+import DocumentIcon from "../../assets/Frame 2.svg";
+import ReportsIcon from "../../assets/Reports.svg";
+import SettingsIcon from "../../assets/Settings.svg";
+import HelpIcon from "../../assets/help-circle.svg";
 
 function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
   const { logout, user } = authStoreManagements();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [menuItems, setMenuItems] = useState([]);
-  const [menuActive, setMenuActive] = useState("");
-  const {pathname} = useLocation();
   const isEmployeePortal = location.pathname.includes("/employee-portal");
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -22,59 +36,53 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
     return false;
   });
 
-  const sidebarAdminPortal = [
-    { title: "Dashboard", to: "/dashboard", icon: <ChartDonut size={20} />},
-    { title: "Employees", to: "/employees", icon: <Users size={20} />},
-    // { title: "Timesheet Payroll", to: "/timesheet", icon: <Timer size={20} />},
-    // { title: "Attandance Payroll", to: "/attandance", icon: <AddressBook size={20} />},
-    // { title: "Leaves Payroll", to: "/leaves", icon: <SignOut size={20} />},
-    // { title: "Loss of Pay details", to: "/los-leaves", icon: <DoorOpen size={20} />},
-    { title: "Pay Runs", to: "/pay-runs", icon: <Money size={20} />},
-    { title: "Approvals", 
+  const sidebarAdminPortal = useMemo(() => [
+    { title: "Dashboard", to: "/dashboard", icon: DashboardIcon },
+    { title: "Employees", to: "/employees", icon: EmployeeIcon },
+    { title: "Pay Runs", to: "/pay-runs", icon: PayRunIcon },
+    { 
+      title: "Approvals", 
       to: "/reimbursement", 
-      icon: <CheckCircle size={20} />, 
+      icon: ApprovalIcon, 
       isDropdown: true, 
       subMenu: SideBarApprovals 
     },
-    // { title: "Form 16", to: "/form-six-teen", icon: <Article size={20} />},
-    { title: "Benefits", to: "/loan", icon: <CurrencyDollar size={20} />},
-    // { title: "Giving", to: "/giving", icon: <Heart size={20} />},
-    { title: "Documents", to: "/documents", icon: <Folder size={20} />},
-    { title: "Reports", to: "/reports", icon: <PresentationChart size={20} />},
-    { title: "Settings", to: "/setting", icon: <Gear size={20} />},
-  ];
-  const sidebarEmployeePortal = [
-    { title: "Home", to: "/employee-portal", icon: <HouseIcon size={20} />},
-    { title: "Salary Details", to: "/employee-portal/salary-detail", icon: <MoneyIcon size={20} />},
-    { title: "Leave & Attendance", to: "/employee-portal/leave-attendance", icon: <AddressBook size={20} />},
-    { title: "Reimbursement", to: "/employee-portal/reimbursement", icon: <MoneyIcon size={20} />},
-    // { title: "Investments", to: "/employee-portal/investment", icon: <InvoiceIcon size={20} />},
-    { title: "Documents", to: "/employee-portal/document", icon: <File size={20} />},
-    { title: "Benefits", to: "/employee-portal/loan", icon: <CurrencyDollar size={20} />},
-  ];
+    { 
+      title: "Benefits", 
+      to: "/loan", 
+      icon: BenefitIcon, 
+      isDropdown: true,
+      subMenu: SideBarBenefits
+    },
+    { title: "Documents", to: "/documents", icon: DocumentIcon },
+    { title: "Reports", to: "/reports", icon: ReportsIcon },
+  ], []);
+
+  const sidebarEmployeePortal = useMemo(() => [
+    { title: "Home", to: "/employee-portal", icon: <HouseIcon size={20} weight="regular" /> },
+    { title: "Salary Details", to: "/employee-portal/salary-detail", icon: <MoneyIcon size={20} weight="regular" /> },
+    { title: "Leave & Attendance", to: "/employee-portal/leave-attendance", icon: <AddressBook size={20} weight="regular" /> },
+    { title: "Reimbursement", to: "/employee-portal/reimbursement", icon: <MoneyIcon size={20} weight="regular" /> },
+    { title: "Documents", to: "/employee-portal/document", icon: <File size={20} weight="regular" /> },
+    { title: "Benefits", to: "/employee-portal/loan", icon: <CurrencyDollar size={20} weight="regular" /> },
+  ], []);
+
+  const menuItems = useMemo(() => {
+    return isEmployeePortal ? sidebarEmployeePortal : sidebarAdminPortal;
+  }, [isEmployeePortal, sidebarEmployeePortal, sidebarAdminPortal]);
 
   useEffect(() => {
-    if(location.pathname.includes("/employee-portal")) {
-      setMenuItems(sidebarEmployeePortal);
-    }else{
-      setMenuItems(sidebarAdminPortal);
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if(location.pathname === "/setting"){
-      setIsSidebarOpen(false)
-    }else{
-      // For mobile, keep sidebar closed by default for employee portal
+    if (location.pathname === "/setting") {
+      setIsSidebarOpen(false);
+    } else {
       if (isEmployeePortal && typeof window !== 'undefined' && window.innerWidth < 768) {
         setIsSidebarOpen(false);
       } else {
         setIsSidebarOpen(true);
       }
     }
-  }, [location.pathname, isEmployeePortal]);
+  }, [location.pathname, isEmployeePortal, setIsSidebarOpen]);
 
-  // Handle window resize and detect mobile
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
@@ -88,32 +96,28 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
       checkMobile();
       if (window.innerWidth >= 768 && !isEmployeePortal) {
         setIsSidebarOpen(true);
-      } else if (window.innerWidth < 768 && isEmployeePortal && isSidebarOpen) {
-        // Keep sidebar state on resize, don't auto-close
       }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [isEmployeePortal, isSidebarOpen]);
+  }, [isEmployeePortal, setIsSidebarOpen]);
 
   const handleLogout = async () => {
     const access_token = localStorage.getItem("accessToken");
     const response = await logout(access_token);
-    if(response === "success logout"){
-      navigate("/login") 
+    if (response === "success logout") {
+      navigate("/login");
     }
   };
 
-  // Close sidebar on mobile when menu item is clicked
-  const handleMenuClick = () => {
+  const handleMenuClick = useCallback(() => {
     if (isEmployeePortal && isMobile) {
       setIsSidebarOpen(false);
     }
-  };
+  }, [isEmployeePortal, isMobile, setIsSidebarOpen]);
 
   return (
     <Fragment>
-      {/* Overlay for mobile */}
       {isMobile && isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
@@ -121,224 +125,403 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
         />
       )}
       
-      {/* Sidebar */}
       <div
-        className={`h-screen bg-[#21263B] flex flex-col items-center justify-between pt-2 z-50 transition-transform duration-300 ease-in-out overflow-hidden ${
+        className={`h-screen bg-white flex flex-col pt-6 z-50 transition-all duration-300 ease-in-out overflow-hidden border-r border-gray-200 ${
           isMobile
             ? `${isSidebarOpen ? "fixed inset-y-0 left-0 w-72 translate-x-0" : "fixed inset-y-0 left-0 w-72 -translate-x-full"}`
             : isEmployeePortal
-              ? `md:relative md:translate-x-0 ${isSidebarOpen ? "md:w-[16.9%]" : "md:w-fit"}`
-              : `${isSidebarOpen ? "md:w-[16.9%]" : "md:w-fit"} md:relative`
+              ? `md:relative md:translate-x-0 ${isSidebarOpen ? "md:w-[278px]" : "md:w-fit"}`
+              : `${isSidebarOpen ? "md:w-[278px]" : "md:w-fit"} md:relative`
         }`}
       >
-        {/* Close button for mobile employee portal */}
         {isEmployeePortal && isSidebarOpen && (
           <div className="absolute top-4 right-4 md:hidden">
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="p-2 rounded-md hover:bg-gray-700 text-white"
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-600"
             >
               <X size={24} />
             </button>
           </div>
         )}
+
+        {/* Logo Section - Updated to match reference */}
         {!location.pathname.includes("/employee-portal") && !location.pathname.includes("/setting") && (
-          <div 
-            className={`
-              ${isSidebarOpen ? "w-full" : "w-fit"} 
-              flex flex-col items-center justify-start bg-[#21263B]
-              mb-2
-            `}
-            >
-            {!isSidebarOpen && (
-              <div className="w-full h-full flex items-center justify-center">
-                <Wallet className="text-white text-2xl" />
+          <div className={`${isSidebarOpen ? "px-6" : "px-4"} mb-8`}>
+            {!isSidebarOpen ? (
+              <div className="w-full flex items-center justify-center">
+                <img src={Logo} alt="Logo" className="w-11 h-11 rounded-lg object-cover" />
               </div>
-            )}
-            {isSidebarOpen && (
-              <div className="w-full flex items-center justify-start">
-                <div className="w-32 h-10 flex items-center justify-center">
-                  <img className="object-cover mt-1" src="/logoTekydoct.png" alt="logo-tekydoct" />
+            ) : (
+              <div className="flex items-center gap-2.5">
+                <img src={Logo} alt="Logo" className="w-11 h-11 rounded-lg object-cover" />
+                <div className="flex flex-col justify-center">
+                  <span className="text-[10px] font-medium tracking-[0.4px] text-[#1C1C1C] leading-[18px] uppercase">
+                    TEKYDOCT
+                  </span>
+                  <span className="text-[20px] font-medium text-[#1C1C1C] leading-[30px] -mt-0.5">
+                    PAYROLL
+                  </span>
                 </div>
-                <h1 className="text-white text-2xl">Payroll</h1>
               </div>
             )}
           </div>
         )}
-        <div className="flex flex-col flex-grow w-full space-y-5 overflow-y-auto overflow-x-hidden">
-        {location.pathname.includes("/employee-portal") && (
-          <>
-            <div 
-              className="w-full flex flex-col items-center justify-center space-y-4"
-            >
-              {/* Avatar with Initial */}
-              <div className="w-28 h-28 rounded-2xl bg-gray-800 border border-gray-700 flex items-center justify-center">
-                <span className="text-blue-400 text-5xl font-semibold">
-                  {user?.firstName?.charAt(0).toUpperCase() || 'U'}
-                </span>
-              </div>
 
-              {/* User Info */}
-              <div className="w-full flex flex-col items-center justify-center">
+        <div className="flex flex-col flex-grow overflow-y-auto overflow-x-hidden">
+          {location.pathname.includes("/employee-portal") && (
+            <>
+              <div className="w-full flex flex-col items-center justify-center px-6 mb-6">
+                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-3">
+                  <span className="text-gray-600 text-3xl font-semibold">
+                    {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
                 <Link 
                   to="/employee-portal/profile-detail" 
-                  className="
-                  text-white 
-                    hover:underline hover:text-blue-400
-                    text-lg font-medium 
-                    "
+                  className="text-gray-900 hover:text-blue-600 text-base font-medium text-center"
                 >
-                  {user?.firstName?.charAt(0).toUpperCase() + user?.firstName?.slice(1)}{" "} 
-                  {user?.middleName?.charAt(0).toUpperCase() + user?.middleName?.slice(1)}{" "} 
-                  {user?.lastName?.charAt(0).toUpperCase() + user?.lastName?.slice(1)}{" "}
-                   - {user?.employeeId || '2432'}
+                  {user?.firstName?.charAt(0).toUpperCase() + user?.firstName?.slice(1)}{" "}
+                  {user?.middleName?.charAt(0).toUpperCase() + user?.middleName?.slice(1)}{" "}
+                  {user?.lastName?.charAt(0).toUpperCase() + user?.lastName?.slice(1)}
+                </Link>
+                <p className="text-gray-500 text-sm">{user?.Designation?.name || 'Employee'}</p>
+              </div>
+              <div className="flex items-center justify-center px-6 mb-6">
+                <CheckInCheckOut isEmployeePortal={location.pathname.includes("/employee-portal")} />
+              </div>
+            </>
+          )}
+
+          <div className="px-6">
+            {/* MAIN Label */}
+            {isSidebarOpen && !isEmployeePortal && (
+              <div className="mb-2 px-3">
+                <span className="text-[10px] font-medium tracking-[0.4px] text-[rgba(28,28,28,0.5)] uppercase leading-3">
+                  MAIN
+                </span>
+              </div>
+            )}
+
+            {/* Menu Items */}
+            <div className="flex flex-col gap-2">
+              {menuItems.map(({ title, to, icon, isDropdown, subMenu }) => {
+                const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
+                const isOpen = activeDropdown === title;
+                const isIconSvg = typeof icon === 'string';
+                
+                return (
+                  <div key={title} className="w-full">
+                    {isDropdown ? (
+                      <button
+                        onClick={() => {
+                          if (!isSidebarOpen) {
+                            setIsSidebarOpen(true);
+                          } else {
+                            setActiveDropdown(isOpen ? null : title);
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                          isActive || isOpen
+                            ? "bg-[rgba(28,28,28,0.05)]"
+                            : "hover:bg-[rgba(28,28,28,0.03)]"
+                        }`}
+                        style={{ height: '40px' }}
+                      >
+                        <div className="flex items-center gap-3">
+                          {isIconSvg ? (
+                            <img 
+                              src={icon} 
+                              alt={title}
+                              className="w-5 h-5"
+                              style={{
+                                filter: isActive || isOpen ? "brightness(0) saturate(100%) contrast(140%)" : "none",
+                                opacity: isActive || isOpen ? 1 : 0.6
+                              }}
+                            />
+                          ) : (
+                            <span className={isActive || isOpen ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"}>
+                              {icon}
+                            </span>
+                          )}
+                          {isSidebarOpen && (
+                            <span className={`text-sm font-medium leading-5 ${
+                              isActive || isOpen ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"
+                            }`}>
+                              {title}
+                            </span>
+                          )}
+                        </div>
+                        {isSidebarOpen && (
+                          <img
+                            src={Arrow}
+                            alt="Arrow"
+                            className="w-6 h-6 transition-transform duration-200"
+                            style={{
+                              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)"
+                            }}
+                          />
+                        )}
+                      </button>
+                    ) : (
+                      <Link
+                        to={to}
+                        onClick={() => { 
+                          setActiveDropdown(null);
+                          handleMenuClick();
+                        }}
+                        className={`w-full flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? "bg-[rgba(28,28,28,0.05)]"
+                            : "hover:bg-[rgba(28,28,28,0.03)]"
+                        }`}
+                        style={{ height: '40px' }}
+                      >
+                        <div className="flex items-center gap-3">
+                          {isIconSvg ? (
+                            <img 
+                              src={icon} 
+                              alt={title}
+                              className="w-5 h-5"
+                              style={{
+                                filter: isActive ? "brightness(0) saturate(100%) contrast(140%)" : "none",
+                                opacity: isActive ? 1 : 0.6
+                              }}
+                            />
+                          ) : (
+                            <span className={isActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"}>
+                              {icon}
+                            </span>
+                          )}
+                          {isSidebarOpen && (
+                            <span className={`text-sm font-medium leading-5 ${
+                              isActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"
+                            }`}>
+                              {title}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    )}
+                    
+                   {/* Dropdown Submenu */}
+{isDropdown && isOpen && isSidebarOpen && (
+  <div className="ml-4 mt-2 relative pl-4" style={{ minHeight: subMenu.length * 50 + 'px' }}>
+    {/* Background line */}
+    <div className="absolute left-0 top-0 w-1 rounded" style={{ 
+      height: '100%', 
+      background: '#F2F2F2' 
+    }} />
+    
+    {/* Active indicator line */}
+    {subMenu.find(item => location.pathname === item.to) && (
+      <div 
+        className="absolute left-0 w-1 rounded transition-all duration-250"
+        style={{ 
+          height: '40px',
+          background: '#1C1C1C',
+          top: `${subMenu.findIndex(item => location.pathname === item.to) * 50}px`
+        }}
+      />
+    )}
+    
+    <div className="flex flex-col" style={{ gap: '8px' }}>
+      {subMenu.map((subItem, index) => {
+        const isSubActive = location.pathname === subItem.to;
+        return (
+          <Link
+            key={subItem.title}
+            to={subItem.to}
+            onClick={handleMenuClick}
+            className={`relative pl-3 pr-3 py-2.5 text-sm rounded-lg transition-all duration-200 ${
+              isSubActive
+                ? "bg-[rgba(28,28,28,0.05)]"
+                : "hover:bg-[rgba(28,28,28,0.03)]"
+            }`}
+            style={{ 
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            {isSubActive && (
+              <div 
+                className="absolute rounded"
+                style={{ 
+                  left: '-16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '2px',
+                  height: '24px',
+                  background: '#1C1C1C'
+                }}
+              />
+            )}
+            <span className={`text-sm font-medium leading-5 ${
+              isSubActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.5)]"
+            }`}>
+              {subItem.title}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  </div>
+)}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Divider */}
+            <div className="my-6 h-0.5 rounded" style={{ background: 'rgba(28,28,28,0.05)' }} />
+
+            {/* SETTINGS Section */}
+            {!isEmployeePortal && (
+              <>
+                {isSidebarOpen && (
+                  <div className="mb-2 px-3">
+                    <span className="text-[10px] font-medium tracking-[0.4px] text-[rgba(28,28,28,0.5)] uppercase leading-3">
+                      SETTINGS
+                    </span>
+                  </div>
+                )}
+                <Link
+                  to="/setting"
+                  className={`w-full flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                    location.pathname === "/setting"
+                      ? "bg-[rgba(28,28,28,0.05)]"
+                      : "hover:bg-[rgba(28,28,28,0.03)]"
+                  }`}
+                  style={{ height: '40px' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={SettingsIcon} 
+                      alt="Settings"
+                      className="w-5 h-5"
+                      style={{
+                        opacity: location.pathname === "/setting" ? 1 : 0.6
+                      }}
+                    />
+                    {isSidebarOpen && (
+                      <span className={`text-sm font-medium leading-5 ${
+                        location.pathname === "/setting" ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"
+                      }`}>
+                        Settings
+                      </span>
+                    )}
+                  </div>
                 </Link>
 
-                <p className="text-gray-400 text-sm">
-                  {user?.Designation.name || 'Employee'}
-                </p>
-              </div>
-            </div>
-
-            {/* Clock */}
-            <div className="flex items-center justify-center"
-            >
-              <CheckInCheckOut isEmployeePortal={pathname.includes("/employee-portal")} />
-            </div>
-          </>
-        )}
-        <div className="w-full flex flex-col px-3 space-y-3"
-        >
-          {menuItems.map(({ title, to, icon, isDropdown, subMenu }) => {
-            const isActive = menuActive === title;
-            const isOpen = activeDropdown === title;
-            return (
-              <div key={title} className="w-full">
-                {isDropdown ? (
-                  <button
-                    onClick={() => {
-                      if (!isSidebarOpen) {
-                        setIsSidebarOpen(true);
-                      } else {
-                        setActiveDropdown(isOpen ? null : title);
-                      }
-                    }}
-                    className={`w-full flex items-center justify-between p-2 duration-300 ease-in-out group rounded-md text-white ${
-                      isActive || isOpen ? "bg-[#3F8DFB]" : "hover:bg-[#3F8DFB]"
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3 text-white">
-                      {icon}
-                      {isSidebarOpen && (
-                        <h1 className="text-sm font-medium">{title}</h1>
-                      )}
-                    </div>
-                    {isSidebarOpen &&
-                      (isOpen ? (
-                        <CaretUp
-                          size={16}
-                          weight="fill"
-                          className="text-white"
-                        />
-                      ) : (
-                        <CaretDown
-                          size={16}
-                          weight="fill"
-                          className="text-white"
-                        />
-                      ))}
-                  </button>
-                ) : (
-                  <Link
-                    to={to}
-                    onClick={() => { 
-                      setActiveDropdown(null); 
-                      setMenuActive(title);
-                      handleMenuClick();
-                    }}
-                    className={`w-full flex items-center text-white p-2 duration-300 ease-in-out rounded-md ${
-                      isActive ? "bg-[#3F8DFB]" : "hover:bg-[#3F8DFB]"
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      {icon}
-                      {isSidebarOpen && (
-                        <h1 className="text-sm font-medium">{title}</h1>
-                      )}
-                    </div>
-                  </Link>
-                )}
-                {isDropdown && isOpen && (
-                  <SideBarSubList
-                    subNavbarTitle={subMenu}
-                    isSidebarOpen={isSidebarOpen}
-                  />
-                )}
-              </div>
-            );
-          })}
+                {/* Help */}
+                <button 
+                  className="w-[10%] flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-[rgba(28,28,28,0.03)] mt-2"
+                  style={{ height: '300px'}}
+                >
+                  <div className="flex items-center gap-3">
+                    <img src={HelpIcon} alt="Help" className="w-5 h-5" style={{ opacity: 0.6 }} />
+                    {isSidebarOpen && (
+                      <span className="text-sm font-medium leading-5 text-[rgba(28,28,28,0.6)]">
+                        Help
+                      </span>
+                    )}
+                  </div>
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-      <div className={`w-full flex flex-col items-center justify-center`}>
-        {!location.pathname.includes("/employee-portal") &&
-          user?.isEnablePortalAccess && (
+        <div className="my-10 h-0.5 rounded" style={{ background: 'rgba(28,28,28,0.05)' }} />
+      <div className="mt-auto border-t border-gray-800">
+          {!location.pathname.includes("/employee-portal") && user?.isEnablePortalAccess && (
             <button
               onClick={() => navigate("/employee-portal")}
-              className="flex items-center justify-center space-x-3 text-white py-4 w-full duration-300 ease-in-out rounded-md hover:bg-[#3F8DFB]"
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18.75 24C20.1424 24 21.4777 23.4469 22.4623 22.4623C23.4469 21.4777 24 20.1424 24 18.75C24 17.3576 23.4469 16.0223 22.4623 15.0377C21.4777 14.0531 20.1424 13.5 18.75 13.5C17.3576 13.5 16.0223 14.0531 15.0377 15.0377C14.0531 16.0223 13.5 17.3576 13.5 18.75C13.5 20.1424 14.0531 21.4777 15.0377 22.4623C16.0223 23.4469 17.3576 24 18.75 24ZM19.281 15.219L21.531 17.469C21.6718 17.6098 21.7509 17.8008 21.7509 18C21.7509 18.1992 21.6718 18.3902 21.531 18.531C21.3902 18.6718 21.1992 18.7509 21 18.7509C20.8008 18.7509 20.6098 18.6718 20.469 18.531L19.5 17.5605V21.75C19.5 21.9489 19.421 22.1397 19.2803 22.2803C19.1397 22.421 18.9489 22.5 18.75 22.5C18.5511 22.5 18.3603 22.421 18.2197 22.2803C18.079 22.1397 18 21.9489 18 21.75V17.5605L17.031 18.531C16.8902 18.6718 16.6992 18.7509 16.5 18.7509C16.3008 18.7509 16.1098 18.6718 15.969 18.531C15.8282 18.3902 15.7491 18.1992 15.7491 18C15.7491 17.8008 15.8282 17.6098 15.969 17.469L18.219 15.219C18.2887 15.1492 18.3714 15.0937 18.4626 15.0559C18.5537 15.0181 18.6513 14.9987 18.75 14.9987C18.8487 14.9987 18.9463 15.0181 19.0374 15.0559C19.1286 15.0937 19.2113 15.1492 19.281 15.219ZM16.5 7.5C16.5 8.69347 16.0259 9.83807 15.182 10.682C14.3381 11.5259 13.1935 12 12 12C10.8065 12 9.66193 11.5259 8.81802 10.682C7.97411 9.83807 7.5 8.69347 7.5 7.5C7.5 6.30653 7.97411 5.16193 8.81802 4.31802C9.66193 3.47411 10.8065 3 12 3C13.1935 3 14.3381 3.47411 15.182 4.31802C16.0259 5.16193 16.5 6.30653 16.5 7.5ZM12 10.5C12.7956 10.5 13.5587 10.1839 14.1213 9.62132C14.6839 9.05871 15 8.29565 15 7.5C15 6.70435 14.6839 5.94129 14.1213 5.37868C13.5587 4.81607 12.7956 4.5 12 4.5C11.2044 4.5 10.4413 4.81607 9.87868 5.37868C9.31607 5.94129 9 6.70435 9 7.5C9 8.29565 9.31607 9.05871 9.87868 9.62132C10.4413 10.1839 11.2044 10.5 12 10.5Z"
-                  fill="#9CA3AF"
-                />
-                <path
-                  d="M12.384 21C12.2122 20.5128 12.097 20.0075 12.0405 19.494H4.5C4.5015 19.125 4.731 18.015 5.748 16.998C6.726 16.02 8.5665 15 12 15C12.39 15 12.76 15.0125 13.11 15.0375C13.449 14.526 13.854 14.0625 14.316 13.6605C13.616 13.5555 12.844 13.502 12 13.5C4.5 13.5 3 18 3 19.5C3 21 4.5 21 4.5 21H12.384Z"
-                  fill="#9CA3AF"
-                />
-              </svg>
-
+              <Users size={20} weight="regular" />
               {isSidebarOpen && (
-                <h1 className="text-xl font-medium text-[#9CA3AF]">
-                  Employee Portal
-                </h1>
+                <span className="text-sm font-medium">Employee Portal</span>
               )}
             </button>
           )}
-        {location.pathname.includes("/employee-portal") && (
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center justify-center space-x-3 text-white py-4 w-full duration-300 ease-in-out rounded-md hover:bg-[#3F8DFB]"
-          >
-            {isSidebarOpen && (
-              <h1 className="text-xl font-regular text-[#9CA3AF]">
-                Switch to Admin View
-              </h1>
-            )}
-          </button>
-        )}
-        <button
-          onClick={handleLogout}
-          className="flex items-center justify-center space-x-3 text-white py-4 w-full duration-300 ease-in-out rounded-md bg-gray-900 hover:bg-gray-950"
-        >
-          <DoorOpen size={25} />
-          {isSidebarOpen && <h1 className="text-lg font-medium">Logout</h1>}
-        </button>
-        {/* Toggle button - hide on mobile for employee portal */}
-        {(!isEmployeePortal || !isMobile) && (
-          <div
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="w-full h-14 flex items-center justify-center bg-[#181C2E] cursor-pointer"
-          >
-            <ArrowLeft className={`text-white text-xl transition-transform duration-300 ${isSidebarOpen ? '' : 'rotate-180'}`} />
-          </div>
-        )}
-      </div>
+          
+          {location.pathname.includes("/employee-portal") && (
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              {isSidebarOpen && (
+                <span className="text-sm font-medium">Switch to Admin View</span>
+              )}
+            </button>
+          )}
+
+          {isSidebarOpen && (
+            <div className="px-4 py-3 mx-2 mb-2">
+              <div className="flex items-center gap-3">
+                {/* User Avatar */}
+                <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
+                  <span className="text-gray-600 font-medium text-sm">
+                    {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+                
+                {/* User Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-gray-900 truncate">
+                    {user?.firstName || 'User'}
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">
+                    {user?.Designation?.name || 'Employee'}
+                  </div>
+                </div>
+                
+                {/* Two Arrows Icon */}
+                <button
+                  onClick={handleLogout}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  title="Logout"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 8L1 10L3 12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M1 10H8" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path d="M8 4V2C8 1.44772 8.44772 1 9 1H14C14.5523 1 15 1.44772 15 2V14C15 14.5523 14.5523 15 14 15H9C8.44772 15 8 14.5523 8 14V12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </button>
+                
+                {/* Vertical Dashed Line */}
+                <div className="h-8 w-px border-l border-dashed border-gray-300"></div>
+                
+                {/* Person Icon (Users SVG) */}
+                <button className="p-1 hover:bg-gray-100 rounded transition-colors">
+                  <Users size={16} weight="regular" className="text-gray-500" />
+                </button>
+                
+                {/* Small Collapse Arrow */}
+                {(!isEmployeePortal || !isMobile) && (
+                  <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    title="Collapse"
+                  >
+                    <CaretLeft size={14} weight="bold" className="text-gray-500" />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Show only arrow icon when sidebar is collapsed */}
+          {!isSidebarOpen && (!isEmployeePortal || !isMobile) && (
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="w-full h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors border-t border-gray-200"
+            >
+              <CaretRight size={20} weight="bold" className="text-gray-600" />
+            </button>
+          )}
+        </div>
       </div>
     </Fragment>
   );

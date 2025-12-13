@@ -1149,198 +1149,165 @@ function TableReusable({
       ) : 
       /* Reimbursements Claims Table */
      tableFor === "Reimbursements" ? (
-  <table className="w-[200%] table-auto px-2 bg-white border border-dashed border-[rgba(28,28,28,0.1)] rounded-t-[10px]">
-    <thead>
-      <tr className="bg-[#1C1C1C] h-20">
-        {dataHeaders?.map((el, idx) => (
-          <th
-            key={idx}
-            scope="col"
-            className="px-6 py-5 text-left text-[14px] font-medium leading-5 text-[#ADADAD] uppercase"
-            style={{ fontFamily: 'Inter', fontWeight: 500 }}
-          >
-            {el}
-          </th>
-        ))}
-        <th className="py-5 text-center w-[60px]"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {dataTable?.map((el, idx) => (
-        <tr 
-          key={idx} 
-          className="border-b border-dashed border-[rgba(28,28,28,0.1)] h-[86px] hover:bg-gray-50"
+  <div className="w-full h-full">
+    {/* SAME OUTER STRUCTURE AS LOANS */}
+    <div className="w-full overflow-x-auto">
+      <table className="w-full table-auto bg-white">
+        <thead
+          className="sticky top-0 z-10"
+          style={{ background: "#1C1C1C", height: "78px" }}
         >
-          {/* Claim Number */}
-          <td className="px-6 text-left">
-            <p 
-              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
-              style={{ fontFamily: 'Inter' }}
-            >
-              {el?.claimNumber}
-            </p>
-          </td>
-
-          {/* Employee Name */}
-          <td className="px-6 text-left">
-            <p 
-              className="text-[16px] leading-6 font-normal text-[rgba(28,28,28,0.5)]"
-              style={{ fontFamily: 'Inter' }}
-            >
-              {el?.employeeName}
-            </p>
-          </td>
-
-          {/* Submitted Date */}
-          <td className="px-6 text-left">
-            <p 
-              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
-              style={{ fontFamily: 'Inter' }}
-            >
-              {el?.submittedDate}
-            </p>
-          </td>
-
-          {/* Claim Amount */}
-          <td className="px-6 text-left">
-            <p 
-              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
-              style={{ fontFamily: 'Inter' }}
-            >
-              ${el?.claimAmount}
-            </p>
-          </td>
-
-          {/* Approved Amount */}
-          <td className="px-6 text-left">
-            <p 
-              className="text-[16px] leading-6 font-normal text-[#1C1C1C]"
-              style={{ fontFamily: 'Inter' }}
-            >
-              ${el?.approvedAmount}
-            </p>
-          </td>
-
-          {/* Status - Approve/Reject buttons or Approved/Rejected badge */}
-          <td className="px-6 text-left">
-            <div className="flex items-center gap-2">
-              {el?.status?.toLowerCase() === "pending" ? (
-                <>
-                  <button 
-                    onClick={() => handleApprove(el?.uuid)}
-                    className="h-[30px] px-4 bg-[#D5FAF2] text-[#014F45] text-[14px] leading-6 font-normal rounded-[25px] hover:opacity-80"
-                    style={{ fontFamily: 'Inter' }}
-                  >
-                    Approve
-                  </button>
-                  <button 
-                    onClick={() => handleReject(el?.uuid)}
-                    className="h-[30px] px-4 bg-[#FEE2E2] text-[#991B1B] text-[14px] leading-6 font-normal rounded-[25px] hover:opacity-80"
-                    style={{ fontFamily: 'Inter' }}
-                  >
-                    Reject
-                  </button>
-                </>
-              ) : (
-                <span 
-                  className={`inline-flex items-center justify-center h-[30px] px-6 text-[14px] leading-6 font-normal rounded-[25px] ${
-                    el?.status?.toLowerCase() === "approved" 
-                      ? 'bg-[#D5FAF2] text-[#014F45]' 
-                      : 'bg-[#FEE2E2] text-[#991B1B]'
-                  }`}
-                  style={{ fontFamily: 'Inter' }}
-                >
-                  {el?.status}
-                </span>
-              )}
-            </div>
-          </td>
-
-          {/* Three dots menu - SEPARATE COLUMN */}
-          <td className="text-center">
-            <div
-              className="relative inline-block"
-              ref={openMenu === el?.uuid ? menuRef : null}
-            >
-              <button
-                onClick={() =>
-                  setOpenMenu(openMenu === el?.uuid ? null : el?.uuid)
-                }
-                className="h-8 w-8 rounded-full border-[1px] flex items-center justify-center border-gray-400 hover:bg-gray-100 transition-colors"
+          <tr>
+            {dataHeaders?.map((el, idx) => (
+              <th
+                key={idx}
+                scope="col"
+                className="px-6 text-left text-[14px] font-medium uppercase"
+                style={{
+                  color: "#ADADAD",
+                  lineHeight: "20px",
+                  fontFamily: "Inter",
+                }}
               >
-                <DotsThreeOutlineVertical
-                  size={16}
-                  className="text-gray-500"
-                />
-              </button>
+                {el}
+              </th>
+            ))}
+            <th className="w-16 px-6"></th>
+          </tr>
+        </thead>
 
-              {openMenu === el?.uuid && (
-                <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50 font-medium">
-                  <button
-                    onClick={() => {
-                      handleEdit(
-                        el?.uuid,
-                        "Reimbursements",
-                        "reimbursement"
-                      );
-                      setOpenMenu(null);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 text-gray-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (!el?.isUsed) {
-                        handleDelete(
-                          el?.uuid,
-                          "Reimbursements",
-                          "reimbursement",
-                          "delete"
-                        );
-                        setOpenMenu(null);
-                      }
-                    }}
-                    disabled={el?.isUsed}
-                    className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                      el?.isUsed
-                        ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                        : "text-red-600 hover:bg-red-50"
-                    }`}
-                    title={el?.isUsed ? "Cannot delete: This component is already assigned to one or more employees" : ""}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (!el?.isUsed) {
-                        handleChangeActiveStatus(
-                          el?.uuid,
-                          "Reimbursements",
-                          "reimbursement"
-                        );
-                        setOpenMenu(null);
-                      }
-                    }}
-                    disabled={el?.isUsed}
-                    className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                      el?.isUsed
-                        ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                        : "text-gray-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
-                    }`}
-                    title={el?.isUsed ? "Cannot change status: This component is already assigned to one or more employees" : ""}
-                  >
-                    Mark as {el?.markAsActive ? "Inactive" : "Active"}
-                  </button>
+        <tbody className="bg-white">
+          {dataTable?.map((el, idx) => (
+            <tr
+              key={idx}
+              className="border-b border-dashed hover:bg-gray-50"
+              style={{
+                height: "86px",
+                borderColor: "rgba(28, 28, 28, 0.1)",
+              }}
+            >
+              {/* Claim Number */}
+              <td className="px-6 text-left">
+                <p className="text-[16px] text-[#1C1C1C]" style={{ fontFamily: "Inter" }}>
+                  {el?.claimNumber}
+                </p>
+              </td>
+
+              {/* Employee Name */}
+              <td className="px-6 text-left">
+                <p
+                  className="text-[16px] text-[rgba(28,28,28,0.5)]"
+                  style={{ fontFamily: "Inter" }}
+                >
+                  {el?.employeeName}
+                </p>
+              </td>
+
+              {/* Submitted Date */}
+              <td className="px-6 text-left">
+                <p className="text-[16px] text-[#1C1C1C]" style={{ fontFamily: "Inter" }}>
+                  {el?.submittedDate}
+                </p>
+              </td>
+
+              {/* Claim Amount */}
+              <td className="px-6 text-left">
+                <p className="text-[16px] text-[#1C1C1C]" style={{ fontFamily: "Inter" }}>
+                  ${el?.claimAmount}
+                </p>
+              </td>
+
+              {/* Approved Amount */}
+              <td className="px-6 text-left">
+                <p className="text-[16px] text-[#1C1C1C]" style={{ fontFamily: "Inter" }}>
+                  ${el?.approvedAmount}
+                </p>
+              </td>
+
+              {/* Status */}
+              <td className="px-6 text-left">
+                <div className="flex items-center gap-2">
+                  {el?.status?.toLowerCase() === "pending" ? (
+                    <>
+                      <button
+                        onClick={() => handleApprove(el?.uuid)}
+                        className="h-[30px] px-4 bg-[#D5FAF2] text-[#014F45] text-[14px] rounded-[25px]"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(el?.uuid)}
+                        className="h-[30px] px-4 bg-[#FEE2E2] text-[#991B1B] text-[14px] rounded-[25px]"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  ) : (
+                    <span
+                      className={`h-[30px] px-6 flex items-center justify-center rounded-[25px] text-[14px] ${
+                        el?.status?.toLowerCase() === "approved"
+                          ? "bg-[#D5FAF2] text-[#014F45]"
+                          : "bg-[#FEE2E2] text-[#991B1B]"
+                      }`}
+                    >
+                      {el?.status}
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-):tableFor === "loans" ? (
+              </td>
+
+              {/* Actions */}
+              <td className="px-6 text-center">
+                <div
+                  className="relative inline-block"
+                  ref={openMenu === el?.uuid ? menuRef : null}
+                >
+                  <button
+                    onClick={() =>
+                      setOpenMenu(openMenu === el?.uuid ? null : el?.uuid)
+                    }
+                    className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-gray-100"
+                  >
+                    <DotsThreeOutlineVertical size={16} />
+                  </button>
+
+                  {openMenu === el?.uuid && (
+                    <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border z-50">
+                      <button
+                        onClick={() => {
+                          handleEdit(el?.uuid, "Reimbursements", "reimbursement");
+                          setOpenMenu(null);
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleDelete(
+                            el?.uuid,
+                            "Reimbursements",
+                            "reimbursement",
+                            "delete"
+                          );
+                          setOpenMenu(null);
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+) : 
+tableFor === "loans" ? (
   <div className="w-full h-full overflow-visible">
     <table className="w-full table-auto">
       <thead className="sticky top-0 z-10" style={{ background: '#1C1C1C', height: '78px' }}>
@@ -1349,9 +1316,9 @@ function TableReusable({
             <th
               key={idx}
               scope="col"
-              className={`text-xs font-medium uppercase tracking-wider ${
+              className={`px-6 text-xs font-medium uppercase tracking-wider ${
                 idx === 3 ? 'text-center' : idx >= 4 ? 'text-right' : 'text-left'
-              } ${idx === 0 ? 'pl-10' : ''} ${idx === dataHeaders.length - 1 ? 'pr-10' : ''}`}
+              }`}
               style={{
                 color: '#ADADAD',
                 fontSize: '14px',
@@ -1362,7 +1329,7 @@ function TableReusable({
               {el}
             </th>
           ))}
-          <th className="w-16"></th>
+          <th className="w-16 px-6"></th>
         </tr>
       </thead>
       <tbody className="bg-white">
@@ -1377,7 +1344,7 @@ function TableReusable({
             onClick={() => handleView?.(el?.uuid, "Loans", "loan")}
           >
             {/* Employee Name */}
-            <td className="pl-10 whitespace-nowrap text-left" style={{ fontFamily: 'Inter' }}>
+            <td className="px-6 whitespace-nowrap text-left" style={{ fontFamily: 'Inter' }}>
               <div className="font-normal text-base" style={{ color: '#1C1C1C' }}>
                 {el?.Employee?.firstName} {el?.Employee?.middleName} {el?.Employee?.lastName}
               </div>
@@ -1387,17 +1354,17 @@ function TableReusable({
             </td>
 
             {/* Loan Number */}
-            <td className="whitespace-nowrap text-left text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
+            <td className="px-6 whitespace-nowrap text-left text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
               {el?.loanNumber}
             </td>
 
             {/* Loan Name */}
-            <td className="whitespace-nowrap text-left text-base capitalize" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
+            <td className="px-6 whitespace-nowrap text-left text-base capitalize" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
               {el?.LoanName?.name || el?.loanType}
             </td>
 
             {/* Status */}
-            <td className="whitespace-nowrap text-center">
+            <td className="px-6 whitespace-nowrap text-center">
               <span
                 className="inline-flex items-center justify-center rounded-full"
                 style={{
@@ -1414,32 +1381,32 @@ function TableReusable({
             </td>
 
             {/* Loan Amount */}
-            <td className="whitespace-nowrap text-right text-base" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
+            <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
               ${el?.loanAmount?.toLocaleString("en-US") || el?.totalAmount?.toLocaleString("en-US")}
             </td>
 
             {/* Amount Repaid */}
-            <td className="whitespace-nowrap text-right text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
+            <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
               ${el?.amountRepaid?.toLocaleString("en-US")}.0
             </td>
 
             {/* Remaining Amount */}
-            <td className="pr-20  whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
+            <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
               ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") || 
                 el?.remainingAmount?.toLocaleString("en-US")}
             </td>
 
             {/* Actions Menu */}
-            <td className="whitespace-nowrap text-right " >
+            <td className="px-6 whitespace-nowrap text-center">
               <div className="relative inline-block" ref={openMenu === el?.uuid ? menuRef : null}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenMenu(openMenu === el?.uuid ? null : el?.uuid);
                   }}
-                  className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors mx-auto"
+                  className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
                 >
-                  <svg width="50" height="20" viewBox="0 0 20 20" fill="none">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <circle cx="10" cy="4" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
                     <circle cx="10" cy="10" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
                     <circle cx="10" cy="16" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>

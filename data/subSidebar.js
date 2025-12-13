@@ -5,6 +5,10 @@ export const SideBarApprovals = [
     { title: "Leave", to: "/leave-approval" },
     { title: "Attendance", to: "/regularization-attendance" },
 ];
+export const SideBarBenefits = [
+    { title: "Loans", to: "/loan" },
+    { title: "Advance Salary", to: "/loan/advance-salary" },
+];
 
 export const SideBarSettings = [
     { title: "Organisation"},
