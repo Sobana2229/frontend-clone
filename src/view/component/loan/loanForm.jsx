@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import HeaderReusable from "../setting/headerReusable";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import Modal from "react-modal";
+import dayjs from "dayjs";
+import { CalendarDots } from "@phosphor-icons/react";
+
+// Import your components
 import CustomOption from "../customOption";
 import FormModal from "../formModal";
 import loanStoreManagements from "../../../store/tdPayroll/loan";
 import employeeStoreManagements from "../../../store/tdPayroll/employee";
 import ReuseableInput from "../reuseableInput";
 import ButtonReusable from "../buttonReusable";
-import dayjs from "dayjs";
-import { CalendarDots } from "@phosphor-icons/react";
-import { employeeLoanEarning } from "../../../../data/dummy";
 import { CustomToast } from "../customToast";
+import CustomDatePicker from "../CustomDatePicker"; // Import the new component
 
 function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, isUpdate, setShowDetail}) {
     const { getLoan, loanNameOptions, createLoans, updateLoans, loading } = loanStoreManagements();
@@ -22,7 +23,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
         loanNameUuid: "",
         employeeUuid: "", 
         loanAmount: "",
-        isSalaryAdvance: isAdvance, // Set dari prop
+        isSalaryAdvance: isAdvance,
         disbursementDate: "",
         reason: "",
         exemptFromPerquisite: false,
@@ -33,7 +34,6 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
     const [modalLoans, setModalLoans] = useState(false);
     const [isLoanAdvance, setIsLoanAdvance] = useState(isAdvance);
 
-    // **FIX: Populate form data when in update mode**
     useEffect(() => {
         if (isUpdate && data) {
             setFormData({
@@ -41,20 +41,18 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                 employeeUuid: data.employeeUuid || "", 
                 loanAmount: data.loanAmount || "",
                 isSalaryAdvance: data.isSalaryAdvance || isAdvance,
-                disbursementDate: data.disbursementDate ? dayjs(data.disbursementDate).format('YYYY-MM-DD') : "",
+                disbursementDate: data.disbursementDate ? new Date(data.disbursementDate) : null,
                 reason: data.reason || "",
                 exemptFromPerquisite: data.exemptFromPerquisite || false,
                 perquisiteRate: data.perquisiteRate || null,
-                deductionStartDate: data.deductionStartDate ? dayjs(data.deductionStartDate).format('YYYY-MM-DD') : "",
+                deductionStartDate: data.deductionStartDate ? new Date(data.deductionStartDate) : null,
                 instalmentAmount: data.instalmentAmount || ""
             });
             
-            // Set isLoanAdvance state berdasarkan data
             setIsLoanAdvance(data.isSalaryAdvance || isAdvance);
         }
     }, [isUpdate, data, isAdvance]);
 
-    // Update form data ketika isAdvance prop berubah (hanya jika bukan update mode)
     useEffect(() => {
         if (!isUpdate) {
             setIsLoanAdvance(isAdvance);
@@ -81,10 +79,8 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
     }, []);
 
     useEffect(() => {
-        // Skip auto-detection jika dalam mode update
         if (isUpdate) return;
         
-        // Cek jika loan name yang dipilih adalah Salary Advance
         const findLoan = loanNameOptions.find(loan => loan.value == formData?.loanNameUuid);
         if(findLoan?.label == 'Salary Advance'){
             setIsLoanAdvance(true);
@@ -93,7 +89,6 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                 isSalaryAdvance: true
             }));
         } else if (!isAdvance) {
-            // Hanya reset jika bukan dari prop isAdvance
             setIsLoanAdvance(false);
             setFormData(prev => ({
                 ...prev,
@@ -136,10 +131,11 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
         }));
     };
 
-    // **FIX: Update handleSubmit untuk support update mode**
     const handleSubmit = async () => {
         const payload = {
             ...formData,
+            disbursementDate: formData.disbursementDate ? dayjs(formData.disbursementDate).format('YYYY-MM-DD') : "",
+            deductionStartDate: formData.deductionStartDate ? dayjs(formData.deductionStartDate).format('YYYY-MM-DD') : "",
             isSalaryAdvance: isAdvance || isLoanAdvance,
             paidOffInstalment: formData.loanAmount && formData.instalmentAmount && parseFloat(formData.instalmentAmount) > 0 ? 
                                 Math.ceil(parseFloat(formData.loanAmount) / parseFloat(formData.instalmentAmount)) : 1
@@ -149,10 +145,8 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
         let response;
 
         if (isUpdate && data?.uuid) {
-            // Update existing loan
             response = await updateLoans(payload, access_token, "loans", data.uuid);
         } else {
-            // Create new loan
             response = await createLoans(payload, access_token, "loans");
         }
 
@@ -193,19 +187,18 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
             loanNameUuid: "",
             employeeUuid: "", 
             loanAmount: "",
-            isSalaryAdvance: isAdvance, // Reset to prop value
-            disbursementDate: "",
+            isSalaryAdvance: isAdvance,
+            disbursementDate: null,
             reason: "",
             exemptFromPerquisite: false,
             perquisiteRate: null,
-            deductionStartDate: "",
+            deductionStartDate: null,
             instalmentAmount: ""
         });
         setShowForm();
         setSelectedLoanData(null);
     };
 
-    // **FIX: Helper functions untuk mendapatkan selected values**
     const getSelectedLoanName = () => {
         if (!formData.loanNameUuid) return null;
         return loanNameOptions.find(option => option.value === formData.loanNameUuid);
@@ -216,32 +209,26 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
         return dataEmployeesOptions?.find(option => option.value === formData.employeeUuid);
     };
 
-    // Dynamic labels based on isAdvance or isLoanAdvance (computed inside return to access state)
     const currentIsAdvance = isAdvance || isLoanAdvance;
     const loanLabel = currentIsAdvance ? "Advance Salary" : "Loan";
     const loanLabelLowercase = currentIsAdvance ? "advance salary" : "loan";
 
     return (
-        <div className=" w-screen h-full overflow-y-auto flex-col flex items-start justify-start bg-white rounded-xl">
-            {/* <HeaderReusable 
-                title={isUpdate ? `Edit ${loanLabel}` : `Create ${loanLabel}`} 
-                handleCancel={handleCancel} 
-            /> */}
+        <div className="w-screen h-full overflow-y-auto flex-col flex items-start justify-start bg-white rounded-xl">
             
             <div className="w-[100%] p-6 items-start justify-start bg-white">                
                  <div className="max-w-screen-xl mx-auto px-8 py-8">
                     <div className="w-full space-y-6 pr-50">
                         <div className="grid grid-cols-1 gap-6">
-                             {/* Loan Name */}
                              <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
                                     {loanLabel} Name
                                 </label>
                                 <Select
                                     options={loanNameOptions}
-                                    value={getSelectedLoanName()} // **FIX: Set selected value**
+                                    value={getSelectedLoanName()}
                                     onChange={handleLoanSelect}
-                                    className='w-full bg-transparent focus:ring-0 outline-none text-sm'
+                                    className='w-[60%] bg-transparent focus:ring-0 outline-none text-sm'
                                     classNames={{
                                         control: () =>
                                         "!rounded-md !bg-white !h-full",
@@ -287,16 +274,15 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                         </div>
 
                         <div className="grid grid-cols-1 gap-6">
-                            {/* Employee Name */}
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
                                     Employee Name<span className="text-red-500">*</span>
                                 </label>
                                 <Select
                                     options={dataEmployeesOptions}
-                                    value={getSelectedEmployee()} // **FIX: Set selected value**
+                                    value={getSelectedEmployee()}
                                     onChange={handleEmployeeSelect}
-                                    className='w-full bg-transparent focus:ring-0 outline-none text-sm'
+                                    className='w-[60%] bg-transparent focus:ring-0 outline-none text-sm'
                                     classNames={{
                                         control: () =>
                                         "!rounded-md !bg-white !h-full",
@@ -331,13 +317,13 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                                 />
                             </div>
 
-                            {/* Loan Amount dengan dynamic label */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">
+                                <label className="block text-xs font-medium text-gray-700">
                                     {loanLabel} Amount<span className="text-red-500">*</span>
                                     <span className="ml-1 text-gray-400 cursor-help" title="Enter loan amount in rupiah">ⓘ</span>
                                 </label>
-                                <div className="relative">
+                               <div className="relative w-[60%]">
+
                                     <ReuseableInput
                                         id="loanAmount"
                                         name="loanAmount"
@@ -354,28 +340,27 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                             </div>
                         </div>
 
-                        {/* Disbursement Date */}
+                        {/* UPDATED: Disbursement Date with Custom DatePicker */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700">
+                            <label className="block text-xs font-medium text-gray-700">
                                 Disbursement Date<span className="text-red-500">*</span>
                             </label>
-                            <ReuseableInput
-                                id="disbursementDate"
-                                name="disbursementDate"
-                                value={formData.disbursementDate}
-                                onChange={(e) => handleInputChange('disbursementDate', e.target.value)}
-                                isFocusRing={false}
+                            <div className="w-[60%]">
+                            <CustomDatePicker
+                                selected={formData.disbursementDate}
+                                onChange={(date) => handleInputChange('disbursementDate', date)}
+                                placeholder="Select Disbursement Date"
                                 isBorderLeft={true}
-                                type="date"
                                 borderColor="red-td-500"
                             />
+                            </div>
                         </div>
 
-                        {/* Reason */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">
                                 Reason<span className="text-red-500">*</span>
                             </label>
+                             <div className="w-[60%]">
                             <ReuseableInput
                                 as="textarea"
                                 id="reason"
@@ -387,36 +372,37 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                                 isBorderLeft={true}
                                 borderColor="red-td-500"
                             />
+                            </div>
                         </div>
 
                         <div className="space-y-4 pt-6 border-t">
                             <h3 className="text-2xl font-normal text-gray-900 mb-8">Repayments</h3>
                             <div className="grid grid-cols-1 gap-6">
-                                {/* Deduction Start Date */}
+                                {/* UPDATED: Deduction Start Date with Custom DatePicker */}
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-gray-700">
                                         Deduction Start Date
                                         <span className="text-red-500">*</span>
                                         <span className="ml-1 text-gray-400 cursor-help" title="Enter EMI deduction start date">ⓘ</span>
                                     </label>
-                                    <ReuseableInput
-                                        id="deductionStartDate"
-                                        name="deductionStartDate"
-                                        value={formData.deductionStartDate}
-                                        onChange={(e) => handleInputChange('deductionStartDate', e.target.value)}
-                                        isFocusRing={false}
+                                     <div className="w-[60%]">
+                                    <CustomDatePicker
+                                        selected={formData.deductionStartDate}
+                                        onChange={(date) => handleInputChange('deductionStartDate', date)}
+                                        placeholder="Select Deduction Start Date"
                                         isBorderLeft={true}
-                                        type="date"
                                         borderColor="red-td-500"
+                                        minDate={formData.disbursementDate || new Date()}
                                     />
+                                    </div>
                                 </div>
 
-                                {/* Instalment Amount */}
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-gray-700">
                                         Instalment Amount<span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
+                                         <div className="w-[60%]">
                                         <ReuseableInput
                                             id="instalmentAmount"
                                             name="instalmentAmount"
@@ -429,13 +415,13 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                                             type="number"
                                             borderColor="red-td-500"
                                         />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    {/* Loan Information */}
                     {formData?.loanAmount && formData?.instalmentAmount && (
                         <div className="w-[90%] bg-blue-td-50 rounded-lg p-4 mt-5">
                             <div className="flex items-start">
@@ -460,9 +446,8 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                     )}
                 </div>
                 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between pt-6 border-t">
-                    <div className="flex space-x-4">
+                <div className="max-w-screen-xl mx-auto px-8">
+                    <div className="flex items-center justify-start pt-10 border-t space-x-4">
                         <ButtonReusable 
                             title={isUpdate ? "Update" : "Save"} 
                             action={handleSubmit} 

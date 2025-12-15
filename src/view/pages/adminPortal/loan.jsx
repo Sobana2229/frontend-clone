@@ -7,12 +7,16 @@ import HeaderReusable from '../../component/setting/headerReusable';
 import LoanForm from '../../component/loan/loanForm';
 import authStoreManagements from '../../../store/tdPayroll/auth';
 import { checkPermission } from '../../../../helper/globalHelper';
+import BottomDownSVG from '../../../assets/bottom-down.svg';
+import PaginationPages from '../../component/paginations';
 
 function LoanPages() {
   const location = useLocation();
   const { getLoan, loanCard, loanAdvanceSalary } = loanStoreManagements();
   const { user } = authStoreManagements();
-  
+  const [cardCurrentPage, setCardCurrentPage] = useState(1);
+const cardsPerPage = 10; // number of cards per page
+
   // Determine active section from URL path
   const getInitialSection = () => {
     const path = location.pathname;
@@ -26,7 +30,13 @@ function LoanPages() {
     // Default to loans for /loan path
     return 'loans';
   };
-  
+  const getPaginatedCards = () => {
+  const cards = getFilteredSummaryCards(); // your current filtered cards
+  const startIndex = (cardCurrentPage - 1) * cardsPerPage;
+  const endIndex = startIndex + cardsPerPage;
+  return cards.slice(startIndex, endIndex);
+};
+
   const [activeSection, setActiveSection] = useState(getInitialSection());
   const [selectedLoanData, setSelectedLoanData] = useState(null);
   const [showFormLoans, setShowFormLoans] = useState(false);
@@ -170,7 +180,7 @@ function LoanPages() {
  const renderSummaryCards = (cards) => {
   if (!cards.length) {
     return (
-      <div className="text-center text-gray-500 py-8">
+      <div className="text-center text-white py-8">
         No {activeSection === 'advance-salary' ? 'advance salary' : 'loan'} data found
       </div>
     );
@@ -179,14 +189,15 @@ function LoanPages() {
   return cards.map((card) => (
     <div
       key={card.id}
-      className="relative bg-white cursor-pointer transition-all duration-300 hover:shadow-2xl"
-      style={{
-        borderRadius: '22.47px',
-        padding: '14.98px',
-        boxShadow: '0px 53.03px 21.37px rgba(194, 194, 194, 0.01), 0px 29.86px 18.02px rgba(194, 194, 194, 0.05), 0px 13.39px 13.39px rgba(194, 194, 194, 0.09), 0px 3.35px 7.21px rgba(194, 194, 194, 0.1)',
-        width: '250px',
-        height: '200px'
-      }}
+      className="relative bg-white cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden"
+    style={{
+  borderRadius: '22.47px',
+  padding: '14.98px',
+  boxShadow: '0px 40px 40px rgba(0, 0, 0, 0.09)',
+  width: '250px',
+  height: '200px'
+}}
+
       onClick={() => handleCardClick(card)}
     >
       {/* Top Left Screw */}
@@ -211,7 +222,7 @@ function LoanPages() {
         
         {/* Arrow */}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <ArrowUpRight size={24} strokeWidth={3} color="#1C1C1C" />
+          <ArrowUpRight size={34} strokeWidth={3} color="#1C1C1C" />
         </div>
 
         {/* Title */}
@@ -220,20 +231,16 @@ function LoanPages() {
         </h3>
 
         {/* Avatars */}
-        <div className="flex -space-x-2">
-          {[0, 1, 2].map((index) => (
-            index < Math.min(card.employeeCount, 3) && (
-              <div key={index} style={{ width: '24px', height: '24px', borderRadius: '50%', background: index === 1 ? '#CFE5FF' : '#3B82F6', border: '2px solid #FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: '#0066FE' }}>
-                {index === 1 ? 'SL' : ''}
-              </div>
-            )
-          ))}
-          {card.employeeCount > 3 && (
-            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(28, 28, 28, 0.1)', border: '2px solid #FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600, color: '#0066FE' }}>
-              +{card.employeeCount - 3}
-            </div>
-          )}
-        </div>
+      {/* Bottom-down SVG inside the card */}
+<div className=" left-4 bottom-4">
+  <img 
+    src={BottomDownSVG} 
+    alt="Bottom Down Arrow" 
+    className="w-18 h-18"  // increase size
+  />
+</div>
+
+ 
       </div>
     </div>
   ));
@@ -258,7 +265,7 @@ function LoanPages() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen w-screen flex flex-col bg-white">
       {/* Header - always show except in detail view */}
       {!showDetail && headerProps && (
         <HeaderReusable {...headerProps} />
@@ -296,26 +303,39 @@ function LoanPages() {
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading {activeSection === 'loans' ? 'loans' : 'advance salary'} data...</p>
+                  <p className="text-white">Loading {activeSection === 'loans' ? 'loans' : 'advance salary'} data...</p>
                 </div>
               </div>
             ) : (
               <div>
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  <h2 className="text-2xl font-bold text-white mb-2">
                     {activeSection === 'loans' ? 'Loan Types' : 'Advance Salary Types'}
                   </h2>
                   
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                   {renderSummaryCards(getFilteredSummaryCards())}
                 </div>
+       {/* Pagination for cards */}
+    
               </div>
             )}
+            
           </div>
+          
         </div>
+        
       )}
+       <div className="flex justify-end mt-6 bottom-2" >
+        <PaginationPages 
+          totalPages={Math.ceil(getFilteredSummaryCards().length / cardsPerPage)}
+          currentPage={cardCurrentPage}
+          setCurrentPage={setCardCurrentPage}
+        />
+      </div>
     </div>
+    
   );
 }
 

@@ -47,7 +47,7 @@ function TablePagination({ totalRecords = 100, rowsPerPageOptions = [10, 20, 50,
   };
 
   return (
-    <div className="flex items-center justify-between px-10 py-5 bg-white w-full" style={{ height: '86px' }}>
+    <div className="flex items-center justify-between px-10 py-1 bg-white w-full" style={{ height: '66px' }}>
       {/* Left side: Rows per page */}
       <div className="flex items-center gap-5">
         <span className="text-sm leading-[22px] font-normal" style={{ 

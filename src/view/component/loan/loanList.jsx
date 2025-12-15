@@ -120,7 +120,7 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
   addData={addData}    // <-- pass the function from LoanPages
 />
 
-            <div className="w-full px-1 py-2">
+            <div className="w-full px-1 py-2 ">
                <div className={`w-full h-screen flex flex-col items-start justify-start relative bg-white`}>
                 <TableReusable 
                   dataHeaders={isAdvance ? advanceSalaryHeaders : loanHeaders} 

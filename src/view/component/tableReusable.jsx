@@ -1,6 +1,6 @@
 function TableReusable({data, tableFor, isTableFull=false}) {
     return (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-hidden">
             <table className={`table-auto ${isTableFull ? "w-full": "min-w-max divide-y"} divide-gray-200`}>
                 {tableFor === "attandanceHour" && (
                     <>

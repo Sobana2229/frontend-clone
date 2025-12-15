@@ -1152,29 +1152,32 @@ function TableReusable({
   <div className="w-full h-full">
     {/* SAME OUTER STRUCTURE AS LOANS */}
     <div className="w-full overflow-x-auto">
-      <table className="w-full table-auto bg-white">
-        <thead
-          className="sticky top-0 z-10"
-          style={{ background: "#1C1C1C", height: "78px" }}
+    <table className="w-full table-auto border-collapse">
+  <thead
+    className="sticky top-0 z-10"
+    style={{ background: '#1C1C1C', height: '78px' }}
+  >
+    <tr>
+      {dataHeaders?.map((el, idx) => (
+        <th
+          key={idx}
+          className={`px-6 ${
+            idx === 3 ? 'text-center' : idx >= 4 ? 'text-right' : 'text-left'
+          }`}
+          style={{
+            color: '#ADADAD',
+            fontFamily: 'Inter',
+            ...(idx === 0 && { borderTopLeftRadius: '12px' }),
+            ...(idx === dataHeaders.length - 1 && { borderTopRightRadius: '12px' })
+          }}
         >
-          <tr>
-            {dataHeaders?.map((el, idx) => (
-              <th
-                key={idx}
-                scope="col"
-                className="px-6 text-left text-[14px] font-medium uppercase"
-                style={{
-                  color: "#ADADAD",
-                  lineHeight: "20px",
-                  fontFamily: "Inter",
-                }}
-              >
-                {el}
-              </th>
-            ))}
-            <th className="w-16 px-6"></th>
-          </tr>
-        </thead>
+          {el}
+        </th>
+      ))}
+      <th className="w-20 px-2"></th>
+    </tr>
+  </thead>
+
 
         <tbody className="bg-white">
           {dataTable?.map((el, idx) => (
@@ -1308,9 +1311,19 @@ function TableReusable({
   </div>
 ) : 
 tableFor === "loans" ? (
-  <div className="w-full h-full">
-    <table className="w-full table-auto">
-      <thead className="sticky top-0 z-10" style={{ background: '#1C1C1C', height: '78px' }}>
+  
+  <div className="w-full h-[80%] px-7 overflow-auto custom-scrollbar">
+    <table className="w-full table-auto border-collapse">
+
+      <thead
+        className="sticky top-0 z-10 overflow-hidden"
+        style={{
+          background: '#1C1C1C',
+          height: '78px',
+          borderTopLeftRadius: '12px',
+          borderTopRightRadius: '12px'
+        }}
+      >
         <tr>
           {dataHeaders?.map((el, idx) => (
             <th
@@ -1323,21 +1336,27 @@ tableFor === "loans" ? (
                 color: '#ADADAD',
                 fontSize: '14px',
                 lineHeight: '20px',
-                fontFamily: 'Inter'
+                fontFamily: 'Inter',
+                ...(idx === 0 && { borderTopLeftRadius: '12px' }),
+                ...(idx === dataHeaders.length - 1 && { borderTopRightRadius: '12px' })
               }}
             >
               {el}
             </th>
           ))}
-          <th className="w-16 px-6"></th>
+          <th
+            className="w-16 px-6"
+            style={{ borderTopRightRadius: '12px' }}
+          />
         </tr>
       </thead>
+
       <tbody className="bg-white">
         {dataTable?.map((el, idx) => (
           <tr
             key={idx}
             className="hover:bg-gray-50 cursor-pointer transition-colors border-b border-dashed"
-            style={{ 
+            style={{
               height: '80px',
               borderColor: 'rgba(28, 28, 28, 0.1)'
             }}
@@ -1392,7 +1411,7 @@ tableFor === "loans" ? (
 
             {/* Remaining Amount */}
             <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
-              ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") || 
+              ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") ||
                 el?.remainingAmount?.toLocaleString("en-US")}
             </td>
 
@@ -1407,57 +1426,90 @@ tableFor === "loans" ? (
                   className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
                 >
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <circle cx="10" cy="4" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
-                    <circle cx="10" cy="10" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
-                    <circle cx="10" cy="16" r="1.8" fill="rgba(28, 28, 28, 0.6)"/>
+                    <circle cx="10" cy="4" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
+                    <circle cx="10" cy="10" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
+                    <circle cx="10" cy="16" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
                   </svg>
                 </button>
 
-                {openMenu === el?.uuid && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border py-1 z-50" style={{ borderColor: 'rgba(162, 161, 168, 0.2)' }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleView?.(el?.uuid, "Loans", "loan");
-                        setOpenMenu(null);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
-                      style={{ color: '#1C1C1C' }}
-                    >
-                      View Details
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit?.(el?.uuid);
-                        setOpenMenu(null);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
-                      style={{ color: '#1C1C1C' }}
-                    >
-                      Edit Loan
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete?.(el?.uuid);
-                        setOpenMenu(null);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 flex items-center gap-2 border-t"
-                      style={{ color: '#EF4444', borderColor: 'rgba(162, 161, 168, 0.1)' }}
-                    >
-                      Delete Loan
-                    </button>
-                  </div>
-                )}
-              </div>
+                
+                   {openMenu === el?.uuid && (
+                  <div
+  className="absolute right-0 top-full mt-1 w-[200px] bg-white rounded-[7px] z-50"
+  style={{
+    boxShadow: '0px 16px 32px -4px rgba(12,12,13,0.1)'
+  }}
+>
+  {/* EDIT */}
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      handleView?.(el?.uuid, "Loans", "loan");
+      setOpenMenu(null);
+    }}
+    className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+  >
+    {/* LEFT BAR ON HOVER ONLY */}
+    <span
+      className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+      style={{
+        background: '#1C1C1C',
+        borderRadius: '5px 0 0 5px'
+      }}
+    />
+    Edit
+  </button>
+
+  {/* RECORD PAYMENT */}
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      handleEdit?.(el?.uuid);
+      setOpenMenu(null);
+    }}
+    className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+  >
+    <span
+      className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+      style={{
+        background: '#1C1C1C',
+        borderRadius: '5px 0 0 5px'
+      }}
+    />
+    Record Payment
+  </button>
+
+  {/* PAUSE INSTALLMENT */}
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      handleDelete?.(el?.uuid);
+      setOpenMenu(null);
+    }}
+    className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+  >
+    <span
+      className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+      style={{
+        background: '#1C1C1C',
+        borderRadius: '5px 0 0 5px'
+      }}
+    />
+    Pause Installment Deduction
+  </button>
+</div>
+                   )
+}
+</div>
             </td>
           </tr>
         ))}
       </tbody>
     </table>
   </div>
-): tableFor === "loanDetails" ? (
+) 
+: tableFor === "loanDetails" ? (
+  
   <div className="relative max-h-[420px] overflow-y-auto custom-scroll">
   <table className="w-full border-separate border-spacing-y-2">
 
