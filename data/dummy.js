@@ -681,6 +681,7 @@ export const loanEmployeePortalHeaders = [
     "Loan Amount",
     "Amount Repaid",
     "Remaining Amount",
+    
 ]
 
 export const advanceSalaryEmployeePortalHeaders = [

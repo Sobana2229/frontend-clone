@@ -9,6 +9,7 @@ import employeeStoreManagements from "../../store/tdPayroll/employee";
 import dayjs from "dayjs";
 import PeriodPicker from "./employeePortal/PeriodPicker";
 import LoanList from "./loan/loanList";
+import { useMemo } from "react";
 import { 
   Users2, 
   FileText, 
@@ -30,6 +31,7 @@ function FilterPage({
     filterFor,
     addData,
     addLoans,
+     dataTable = [],
     setFilter = undefined,
     filter = {},
     onlyAll = false,
@@ -199,7 +201,18 @@ function FilterPage({
     ];
 
     const loanStatusOptions = ["All", "Active", "Completed", "Pending", "Rejected"];
+const filteredLoans = dataTable?.filter((loan) => {
+    // 1️⃣ Employee filter
+    if (filter.loanEmployeeUuid) {
+        if (loan?.Employee?.uuid !== filter.loanEmployeeUuid) return false;
+    }
 
+    // 2️⃣ Loan Name filter
+    if (filter.loanName) {
+        const loanName = loan?.LoanName?.name || loan?.loanType;
+        if (loanName !== filter.loanName) return false;
+    }
+});
     // ============================================================
     // RENDER FOR CLAIMS SECTION - SIMPLE COMPACT DESIGN
     // ============================================================
@@ -341,6 +354,10 @@ function FilterPage({
     );
 }
 
+// ============================================
+// COMPLETE FilterPage.jsx - LOANS SECTION ONLY
+// ============================================
+
 if (filterFor === "Loans") {
     const selectedLoanEmployee = getSelectedValue(dataEmployeesOptions, "loanEmployeeUuid");
     const [employeeSearchTerm, setEmployeeSearchTerm] = useState("");
@@ -351,14 +368,24 @@ if (filterFor === "Loans") {
         employee.label.toLowerCase().includes(employeeSearchTerm.toLowerCase())
     ) || [];
 
+    // Get unique loan names from dataTable prop
+    const loanNameOptions = useMemo(() => {
+        if (!dataTable || !Array.isArray(dataTable)) return [];
+        const uniqueNames = [...new Set(
+            dataTable.map(loan => loan?.LoanName?.name || loan?.loanType || loan?.loanName)
+                .filter(Boolean)
+        )];
+        return uniqueNames;
+    }, [dataTable]);
+
     // Filter loan names based on search
     const filteredLoanNames = loanNameOptions.filter(name =>
         name.toLowerCase().includes(loanNameSearchTerm.toLowerCase())
     );
 
     return (
-        <div className="w-full">
-            <div className="w-[97%] mx-auto px-4 pt-8 pb-5 bg-white border-y border-gray-200">
+        <div className="w-full pt-12">
+            <div className="w-[97%] mx-auto px-4 pt-10 pb-5 bg-white border-y border-gray-200">
                 <div className="w-full h-[60px] border border-neutral-200 rounded-md bg-white flex items-center px-5 relative">
                     <span className="text-[14px] font-medium text-neutral-500">
                         FILTER BY :
@@ -375,7 +402,6 @@ if (filterFor === "Loans") {
                         >
                             <Users2 size={18} className="text-neutral-400" />
                             
-                            {/* Show selected chip or placeholder */}
                             {filter.loanEmployeeUuid ? (
                                 <div className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1 rounded-full">
                                     <Users2 size={16} className="text-white" />
@@ -413,7 +439,6 @@ if (filterFor === "Loans") {
 
                         {isEmployeeOpen && (
                             <div className="absolute top-full mt-2 left-0 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                                {/* Search Input */}
                                 <div className="p-2 border-b border-gray-200">
                                     <div className="relative">
                                         <svg 
@@ -439,7 +464,6 @@ if (filterFor === "Loans") {
                                     </div>
                                 </div>
 
-                                {/* Options List */}
                                 <div className="max-h-52 overflow-y-auto">
                                     {filteredEmployees.length > 0 ? (
                                         filteredEmployees.map((employee) => (
@@ -484,7 +508,6 @@ if (filterFor === "Loans") {
                         >
                             <FileText size={18} className="text-neutral-400" />
                             
-                            {/* Show selected chip or placeholder */}
                             {filter.loanName ? (
                                 <div className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1 rounded-full">
                                     <span className="text-[13px] font-medium">
@@ -517,7 +540,6 @@ if (filterFor === "Loans") {
 
                         {isLoanNameOpen && (
                             <div className="absolute top-full mt-2 left-0 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                                {/* Search Input */}
                                 <div className="p-3 border-b border-gray-200">
                                     <div className="relative">
                                         <svg 
@@ -534,7 +556,7 @@ if (filterFor === "Loans") {
                                         </svg>
                                         <input
                                             type="text"
-                                           
+                                            placeholder="Search loan type..."
                                             value={loanNameSearchTerm}
                                             onChange={(e) => setLoanNameSearchTerm(e.target.value)}
                                             className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
@@ -543,7 +565,6 @@ if (filterFor === "Loans") {
                                     </div>
                                 </div>
 
-                                {/* Options List */}
                                 <div className="max-h-60 overflow-y-auto">
                                     <button
                                         onClick={() => {
@@ -602,7 +623,10 @@ if (filterFor === "Loans") {
                                 {loanStatusOptions.map((status) => (
                                     <button
                                         key={status}
-                                        onClick={() => handleLoanStatusSelect(status)}
+                                        onClick={() => {
+                                            handleLoanStatusSelect(status);
+                                            setIsLoanStatusOpen(false);
+                                        }}
                                         className="w-full px-4 py-2 text-sm text-left hover:bg-gray-50 capitalize"
                                     >
                                         {status}
@@ -683,8 +707,7 @@ if (filterFor === "Loans") {
             </div>
         </div>
     );
-}
-    // ============================================================
+}// ============================================================
     // DEFAULT RENDER FOR OTHER SECTIONS (employee, leave-approval, etc.)
     // ============================================================
        return (

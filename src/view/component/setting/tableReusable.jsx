@@ -1312,7 +1312,8 @@ function TableReusable({
 ) : 
 tableFor === "loans" ? (
   
-  <div className="w-full h-[80%] px-7 overflow-auto custom-scrollbar">
+  <div className="w-full h-[80%] pl-7 pr-0 overflow-auto custom-scrollbar">
+
     <table className="w-full table-auto border-collapse">
 
       <thead
@@ -1344,10 +1345,7 @@ tableFor === "loans" ? (
               {el}
             </th>
           ))}
-          <th
-            className="w-16 px-6"
-            style={{ borderTopRightRadius: '12px' }}
-          />
+         
         </tr>
       </thead>
 
@@ -1366,9 +1364,6 @@ tableFor === "loans" ? (
             <td className="px-6 whitespace-nowrap text-left" style={{ fontFamily: 'Inter' }}>
               <div className="font-normal text-base" style={{ color: '#1C1C1C' }}>
                 {el?.Employee?.firstName} {el?.Employee?.middleName} {el?.Employee?.lastName}
-              </div>
-              <div className="text-sm" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
-                ({el?.Employee?.employeeId || el?.employeeId})
               </div>
             </td>
 
@@ -1432,82 +1427,79 @@ tableFor === "loans" ? (
                   </svg>
                 </button>
 
-                
-                   {openMenu === el?.uuid && (
+                {openMenu === el?.uuid && (
                   <div
-  className="absolute right-0 top-full mt-1 w-[200px] bg-white rounded-[7px] z-50"
-  style={{
-    boxShadow: '0px 16px 32px -4px rgba(12,12,13,0.1)'
-  }}
->
-  {/* EDIT */}
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      handleView?.(el?.uuid, "Loans", "loan");
-      setOpenMenu(null);
-    }}
-    className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
-  >
-    {/* LEFT BAR ON HOVER ONLY */}
-    <span
-      className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
-      style={{
-        background: '#1C1C1C',
-        borderRadius: '5px 0 0 5px'
-      }}
-    />
-    Edit
-  </button>
+                    className="absolute right-0 top-full mt-1 w-[200px] bg-white rounded-[7px] z-50"
+                    style={{
+                      boxShadow: '0px 16px 32px -4px rgba(12,12,13,0.1)'
+                    }}
+                  >
+                    {/* EDIT */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleView?.(el?.uuid, "Loans", "loan");
+                        setOpenMenu(null);
+                      }}
+                      className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+                    >
+                      <span
+                        className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{
+                          background: '#1C1C1C',
+                          borderRadius: '5px 0 0 5px'
+                        }}
+                      />
+                      Edit
+                    </button>
 
-  {/* RECORD PAYMENT */}
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      handleEdit?.(el?.uuid);
-      setOpenMenu(null);
-    }}
-    className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
-  >
-    <span
-      className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
-      style={{
-        background: '#1C1C1C',
-        borderRadius: '5px 0 0 5px'
-      }}
-    />
-    Record Payment
-  </button>
+                    {/* RECORD PAYMENT */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit?.(el?.uuid);
+                        setOpenMenu(null);
+                      }}
+                      className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+                    >
+                      <span
+                        className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{
+                          background: '#1C1C1C',
+                          borderRadius: '5px 0 0 5px'
+                        }}
+                      />
+                      Record Payment
+                    </button>
 
-  {/* PAUSE INSTALLMENT */}
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      handleDelete?.(el?.uuid);
-      setOpenMenu(null);
-    }}
-    className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
-  >
-    <span
-      className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
-      style={{
-        background: '#1C1C1C',
-        borderRadius: '5px 0 0 5px'
-      }}
-    />
-    Pause Installment Deduction
-  </button>
-</div>
-                   )
-}
-</div>
+                    {/* PAUSE INSTALLMENT */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete?.(el?.uuid);
+                        setOpenMenu(null);
+                      }}
+                      className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+                    >
+                      <span
+                        className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{
+                          background: '#1C1C1C',
+                          borderRadius: '5px 0 0 5px'
+                        }}
+                      />
+                      Pause Installment Deduction
+                    </button>
+                  </div>
+                )}
+              </div>
             </td>
           </tr>
         ))}
       </tbody>
     </table>
   </div>
-) 
+)
 : tableFor === "loanDetails" ? (
   
   <div className="relative max-h-[420px] overflow-y-auto custom-scroll">

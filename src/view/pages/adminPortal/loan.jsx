@@ -14,9 +14,9 @@ function LoanPages() {
   const location = useLocation();
   const { getLoan, loanCard, loanAdvanceSalary } = loanStoreManagements();
   const { user } = authStoreManagements();
-  const [cardCurrentPage, setCardCurrentPage] = useState(1);
-const cardsPerPage = 10; // number of cards per page
-
+ // number of cards per page
+const [cardCurrentPage, setCardCurrentPage] = useState(1);
+const [cardsPerPage, setCardsPerPage] = useState(10); // Change this line - make it state
   // Determine active section from URL path
   const getInitialSection = () => {
     const path = location.pathname;
@@ -31,27 +31,26 @@ const cardsPerPage = 10; // number of cards per page
     return 'loans';
   };
   const getPaginatedCards = () => {
-  const cards = getFilteredSummaryCards(); // your current filtered cards
+  const cards = getFilteredSummaryCards();
   const startIndex = (cardCurrentPage - 1) * cardsPerPage;
   const endIndex = startIndex + cardsPerPage;
   return cards.slice(startIndex, endIndex);
 };
-
   const [activeSection, setActiveSection] = useState(getInitialSection());
   const [selectedLoanData, setSelectedLoanData] = useState(null);
   const [showFormLoans, setShowFormLoans] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
 
   // Update active section when URL changes
-  useEffect(() => {
-    const newSection = getInitialSection();
-    console.log('[LoanPages] URL changed, setting section to:', newSection);
-    setActiveSection(newSection);
-    // Reset states when navigating between sections
-    setSelectedLoanData(null);
-    setShowFormLoans(false);
-    setShowDetail(false);
-  }, [location.pathname]);
+useEffect(() => {
+  const newSection = getInitialSection();
+  setActiveSection(newSection);
+  setSelectedLoanData(null);
+  setShowFormLoans(false);
+  setShowDetail(false);
+  setCardCurrentPage(1);
+}, [location.pathname]);
+
 
   // Fetch loan data
   useEffect(() => {
@@ -95,6 +94,29 @@ const cardsPerPage = 10; // number of cards per page
     console.log('[LoanPages] Summary cards:', currentData.summaryCards);
     return currentData.summaryCards;
   };
+const getEmployeesForCard = (cardId) => {
+  const currentData = getCurrentData();
+  if (!currentData?.groupedData || !currentData.groupedData[cardId]) {
+    return [];
+  }
+  
+  // Extract unique employees from loans in this card type
+  const employees = [];
+  const seenIds = new Set();
+  
+  currentData.groupedData[cardId].loans?.forEach(loan => {
+    if (loan.Employee && !seenIds.has(loan.Employee.id)) {
+      employees.push({
+        id: loan.Employee.id,
+        firstName: loan.Employee.firstName,
+        lastName: loan.Employee.lastName
+      });
+      seenIds.add(loan.Employee.id);
+    }
+  });
+  
+  return employees;
+};
 
   const handleCardClick = (card) => {
     console.log('[LoanPages] Card clicked:', card.name);
@@ -187,36 +209,36 @@ const cardsPerPage = 10; // number of cards per page
   }
 
   return cards.map((card) => (
-    <div
-      key={card.id}
-      className="relative bg-white cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden"
-    style={{
-  borderRadius: '22.47px',
-  padding: '14.98px',
-  boxShadow: '0px 40px 40px rgba(0, 0, 0, 0.09)',
-  width: '250px',
-  height: '200px'
-}}
-
-      onClick={() => handleCardClick(card)}
-    >
+      
+      
+   <div
+        key={card.id}
+        className="relative bg-white cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden"
+        style={{
+          borderRadius: '22.47px',
+          paddingTop: '14.98px',
+          padding: '14.98px',
+          boxShadow: `
+            0px 3.35px 7.21px 0px rgba(194, 194, 194, 0.1),
+            0px 13.39px 13.39px 0px rgba(194, 194, 194, 0.09),
+            0px 29.86px 18.02px 0px rgba(194, 194, 194, 0.05),
+            0px 53.03px 21.37px 0px rgba(194, 194, 194, 0.01),
+            0px 82.89px 23.17px 0px rgba(194, 194, 194, 0)
+          `,
+          width: '250px',
+          height: '200px',
+          gap: '10px',
+          opacity: 1
+        }}
+        onClick={() => handleCardClick(card)}
+      >
       {/* Top Left Screw */}
-      <div className="absolute" style={{ width: '12.36px', height: '12.36px', left: '9.36px', top: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }}>
-        <div style={{ position: 'absolute', width: '5.41px', height: '5.41px', left: '1.93px', top: '1.16px', background: '#FFFFFF', filter: 'blur(1.54px)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', width: '5.62px', height: '5.62px', left: '3.38px', top: '3.37px', background: '#F3F4F6', boxShadow: 'inset 0px 0.51px 0.51px rgba(0, 0, 0, 0.6)', borderRadius: '50%' }} />
-      </div>
-
+     
       {/* Top Right Screw */}
-      <div className="absolute" style={{ width: '12.36px', height: '12.36px', right: '9.36px', top: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }}>
-        <div style={{ position: 'absolute', width: '5.41px', height: '5.41px', left: '1.93px', top: '1.16px', background: '#FFFFFF', filter: 'blur(1.54px)', borderRadius: '50%' }} />
-      </div>
+      
 
       {/* Bottom Left Screw */}
-      <div className="absolute" style={{ width: '12.36px', height: '12.36px', left: '9.36px', bottom: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }} />
-
-      {/* Bottom Right Screw */}
-      <div className="absolute" style={{ width: '12.36px', height: '12.36px', right: '9.36px', bottom: '9.36px', background: 'linear-gradient(173.29deg, rgba(255, 255, 255, 0.2) 14.51%, rgba(255, 255, 255, 0) 37.88%), #EDEDED', opacity: 0.4, boxShadow: 'inset 0px -0.26px 0.26px rgba(77, 77, 77, 0.4), inset 0px -1.03px 1.54px rgba(90, 90, 90, 0.25)', borderRadius: '19.47px' }} />
-
+      
       {/* Inner Container */}
       <div style={{ padding: '26.21px', width: '220.04px', height: '170.04px', background: 'rgba(28, 28, 28, 0.05)', border: '0.26px solid rgba(28, 28, 28, 0.05)', boxShadow: '0px 5.15px 10.3px rgba(189, 188, 188, 0.25), -1.03px 1.03px 2.57px rgba(224, 224, 224, 0.2)', backdropFilter: 'blur(5.47px)', borderRadius: '10.81px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
         
@@ -226,19 +248,54 @@ const cardsPerPage = 10; // number of cards per page
         </div>
 
         {/* Title */}
-        <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '24px', lineHeight: '32px', color: '#1C1C1C' }}>
+        <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '24px', lineHeight: '67px', color: '#1C1C1C' }}>
           {card.name.replace(/ Loan$/, '')}
         </h3>
 
         {/* Avatars */}
       {/* Bottom-down SVG inside the card */}
-<div className=" left-4 bottom-4">
-  <img 
-    src={BottomDownSVG} 
-    alt="Bottom Down Arrow" 
-    className="w-18 h-18"  // increase size
-  />
-</div>
+{/* Dynamic Avatars */}
+
+
+{/* Dynamic Avatars */}
+<div className="flex items-center space-x-2">
+  <div className="flex -space-x-1.5">
+    {card.employeeCount && card.employeeCount >= 1 && (
+      <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
+        <span className="text-[10px] text-white font-medium">👤</span>
+      </div>
+    )}
+    {card.employeeCount && card.employeeCount >= 2 && (
+      <div className="w-6 h-6 bg-orange-500 rounded-full border-2 border-white flex items-center justify-center">
+        <span className="text-[10px] text-white font-medium">👤</span>
+      </div>
+    )}
+    {card.employeeCount && card.employeeCount >= 3 && (
+      <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+        <span className="text-[10px] text-white font-medium">👤</span>
+      </div>
+    )}
+  </div>
+{card.employeeCount && card.employeeCount > 3 && (
+  <div 
+    style={{
+      height: '24px',
+      padding: '0 10px',
+      borderRadius: '61.5px',
+      backgroundColor: '#E5E7EB',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '11px',
+      fontWeight: '500',
+      color: '#6B7280',
+      opacity: 1
+    }}
+  >
+    +{card.employeeCount - 3}
+    </div>
+)
+ }</div>
 
  
       </div>
@@ -267,9 +324,8 @@ const cardsPerPage = 10; // number of cards per page
   return (
     <div className="h-screen w-screen flex flex-col bg-white">
       {/* Header - always show except in detail view */}
-      {!showDetail && headerProps && (
-        <HeaderReusable {...headerProps} />
-      )}
+    {/* Header - show only in form and detail views, NOT in cards view */}
+
 
       {/* Content area */}
       {showFormLoans ? (
@@ -315,7 +371,9 @@ const cardsPerPage = 10; // number of cards per page
                   
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                  {renderSummaryCards(getFilteredSummaryCards())}
+                 {renderSummaryCards(getPaginatedCards())}
+
+                  
                 </div>
        {/* Pagination for cards */}
     
@@ -327,13 +385,17 @@ const cardsPerPage = 10; // number of cards per page
         </div>
         
       )}
-       <div className="flex justify-end mt-6 bottom-2" >
-        <PaginationPages 
-          totalPages={Math.ceil(getFilteredSummaryCards().length / cardsPerPage)}
-          currentPage={cardCurrentPage}
-          setCurrentPage={setCardCurrentPage}
-        />
-      </div>
+
+<div className="flex justify-end mt-6 bottom-2 px-8">
+  <PaginationPages 
+    totalRecords={getFilteredSummaryCards().length}
+    currentPage={cardCurrentPage}
+    setCurrentPage={setCardCurrentPage}
+    rowsPerPage={cardsPerPage}
+    setRowsPerPage={setCardsPerPage}
+    rowsPerPageOptions={[5, 10, 20, 50]}
+  />
+</div>
     </div>
     
   );

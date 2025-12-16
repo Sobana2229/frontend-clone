@@ -1,7 +1,7 @@
 import { ArrowDown, CaretDown, DotsThree, Funnel, Info, WarningCircle, X, ArrowLeft } from "@phosphor-icons/react";
 import FilterPage from "../filterPage";
 import LoanForm from "./loanForm";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import loanStoreManagements from "../../../store/tdPayroll/loan";
 import TableReusable from "../setting/tableReusable";
 import { loanHeaders, advanceSalaryHeaders } from "../../../../data/dummy";
@@ -9,18 +9,24 @@ import PaginationPages from "../paginations";
 import LoanDetail from "./loanDetail";
 
 
-function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setShowDetail, setSelectedLoanData, addData,addLoans }) {
+function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setShowDetail, setSelectedLoanData, addData, addLoans }) {
   const { getLoan, loanData, loanDataByUuid, getLoanByUuid } = loanStoreManagements();
   const [showFormLoans, setShowFormLoans] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [tempUuid, setTempUuid] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  // Dynamic initial filter berdasarkan props
+  
+  // Dynamic initial filter with NEW filter fields
   const [filter, setFilter] = useState({
     employeeUuid: "",
     isSalaryAdvance: isAdvance !== null && isAdvance !== undefined ? isAdvance : "",
     loanNameUuid: loanNameUuid || "",
+    // NEW FILTERS
+    loanEmployeeUuid: null,
+    loanName: null,
+    loanStatus: null,
+    loanNumber: ''
   });
   
   // Update filter when props change
@@ -44,7 +50,7 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
     const params = buildFetchParams();
     const access_token = localStorage.getItem("accessToken");
     getLoan(access_token, "loan", params);
-  }, [filter, currentPage, isAdvance, loanNameUuid]);
+  }, [filter.employeeUuid, filter.isSalaryAdvance, currentPage, isAdvance, loanNameUuid]);
 
   // Helper function untuk build fetch parameters
   const buildFetchParams = () => {
@@ -53,31 +59,65 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
       page: currentPage,
     };
 
-    // Add filters berdasarkan kondisi
     if (filter.employeeUuid) {
       params.employeeUuid = filter.employeeUuid;
     }
 
-    // Handle isSalaryAdvance filtering
     if (isAdvance !== null && isAdvance !== undefined) {
-      // Jika isAdvance di-set dari props, gunakan itu (convert boolean to string for query param)
       params.isSalaryAdvance = isAdvance === true ? 'true' : 'false';
     } else if (filter.isSalaryAdvance !== null && filter.isSalaryAdvance !== undefined && filter.isSalaryAdvance !== "") {
-      // Jika ada filter manual dari user
       params.isSalaryAdvance = filter.isSalaryAdvance === true || filter.isSalaryAdvance === 'true' ? 'true' : 'false';
     }
 
-    // Handle loanNameUuid filtering
     if (loanNameUuid) {
-      // Jika loanNameUuid di-set dari props (specific loan type)
       params.loanNameUuid = loanNameUuid;
     } else if (filter.loanNameUuid) {
-      // Jika ada filter manual dari user
       params.loanNameUuid = filter.loanNameUuid;
     }
 
     return params;
   };
+
+  // CLIENT-SIDE FILTERING FUNCTION
+  const getFilteredLoans = useMemo(() => {
+    if (!loanData?.list || !Array.isArray(loanData.list)) return [];
+    
+    return loanData.list.filter((loan) => {
+      // Employee filter (loanEmployeeUuid)
+      if (filter.loanEmployeeUuid) {
+        const employeeUuid = loan?.Employee?.uuid || loan?.employeeUuid;
+        if (employeeUuid !== filter.loanEmployeeUuid) {
+          return false;
+        }
+      }
+
+      // Loan Name filter
+      if (filter.loanName) {
+        const loanName = loan?.LoanName?.name || loan?.loanType || loan?.loanName;
+        if (loanName !== filter.loanName) {
+          return false;
+        }
+      }
+
+      // Loan Status filter
+      if (filter.loanStatus && filter.loanStatus !== "All") {
+        const status = loan?.status;
+        if (status !== filter.loanStatus) {
+          return false;
+        }
+      }
+
+      // Loan Number filter (partial match)
+      if (filter.loanNumber) {
+        const loanNumber = loan?.loanNumber?.toString() || '';
+        if (!loanNumber.includes(filter.loanNumber)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [loanData?.list, filter.loanEmployeeUuid, filter.loanName, filter.loanStatus, filter.loanNumber]);
 
   const handleView = async (uuid, item, type) => {
     setTempUuid(uuid);
@@ -92,8 +132,7 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
   }
 
   return (
-<div className={`w-full h-screen flex flex-col items-start justify-start relative bg-white`}>
-
+    <div className={`w-full h-screen flex flex-col items-start justify-start relative bg-white`}>
       {showDetail ? (
         <LoanDetail 
           setShowDetail={setShowDetail} 
@@ -110,33 +149,39 @@ function LoanList({ isAdvance, loanNameUuid, loanName, onBack, showDetail, setSh
       ) : (
         !showFormLoans ? (
           <>
-          <FilterPage 
-  filterFor={"Loans"} 
-  onlyAll={true} 
-  setFilter={setFilter} 
-  filter={filter}
-  isAll={true} 
-  isHeader={false}
-  addData={addData}    // <-- pass the function from LoanPages
-/>
+            <FilterPage 
+              filterFor={"Loans"} 
+              onlyAll={true} 
+              setFilter={setFilter} 
+              filter={filter}
+              showHeading={false} 
+              isAll={true} 
+              isHeader={false}
+              addData={addData}
+              dataTable={loanData?.list}
+            />
 
-            <div className="w-full px-1 py-2 ">
-               <div className={`w-full h-screen flex flex-col items-start justify-start relative bg-white`}>
+            <div className="w-full px-1 py-2">
+              <div className={`w-full h-screen flex flex-col items-start justify-start relative bg-white`}>
                 <TableReusable 
                   dataHeaders={isAdvance ? advanceSalaryHeaders : loanHeaders} 
-                  dataTable={loanData?.list} 
+                  dataTable={getFilteredLoans} 
                   tableFor="loans" 
                   handleView={handleView} 
                 />
-                
-                </div>
-                 <div className="w-full h-25 px-1 py-2 bg-white border-t border-gray-200 flex items-center justify-end sticky bottom-0 z-10">
-              <PaginationPages 
-                totalPages={loanData?.totalPage} 
-                currentPage={currentPage} 
-                setCurrentPage={setCurrentPage} 
-              />
-            </div>
+              </div>
+        <div className="w-full h-25 px-1 py-2 bg-white border-t border-gray-200 flex items-center justify-end sticky bottom-0 z-10">
+  <PaginationPages 
+    totalRecords={loanData?.total || getFilteredLoans.length}
+    currentPage={currentPage}
+    setCurrentPage={setCurrentPage}
+    rowsPerPage={10}
+    setRowsPerPage={(value) => {
+      // Handle rows per page change if needed
+    }}
+    rowsPerPageOptions={[10, 20, 50, 100]}
+  />
+</div>
             </div>
           </>
         ) : (
