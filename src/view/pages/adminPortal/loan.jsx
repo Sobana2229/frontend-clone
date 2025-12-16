@@ -297,7 +297,7 @@ const cardsPerPage = 10; // number of cards per page
   </div>
       ) : (
         // CARDS VIEW (default view showing all cards)
-        <div className="flex-1 ">
+        <div className="flex-1 overflow-hidden flex flex-col">
           <div className="p-6">
             {!currentData ? (
               <div className="flex items-center justify-center h-64">

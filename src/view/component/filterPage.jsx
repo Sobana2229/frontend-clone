@@ -341,11 +341,6 @@ function FilterPage({
     );
 }
 
-
-    
-    // ============================================================
-    // RENDER FOR LOAN SECTION - WITH WORKING DROPDOWNS
-    // Enhanced Dropdown UI with Search and Selection Chips
 if (filterFor === "Loans") {
     const selectedLoanEmployee = getSelectedValue(dataEmployeesOptions, "loanEmployeeUuid");
     const [employeeSearchTerm, setEmployeeSearchTerm] = useState("");
@@ -539,7 +534,7 @@ if (filterFor === "Loans") {
                                         </svg>
                                         <input
                                             type="text"
-                                            placeholder="Search loan type..."
+                                           
                                             value={loanNameSearchTerm}
                                             onChange={(e) => setLoanNameSearchTerm(e.target.value)}
                                             className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
