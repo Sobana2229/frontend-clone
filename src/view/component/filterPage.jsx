@@ -385,7 +385,7 @@ if (filterFor === "Loans") {
 
     return (
         <div className="w-full pt-12">
-            <div className="w-[97%] mx-auto px-4 pt-10 pb-5 bg-white border-y border-gray-200">
+            <div className="w-full mx-auto pl-7 pr-5 pt-10 pb-5 bg-white ">
                 <div className="w-full h-[60px] border border-neutral-200 rounded-md bg-white flex items-center px-5 relative">
                     <span className="text-[14px] font-medium text-neutral-500">
                         FILTER BY :

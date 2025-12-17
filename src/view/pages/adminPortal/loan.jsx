@@ -258,44 +258,85 @@ const getEmployeesForCard = (cardId) => {
 
 
 {/* Dynamic Avatars */}
-<div className="flex items-center space-x-2">
-  <div className="flex -space-x-1.5">
-    {card.employeeCount && card.employeeCount >= 1 && (
-      <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
-        <span className="text-[10px] text-white font-medium">👤</span>
-      </div>
-    )}
-    {card.employeeCount && card.employeeCount >= 2 && (
-      <div className="w-6 h-6 bg-orange-500 rounded-full border-2 border-white flex items-center justify-center">
-        <span className="text-[10px] text-white font-medium">👤</span>
-      </div>
-    )}
-    {card.employeeCount && card.employeeCount >= 3 && (
-      <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-        <span className="text-[10px] text-white font-medium">👤</span>
-      </div>
-    )}
+{/* Dynamic Avatars */}
+{/* Dynamic Avatars */}
+{/* Dynamic Avatars */}
+<div className="flex items-center">
+  <div className="flex -space-x-2">
+    {(() => {
+      const colors = ['#93C5FD', '#FDBA74', '#86EFAC', '#E9D5FF']; // Light blue, orange, green, purple
+      const employeeCount = card.employeeCount || 0;
+      
+      if (employeeCount === 0) {
+        return null;
+      }
+      
+      // Get actual employees for this card
+      const currentData = getCurrentData();
+      const employees = [];
+      
+      if (currentData?.groupedData && currentData.groupedData[card.id]) {
+        const seenIds = new Set();
+        currentData.groupedData[card.id].loans?.forEach(loan => {
+          if (loan.Employee && !seenIds.has(loan.Employee.id)) {
+            employees.push({
+              id: loan.Employee.id,
+              firstName: loan.Employee.firstName,
+              lastName: loan.Employee.lastName
+            });
+            seenIds.add(loan.Employee.id);
+          }
+        });
+      }
+      
+      // If 1, 2, or 3 employees - show that exact number with initials
+      if (employeeCount <= 3) {
+        return Array.from({ length: employeeCount }).map((_, index) => {
+          const employee = employees[index];
+          return (
+            <div 
+              key={employee?.id || index}
+              className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center"
+              style={{ backgroundColor: colors[index] }}
+            >
+              <span className="text-xs font-semibold text-gray-700">
+                {employee?.firstName?.charAt(0).toUpperCase() || '?'}
+              </span>
+            </div>
+          );
+        });
+      }
+      
+      // If 4 or more employees - show first 3 with initials + 4th circle with "+count"
+      return (
+        <>
+          {Array.from({ length: 3 }).map((_, index) => {
+            const employee = employees[index];
+            return (
+              <div 
+                key={employee?.id || index}
+                className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center"
+                style={{ backgroundColor: colors[index] }}
+              >
+                <span className="text-xs font-semibold text-gray-700">
+                  {employee?.firstName?.charAt(0).toUpperCase() || '?'}
+                </span>
+              </div>
+            );
+          })}
+          <div 
+            className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center"
+            style={{ backgroundColor: colors[3] }}
+          >
+            <span className="text-xs font-semibold text-gray-700">
+              +{employeeCount - 3}
+            </span>
+          </div>
+        </>
+      );
+    })()}
   </div>
-{card.employeeCount && card.employeeCount > 3 && (
-  <div 
-    style={{
-      height: '24px',
-      padding: '0 10px',
-      borderRadius: '61.5px',
-      backgroundColor: '#E5E7EB',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '11px',
-      fontWeight: '500',
-      color: '#6B7280',
-      opacity: 1
-    }}
-  >
-    +{card.employeeCount - 3}
-    </div>
-)
- }</div>
+</div>
 
  
       </div>

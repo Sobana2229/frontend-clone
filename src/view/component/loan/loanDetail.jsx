@@ -36,11 +36,9 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
     const [showModalConfirm, setShowModalConfirm] = useState(false);
     const [showModalRecordPayment, setShowModalRecordPayment] = useState(false);
     
-    // NEW: Employee filter state
     const [selectedEmployeeUuid, setSelectedEmployeeUuid] = useState("");
     const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
-    // Pie Chart State
     const [pieChartData, setPieChartData] = useState([]);
 
     const loanLabel = isAdvance ? "Advance Salary" : "Loan";
@@ -92,7 +90,6 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
         return `$${amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
     };
 
-    // NEW: Generate unique employee options from dataList
     const getEmployeeOptions = () => {
         if (!dataList) return [];
         
@@ -112,7 +109,6 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
         return uniqueEmployees.sort((a, b) => a.name.localeCompare(b.name));
     };
 
-    // NEW: Filter dataList based on selected employee
     const getFilteredDataList = () => {
         if (!selectedEmployeeUuid || selectedEmployeeUuid === "all") {
             return dataList;
@@ -120,20 +116,18 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
         return dataList?.filter(loan => loan.employeeUuid === selectedEmployeeUuid) || [];
     };
 
-    // NEW: Handle employee selection
     const handleEmployeeSelect = (employeeUuid) => {
         setSelectedEmployeeUuid(employeeUuid);
         setIsEmployeeDropdownOpen(false);
     };
 
-    // NEW: Get selected employee info
     const getSelectedEmployeeInfo = () => {
         if (!selectedEmployeeUuid || selectedEmployeeUuid === "all") {
-            return "All Employees";
+            return "Employee";
         }
         const employeeOptions = getEmployeeOptions();
         const selected = employeeOptions.find(emp => emp.uuid === selectedEmployeeUuid);
-        return selected ? `${selected.name} (${selected.employeeId})` : "Select an Employee";
+        return selected ? `${selected.name} (${selected.employeeId})` : "Employee";
     };
 
     const handleRecordRepayment = () => {
@@ -183,46 +177,102 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
     const filteredDataList = getFilteredDataList();
 
     return (
-        <div className="w-full flex-col h-screen bg-gray-50 flex">
-            {!isLoanEmployeePortal ? (
-                <div className="w-full flex items-center justify-between border-b border-gray-200 bg-white">
-                    <div className="p-4 h-16 w-[23.9%] flex items-center justify-between border-r bg-[#1C1C1C]">
-                        <div className="flex items-center space-x-2">
-                            <h2 className="text-xs font-normal text-[#ADADAD]">All {loanLabelPlural}</h2>
-                            <CaretDown size={16} className="text-[#ADADAD]" />
-                        </div>
-                        <button onClick={setShowFormLoans} className="w-8 h-8 rounded bg-blue-td-500 flex items-center justify-center hover:bg-blue-td-600">
-                            <Plus size={16} className="text-white" />
-                        </button>
-                    </div>
+        <div className="w-full flex-col h-screen bg-white flex pt-20 mt-3">
+            <style>{`
+                .scrollbar-verythin::-webkit-scrollbar {
+                    width: 7px;
+                    height: 7px;
+                }
+                .scrollbar-verythin::-webkit-scrollbar-track {
+                    background: rgba(28, 28, 28, 0.05);
+                    border-radius: 4px;
+                }
+                .scrollbar-verythin::-webkit-scrollbar-thumb {
+                    background: rgba(28, 28, 28, 0.5);
+                    border-radius: 4px;
+                }
+            `}</style>
 
-                    {/* Header */}
-                    <div className="p-4 w-full h-16 flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
-                            <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                {loanData.status}
+            {!isLoanEmployeePortal ? (
+                <div className="w-full border-collapse px-5">
+      <div
+    className="w-full bg-white rounded-lg border border-gray-200"
+    style={{ height: '60px' }}
+  >
+    <div className="flex items-center justify-between h-full px-5">
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm font-medium" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                FILTER BY :
                             </span>
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
+                                    className="flex items-center gap-2.5 px-3 py-1 hover:bg-gray-50 rounded"
+                                >
+                                    <User size={20} style={{ color: 'rgba(28, 28, 28, 0.4)' }} />
+                                    <span className="text-sm font-medium" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                        {getSelectedEmployeeInfo()}
+                                    </span>
+                                    <CaretDown size={14} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
+                                </button>
+                                {isEmployeeDropdownOpen && (
+                                    <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border z-50 max-h-80 overflow-y-auto scrollbar-verythin">
+                                        <button
+                                            onClick={() => handleEmployeeSelect("all")}
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
+                                        >
+                                            All Employees
+                                        </button>
+                                        {employeeOptions.map((emp) => (
+                                            <button
+                                                key={emp.uuid}
+                                                onClick={() => handleEmployeeSelect(emp.uuid)}
+                                                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
+                                            >
+                                                {emp.name} ({emp.employeeId})
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+
+                        <div className="flex items-center gap-2">
                             <button 
                                 onClick={handleRecordRepayment}
-                                className="bg-blue-td-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-td-600"
+                                className="flex items-center justify-center gap-3 px-4 rounded text-white font-medium text-base"
+                                style={{ 
+                                    height: '35px',
+                                    width: '165px',
+                                    background: '#0066FE',
+                                    borderRadius: '5px'
+                                }}
                             >
-                                Record Repayment
+                                <Plus size={18} />
+                                <span>Repayment</span>
                             </button>
                             <div className="relative">
-                                <button onClick={() => setOpenMenu(!openMenu)} className="p-2 border hover:bg-gray-100 rounded">
-                                    <DotsThree size={20} className="text-gray-500" />
+                                <button 
+                                    onClick={() => setOpenMenu(!openMenu)} 
+                                    className="flex items-center justify-center rounded hover:bg-gray-50"
+                                    style={{
+                                        width: '35px',
+                                        height: '35px',
+                                        border: '1px solid rgba(28, 28, 28, 0.4)',
+                                        borderRadius: '8px'
+                                    }}
+                                >
+                                    <DotsThree size={24} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
                                 </button>
                                 {openMenu && (
-                                    <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
+                                    <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border overflow-hidden z-50">
                                         <button
                                             onClick={() => {
                                                 handleShowForm("edit");
                                                 setOpenMenu(false);
                                             }}
-                                            className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                                            style={{ color: '#1C1C1C' }}
                                         >
                                             Edit {loanLabel}
                                         </button>
@@ -231,7 +281,8 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                                 handleShowForm("pause");
                                                 setOpenMenu(false);
                                             }}
-                                            className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                                            style={{ color: '#1C1C1C' }}
                                         >
                                             Pause Instalment Deduction
                                         </button>
@@ -240,7 +291,8 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                                 handleShowForm("delete");
                                                 setOpenMenu(false);
                                             }}
-                                            className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                                            style={{ color: '#1C1C1C' }}
                                         >
                                             Delete
                                         </button>
@@ -250,13 +302,13 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                         </div>
                     </div>
                 </div>
+                </div> 
             ) : (
                 <div className="w-full flex items-center justify-between border-b border-gray-200 bg-white">
-                    {/* Header */}
                     <div className="p-4 w-full h-16 flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
-                            <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium">
                                 {loanData.status}
                             </span>
                         </div>
@@ -265,48 +317,63 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
             )}
 
             {!isLoanEmployeePortal ? (
-                
-                <div className="w-full flex-1 flex overflow-y-auto bg-white-td-300 p-5 overflow-hidden">
+                <div className="w-full flex-1 flex overflow-y-auto p-3 overflow-hidden" style={{ background: '#FFFFFF' }}>
                     <div className="w-full flex h-full bg-white rounded-xl overflow-hidden">
-                        {/* Left Sidebar - DARK THEME */}
-                        <div className="w-[24.5%] bg-[#fffefe] flex flex-col">    
-                            {/* Header Section */}
-                            <div className="px-4 py-7 bg-[#1C1C1C] flex-shrink-0 rounded-t-lg">
-                                <h2 className="text-l font-normal text-[#a9a9a9f3] uppercase tracking-wide">EMPLOYEE LIST</h2>
+                        {/* Left Sidebar */}
+                        <div className="flex flex-col" style={{ width: '24.5%', background: '#FFFFFF' }}>    
+                            {/* Dark Header */}
+                            <div className="flex-shrink-0 rounded-t-lg" style={{ 
+                                padding: '28px 14px',
+                                background: '#1C1C1C',
+                                height: '91px'
+                            }}>
+                                <h2 className="text-xl font-medium tracking-wide" style={{ color: '#ADADAD' }}>
+                                    EMPLOYEE LIST
+                                </h2>
                             </div>
                             
-                            <div className="flex-1 overflow-y-auto scrollbar-verythin scrollbar-thumb-gray-300 scrollbar-track-gray-200 max-h-[600px]">
-
+                            <div className="flex-1 overflow-y-auto scrollbar-verythin">
                                 {filteredDataList.length === 0 ? (
-                                    <div className="p-4 text-center text-gray-900 text-sm">
+                                    <div className="p-4 text-center text-sm" style={{ color: '#1C1C1C' }}>
                                         {selectedEmployeeUuid && selectedEmployeeUuid !== "all" 
                                             ? `No ${loanLabelLowercase}s found for selected employee`
                                             : `No ${loanLabelLowercase}s available`
                                         }
                                     </div>
                                 ) : (
-                                    filteredDataList.map((el, idx) => {
+                                    filteredDataList.map((el) => {
                                         return(
                                             <button 
                                                 onClick={() => handleView(el?.uuid, loanLabelPlural, loanLabelLowercase)} 
                                                 key={el?.uuid} 
-                                                className={`w-full p-4 border-b border-white hover:bg-gray-100 text-left transition-colors ${el?.uuid === tempUuid ? "bg-gray-100 border-l-4 border-blue-td-500" : ""}`}
+                                                className={`w-full border-b hover:bg-gray-50 text-left transition-colors ${
+                                                    el?.uuid === tempUuid ? "bg-gray-50 border-l-4" : ""
+                                                }`}
+                                                style={{ 
+                                                    padding: '16px',
+                                                    height: '70px',
+                                                    borderBottom: '1px solid #FFFFFF',
+                                                    borderLeftColor: el?.uuid === tempUuid ? '#0066FE' : 'transparent'
+                                                }}
                                             >
                                                 <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-sm font-normal text-black">
+                                                    <span className="text-sm font-normal" style={{ color: '#1C1C1C' }}>
                                                         {`${el?.Employee?.firstName} ${el?.Employee?.middleName} ${el?.Employee?.lastName}`} ({el?.Employee?.employeeId})
                                                     </span>
-                                                    <span className="text-sm font-semibold text-black">
+                                                    <span className="text-base font-semibold" style={{ color: '#1C1C1C' }}>
                                                         {formatCurrency(el?.loanAmount)}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center justify-between text-xs">
-                                                    <div className="flex items-center space-x-2 text-gray-400">
+                                                    <div className="flex items-center gap-2" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
                                                         <span>{el?.LoanName?.name}</span>
                                                         <span>|</span>
                                                         <span>{el?.loanNumber}</span>
                                                     </div>
-                                                    <span className="bg-blue-td-100 text-blue-td-600 px-2 py-1 rounded text-xs font-normal">
+                                                    <span className="px-2 py-1 rounded text-xs font-normal" style={{
+                                                        background: 'rgba(0, 102, 254, 0.1)',
+                                                        color: 'rgba(0, 102, 254, 0.9)'
+                                                    }}>
                                                         {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
                                                     </span>
                                                 </div>
@@ -315,28 +382,36 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     })
                                 )}
                             </div>
-
-                            {/* Scrollbar Indicator */}
-                           
                         </div>
 
                         {/* Main Content */}
                         <div className="w-full flex flex-col min-h-0 flex-1">
-                            <div className="flex-1 overflow-y-auto p-5 space-y-10">
-                                <div className="w-full grid grid-cols-4 auto-rows-[130px] gap-3">
+                            <div className="flex-1 px-5 space-y-10">
+                                <div className="w-full grid grid-cols-4 gap-3" style={{ gridAutoRows: '130px' }}>
                                     {/* Employee Card - spans 2 rows */}
-                                    <div className="bg-[#FFE2B8] rounded-2xl row-span-2 flex items-center justify-center flex-col space-y-5">
-                                        <div className="w-30 h-30 rounded-full bg-[#FFF3E0] flex items-center justify-center text-6xl font-normal text-[#FF8800]">
+                                    <div className="row-span-2 flex items-center justify-center flex-col space-y-5 rounded-2xl" style={{ background: '#FFE2B8' }}>
+                                        <div className="w-30 h-30 rounded-full flex items-center justify-center text-6xl font-normal" style={{
+                                            width: '100px',
+                                            height: '100px',
+                                            background: '#FFF3E0',
+                                            color: '#FF8800'
+                                        }}>
                                             {loanData?.employeeName?.charAt(0).toUpperCase()}
                                         </div>
-                                        <h1 className="text-xl font-medium capitalize text-[#1C1C1C]">{loanData?.employeeName}</h1>
-                                        <p className="text-sm font-normal text-[#1C1C1C99]">{data?.LoanName?.name}</p>
+                                        <h1 className="text-xl font-medium capitalize" style={{ color: '#1C1C1C' }}>
+                                            {loanData?.employeeName}
+                                        </h1>
+                                        <p className="text-sm font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                            {data?.LoanName?.name}
+                                        </p>
                                     </div>
 
                                     {/* Loan Amount */}
-                                    <div className="bg-white-td-50 flex p-8 flex-col rounded-tl-2xl border border-white-200">
-                                        <h2 className="text-gray-td-400 font-normal text-xs mb-2">{loanLabel} Amount</h2>
-                                        <h2 className="font-normal text-2xl text-[#1C1C1C]">
+                                    <div className="flex p-8 flex-col rounded-tl-2xl border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                        <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                            {loanLabel} Amount
+                                        </h2>
+                                        <h2 className="font-normal text-2xl" style={{ color: '#1C1C1C' }}>
                                             {new Intl.NumberFormat("en-US", {
                                                 style: "currency",
                                                 currency: "USD",
@@ -345,9 +420,11 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Remaining Amount */}
-                                    <div className="bg-white-td-50 flex p-8 flex-col border border-gray-200">
-                                        <h2 className="text-gray-td-400 font-normal text-xs mb-2">Remaining Amount</h2>
-                                        <h2 className="font-normal text-2xl text-red-600">
+                                    <div className="flex p-8 flex-col border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                        <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                            Remaining Amount
+                                        </h2>
+                                        <h2 className="font-normal text-2xl" style={{ color: '#DC2626' }}>
                                             {new Intl.NumberFormat("en-US", {
                                                 style: "currency",
                                                 currency: "USD",
@@ -356,23 +433,27 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Instalments Remaining */}
-                                    <div className="bg-white-td-50 flex p-8 flex-col rounded-tr-2xl border border-gray-200">
-                                        <div className="w-full flex items-center justify-start space-x-2 mb-2">
-                                            <h2 className="text-gray-td-400 font-normal text-xs">Instalment(s) Remaining</h2>
-                                            <Info size={14} className="text-gray-td-400" />
+                                    <div className="flex p-8 flex-col rounded-tr-2xl border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                        <div className="w-full flex items-center justify-start gap-2 mb-2">
+                                            <h2 className="text-xs font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Instalment(s) Remaining
+                                            </h2>
+                                            <Info size={14} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
                                         </div>
-                                        <h2 className="font-normal text-3xl text-[#1C1C1C]">
+                                        <h2 className="font-normal" style={{ fontSize: '30px', lineHeight: '38px', color: '#1C1C1C' }}>
                                             {loanPaymentHistory?.paymentSchedule 
                                                 ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length 
                                                 : 0
-                                            } <span className="text-xl">/ {data?.paidOffInstalment}</span>
+                                            } <span className="text-lg">/ {data?.paidOffInstalment}</span>
                                         </h2>
                                     </div>
 
                                     {/* Instalment Amount */}
-                                    <div className="bg-white-td-50 flex p-8 flex-col rounded-bl-2xl border border-gray-200">
-                                        <h2 className="text-gray-td-400 font-normal text-xs mb-2">Instalment Amount</h2>
-                                        <h2 className="font-normal text-2xl text-[#1C1C1C]">
+                                    <div className="flex p-8 flex-col rounded-bl-2xl border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                        <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                            Instalment Amount
+                                        </h2>
+                                        <h2 className="font-normal text-2xl" style={{ color: '#1C1C1C' }}>
                                             {new Intl.NumberFormat("en-US", {
                                                 style: "currency",
                                                 currency: "USD",
@@ -381,25 +462,26 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Amount Prepaid - spans 2 columns */}
-                                    <div className="bg-white-td-50 col-span-2 flex p-8 flex-col rounded-br-2xl relative border border-gray-200">
+                                    <div className="col-span-2 flex p-8 flex-col rounded-br-2xl relative border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
                                         <div className="flex-1">
-                                            <h2 className="text-gray-td-400 font-normal text-xs mb-2">Amount Prepaid</h2>
-                                            <h2 className="font-normal text-2xl text-[#0FA38B]">
+                                            <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Amount Prepaid
+                                            </h2>
+                                            <h2 className="font-normal text-2xl" style={{ color: '#0FA38B' }}>
                                                 {new Intl.NumberFormat("en-US", {
                                                     style: "currency",
                                                     currency: "USD",
                                                 }).format(data?.amountRepaid ?? 0)}
                                             </h2>
-                                            <p className="text-xs text-gray-td-400 mt-2">
-                                                Next Instalment Date: <span className="text-black">{loanData?.nextInstalmentDate}</span>
+                                            <p className="text-xs mt-2" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                Next Instalment Date: <span style={{ color: '#1C1C1C' }}>{loanData?.nextInstalmentDate}</span>
                                             </p>
                                         </div>
                                         
                                         {/* Progress Circle */}
                                         <div className="absolute right-8 top-1/2 -translate-y-1/2">
-                                            <div className="relative w-32 h-20">
+                                            <div className="relative" style={{ width: '160px', height: '88px' }}>
                                                 <svg width="160" height="88" viewBox="0 0 160 88" className="transform">
-                                                    {/* Background semicircle */}
                                                     <path
                                                         d="M 20 80 A 60 60 0 0 1 140 80"
                                                         fill="none"
@@ -407,7 +489,6 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                                         strokeWidth="16"
                                                         strokeLinecap="round"
                                                     />
-                                                    {/* Progress semicircle */}
                                                     <path
                                                         d="M 20 80 A 60 60 0 0 1 140 80"
                                                         fill="none"
@@ -420,7 +501,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                                     />
                                                 </svg>
                                                 <div className="absolute inset-0 flex items-end justify-center pb-2">
-                                                    <span className="text-2xl font-semibold text-gray-900">
+                                                    <span className="text-2xl font-semibold" style={{ color: '#1C1C1C' }}>
                                                         {Math.round(((data?.amountRepaid || 0) / (data?.loanAmount || 1)) * 100)}%
                                                     </span>
                                                 </div>
@@ -429,28 +510,156 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
                                 </div>
                                 
-                                {/* Table History */}
-                                <div className="w-full">
-                                    <TableReusable 
-                                        dataHeaders={loanDetailHeaders} 
-                                        tableFor="loanDetails" 
-                                        dataTable={loanPaymentHistory?.paymentSchedule ? loanPaymentHistory?.paymentSchedule : []}
-                                    />
+                                {/* Loan Repayment Summary Title */}
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                        LOAN REPAYMENT SUMMARY
+                                    </h2>
+                                    <Info size={14} style={{ color: 'rgba(28, 28, 28, 0.6)' }} />
+                                </div>
+
+                                {/* Table */}
+                                <div className="w-full  overflow-y-auto scrollbar-verythin">
+                                    <div className="min-w-full overflow-y-auto scrollbar-verythin">
+                                        {/* Table Header */}
+                                        <div className="flex items-center rounded-t-lg overflow-y-auto scrollbar-verythin" style={{ 
+                                            height: '50px',
+                                            background: '#1C1C1C',
+                                            padding: '0 15px'
+                                        }}>
+                                            <div style={{ width: '141px' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    INSTALMENT STATUS
+                                                </span>
+                                            </div>
+                                            <div style={{ width: '185px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    INSTALMENT DATE
+                                                </span>
+                                            </div>
+                                            <div style={{ width: '174px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    AMOUNT REPAID
+                                                </span>
+                                            </div>
+                                            <div style={{ width: '215px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    TOTAL AMOUNT REPAID
+                                                </span>
+                                            </div>
+                                            <div style={{ width: '199px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    REMAINING AMOUNT
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Table Body */}
+                                        <div className="overflow-y-auto scrollbar-verythin">
+                                            {loanPaymentHistory?.paymentSchedule?.map((payment, idx) => {
+                                                const isPaid = payment?.status === "paid";
+                                                const isLast = idx === loanPaymentHistory.paymentSchedule.length - 1;
+                                                
+                                                return (
+                                                    <div 
+                                                        key={idx}
+                                                        className="flex items-center relative "
+                                                        style={{ 
+                                                            height: '91px',
+                                                            padding: '0 15px',
+                                                            borderBottom: isLast ? 'none' : '1px dashed rgba(28, 28, 28, 0.1)'
+                                                        }}
+                                                    >
+                                                        {/* Status */}
+                                                        <div style={{ width: '141px' }} className="flex items-center gap-3">
+                                                            <div className="relative flex items-center">
+                                                                <div 
+                                                                    className="rounded-full flex items-center justify-center"
+                                                                    style={{
+                                                                        width: '26px',
+                                                                        height: '26px',
+                                                                        background: isPaid ? '#0066FE' : 'transparent',
+                                                                        border: isPaid ? 'none' : '1px solid rgba(28, 28, 28, 0.6)'
+                                                                    }}
+                                                                >
+                                                                    {isPaid ? (
+                                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                                            <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <span className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                            {idx + 1}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                {/* Connecting Line */}
+                                                                {!isLast && (
+                                                                    <div 
+                                                                        className="absolute left-1/2 -translate-x-1/2"
+                                                                        style={{
+                                                                            top: '26px',
+                                                                            width: '1px',
+                                                                            height: '45px',
+                                                                            borderLeft: isPaid ? '1px solid #0066FE' : '1px dashed rgba(28, 28, 28, 0.2)'
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Date */}
+                                                        <div style={{ width: '185px', textAlign: 'right' }}>
+                                                            <span className="text-sm font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                {dayjs(payment?.date).format("DD/MM/YYYY")}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Amount Repaid */}
+                                                        <div style={{ width: '174px', textAlign: 'right' }}>
+                                                            <span className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                {new Intl.NumberFormat("en-US", {
+                                                                    style: "currency",
+                                                                    currency: "USD",
+                                                                }).format(payment?.amountPaid ?? 0)}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Total Amount Repaid */}
+                                                        <div style={{ width: '215px', textAlign: 'right' }}>
+                                                            <span className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                {new Intl.NumberFormat("en-US", {
+                                                                    style: "currency",
+                                                                    currency: "USD",
+                                                                }).format(payment?.totalAmountPaid ?? 0)}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Remaining Amount */}
+                                                        <div style={{ width: '199px', textAlign: 'right' }}>
+                                                            <span className="text-base font-normal" style={{ color: '#DC2626' }}>
+                                                                {new Intl.NumberFormat("en-US", {
+                                                                    style: "currency",
+                                                                    currency: "USD",
+                                                                }).format(payment?.remainingAmount ?? 0)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             ) : (
-                <div className="w-full flex-1 flex overflow-y-auto bg-gray-td-100 p-5 overflow-hidden">
+                <div className="w-full flex-1 flex overflow-y-auto p-5 overflow-hidden" style={{ background: '#F9FAFB' }}>
                     <div className="w-full flex h-full bg-black rounded-xl overflow-hidden">
-                        {/* Main Content - Employee Portal View */}
                         <div className="w-full flex flex-col min-h-0 flex-1">
                             <div className="flex-1 overflow-y-auto p-5 space-y-10">
-                                {/* Dashboard Section */}
                                 <div className="w-full flex gap-3">
-                                    {/* Pie Chart */}
-                                    <div className="flex items-center justify-center bg-gray-td-50 rounded-lg p-8 flex-shrink-0">
+                                    <div className="flex items-center justify-center rounded-lg p-8 flex-shrink-0" style={{ background: '#FAFAFA' }}>
                                         <div className="relative w-48 h-48">
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <PieChart>
@@ -479,12 +688,12 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                         </div>
                                     </div>
 
-                                    {/* Grid of cards */}
                                     <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-3">
-                                        {/* Loan Amount */}
-                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tl-2xl">
-                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">{loanLabel} Amount</h2>
-                                            <h2 className="text-gray-td-400 font-normal text-2xl">
+                                        <div className="flex flex-col justify-center p-6 rounded-tl-2xl" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                {loanLabel} Amount
+                                            </h2>
+                                            <h2 className="text-2xl font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 {new Intl.NumberFormat("en-US", {
                                                     style: "currency",
                                                     currency: "USD",
@@ -492,10 +701,11 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                             </h2>
                                         </div>
 
-                                        {/* Remaining Amount */}
-                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6">
-                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">Remaining Amount</h2>
-                                            <h2 className="text-red-td-400 font-normal text-2xl">
+                                        <div className="flex flex-col justify-center p-6" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Remaining Amount
+                                            </h2>
+                                            <h2 className="text-2xl font-normal" style={{ color: '#DC2626' }}>
                                                 {new Intl.NumberFormat("en-US", {
                                                     style: "currency",
                                                     currency: "USD",
@@ -503,13 +713,14 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                             </h2>
                                         </div>
 
-                                        {/* Instalments Remaining */}
-                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tr-2xl">
+                                        <div className="flex flex-col justify-center p-6 rounded-tr-2xl" style={{ background: '#FAFAFA' }}>
                                             <div className="flex items-center space-x-2 mb-1">
-                                                <h2 className="text-gray-td-400 font-normal text-xs">Instalment(s) Remaining</h2>
-                                                <Info size={14} className="text-gray-td-400" />
+                                                <h2 className="text-xs font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                    Instalment(s) Remaining
+                                                </h2>
+                                                <Info size={14} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
                                             </div>
-                                            <h2 className="text-gray-td-400 font-normal text-2xl">
+                                            <h2 className="text-2xl font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 {loanPaymentHistory?.paymentSchedule
                                                     ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length
                                                     : 0}
@@ -517,13 +728,11 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                             </h2>
                                         </div>
 
-                                        {/* Instalment Amount */}
-                                                                               {/* Instalment Amount */}
-                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-bl-2xl">
-                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">
+                                        <div className="flex flex-col justify-center p-6 rounded-bl-2xl" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 Instalment Amount
                                             </h2>
-                                            <h2 className="text-gray-td-400 font-normal text-2xl">
+                                            <h2 className="text-2xl font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 {new Intl.NumberFormat("en-US", {
                                                     style: "currency",
                                                     currency: "USD",
@@ -531,12 +740,11 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                             </h2>
                                         </div>
 
-                                        {/* Amount Prepaid */}
-                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6">
-                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">
+                                        <div className="flex flex-col justify-center p-6" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 Amount Prepaid
                                             </h2>
-                                            <h2 className="text-green-td-400 font-normal text-2xl">
+                                            <h2 className="text-2xl font-normal" style={{ color: '#0FA38B' }}>
                                                 {new Intl.NumberFormat("en-US", {
                                                     style: "currency",
                                                     currency: "USD",
@@ -544,19 +752,17 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                             </h2>
                                         </div>
 
-                                        {/* Next Instalment Date */}
-                                        <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-br-2xl">
-                                            <h2 className="text-gray-td-400 font-normal text-xs mb-1">
+                                        <div className="flex flex-col justify-center p-6 rounded-br-2xl" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 Next Instalment Date
                                             </h2>
-                                            <h2 className="text-gray-td-400 font-normal text-lg">
+                                            <h2 className="text-lg font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 {loanData?.nextInstalmentDate}
                                             </h2>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Loan Repayment Summary */}
                                 <div className="w-full flex flex-col items-start justify-start space-y-4">
                                     <div className="flex items-center space-x-2">
                                         <h1 className="text-base font-normal text-gray-600">
@@ -565,8 +771,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                         <Info size={14} className="text-gray-600" />
                                     </div>
 
-                                    {/* Disbursement & Closing Card */}
-                                    <div className="w-full max-w-sm bg-[#D9FBEA] rounded-xl overflow-hidden">
+                                    <div className="w-full max-w-sm rounded-xl overflow-hidden" style={{ background: '#D9FBEA' }}>
                                         <div className="flex items-center justify-between px-5 py-4">
                                             <p className="text-sm">{disbursementLabel} Date</p>
                                             <p className="text-sm font-medium">
@@ -583,7 +788,6 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
                                 </div>
 
-                                {/* Repayment Table */}
                                 <div className="w-full">
                                     <TableReusable
                                         dataHeaders={loanDetailHeaders}
@@ -599,9 +803,32 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                         </div>
                     </div>
                 </div>
+            )}
 
+            {/* Modals */}
+            {modalPauseLoans && (
+                <Modal isOpen={modalPauseLoans} onRequestClose={() => setModalPauseLoans(false)}>
+                    {/* Your pause modal content */}
+                </Modal>
+            )}
+            {showModalConfirm && (
+                <SimpleModalMessage
+                    isOpen={showModalConfirm}
+                    onClose={() => setShowModalConfirm(false)}
+                    onConfirm={handleDelete}
+                    message={`Are you sure you want to delete this ${loanLabelLowercase}?`}
+                />
+            )}
+            {showModalRecordPayment && (
+                <FormModal
+                    isOpen={showModalRecordPayment}
+                    onClose={() => setShowModalRecordPayment(false)}
+                    type="recordPayment"
+                    loanData={data}
+                />
             )}
         </div>
     );  
 }
-    export default LoanDetail;
+
+export default LoanDetail;
