@@ -1003,150 +1003,204 @@ function TableReusable({
             ))}
           </tbody>
         </table>
-      ) : tableFor === "Earnings" ? (
-        <table className="w-full table-auto">
-          <thead>
-            <tr>
-              {dataHeaders?.map((el, idx) => (
-                <th
-                  key={idx}
-                  scope="col"
-                  className={`px-6 py-4 bg-blue-td-50 text-blue-td-500 ${
-                    el == "Consider for SPK" ? "text-center" : "text-left"
-                  } text-lg font-medium uppercase tracking-wider border-b-[1px]`}
+      ) :
+     // Updated table section for Earnings - paste this to replace the existing table in your code
+
+tableFor === "Earnings" ? (
+  <div className="relative h-[720px] overflow-y-auto earnings-scroll">
+    <table className="w-full border-separate border-spacing-0">
+      
+      {/* ===== TABLE HEADER ===== */}
+      <thead className="sticky top-0 z-10">
+        <tr
+          className="h-[80px]"
+          style={{
+            background: "#1C1C1C"
+          }}
+        >
+          {/* Checkbox */}
+          <th className="w-[58px] px-5 text-left">
+            <input type="checkbox" className="w-[18px] h-[18px] rounded border-[#ADADAD]" />
+          </th>
+
+          {dataHeaders?.map((el, idx) => (
+            <th
+              key={idx}
+              className={`px-6 text-[14px] font-medium uppercase tracking-wide text-[#ADADAD] ${
+                el === "Consider for SPK" ? "text-center w-[140px]" : "text-left"
+              }`}
+              style={{
+                fontFamily: 'Inter',
+                lineHeight: '20px'
+              }}
+            >
+              {el}
+            </th>
+          ))}
+
+          {/* Actions column */}
+          <th className="w-[60px]"></th>
+        </tr>
+      </thead>
+
+      {/* ===== TABLE BODY ===== */}
+      <tbody className="bg-white">
+        {dataTable?.map((el, idx) => (
+          <tr
+            key={idx}
+            className="h-[86px] hover:bg-gray-50 border-b border-dashed border-[rgba(28,28,28,0.1)]"
+          >
+            {/* Checkbox */}
+            <td className="px-5">
+              <input type="checkbox" className="w-[18px] h-[18px] rounded border-[rgba(28,28,28,0.3)]" />
+            </td>
+
+            {/* Name */}
+            <td className="px-6">
+              <p 
+                className="text-[16px] font-normal text-[#0066FE] cursor-pointer"
+                style={{
+                  fontFamily: 'Inter',
+                  lineHeight: '24px'
+                }}
+              >
+                {el?.earningName}
+              </p>
+            </td>
+
+            {/* Earning Type */}
+            <td className="px-6">
+              <p 
+                className="text-[16px] font-normal text-[#1C1C1C]"
+                style={{
+                  fontFamily: 'Inter',
+                  lineHeight: '24px'
+                }}
+              >
+                {el?.earningName}
+              </p>
+            </td>
+
+            {/* Calculation Type */}
+            <td className="px-6">
+              <p 
+                className="text-[16px] font-normal text-[#1C1C1C]"
+                style={{
+                  fontFamily: 'Inter',
+                  lineHeight: '24px'
+                }}
+              >
+                {el?.payType && `${el?.payType};`} {el?.calculationType}
+              </p>
+            </td>
+
+            {/* Mode / Consider for SPK */}
+            <td className="px-6 text-center">
+              {el?.considerSpk ? (
+                <CheckCircle size={20} className="text-[#1DBDA0] inline-block" weight="fill" />
+              ) : (
+                <Prohibit size={20} className="text-[rgba(28,28,28,0.6)] inline-block" />
+              )}
+            </td>
+
+            {/* Status */}
+            <td className="px-6">
+              <span
+                className={`inline-flex items-center justify-center min-w-[100px] h-[30px] px-4 rounded-full text-[16px] font-normal ${
+                  el?.isActive
+                    ? "bg-[#D5FAF2] text-[#014F45]"
+                    : "bg-[rgba(28,28,28,0.1)] text-[#1C1C1C]"
+                }`}
+                style={{
+                  fontFamily: 'Inter',
+                  lineHeight: '24px'
+                }}
+              >
+                {el?.isActive ? "Active" : "Inactive"}
+              </span>
+            </td>
+
+            {/* Actions */}
+            <td className="px-4 text-center">
+              <div
+                className="relative inline-block"
+                ref={openMenu === el?.uuid ? menuRef : null}
+              >
+                <button
+                  onClick={() =>
+                    setOpenMenu(openMenu === el?.uuid ? null : el?.uuid)
+                  }
+                  className="h-6 w-6 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
                 >
-                  {el}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable?.map((el, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-lg font-normal">{el?.earningName}</p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-lg text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black sm font-normal">
-                      {el?.earningName}
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-lg text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <p className="text-black font-normal">
-                      {el?.payType && `${el?.payType};`} {el?.calculationType}
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-lg text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-center justify-center space-y-2">
-                    {el?.considerSpk ? (
-                      <CheckCircle size={20} className={`text-green-td-500`} />
-                    ) : (
-                      <Prohibit size={20} className={`text-gray-td-500`} />
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-left text-lg text-blue-500 border-b-[1px]">
-                  <div className="flex flex-col items-start justify-start space-y-2">
-                    <div
-                      className={`flex items-center justify-center px-4 py-1 ${
-                        el?.isActive ? "bg-green-td-50" : "bg-gray-td-50"
-                      } rounded-full`}
-                    >
-                      <p
-                        className={`${
-                          el?.isActive
-                            ? "text-green-td-600"
-                            : "text-gray-td-600"
-                        } text-sm font-normal`}
-                      >
-                        {el?.isActive ? "Active" : "Inactive"}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-black border-b-[1px]">
-                  <div
-                    className="relative"
-                    ref={openMenu === el?.uuid ? menuRef : null}
-                  >
+                  <DotsThreeOutlineVertical size={20} className="text-[rgba(28,28,28,0.6)]" weight="fill" />
+                </button>
+
+                {openMenu === el?.uuid && (
+                  <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
                     <button
                       onClick={() =>
-                        setOpenMenu(openMenu === el?.uuid ? null : el?.uuid)
+                        handleDelete(el?.uuid, "Earnings", "earning", "delete")
                       }
-                      className="h-6 w-6 rounded-full border-[2px] flex items-center justify-center border-gray-td-500"
+                      disabled={el?.isUsed}
+                      className={`w-full px-4 py-2.5 text-[14px] text-left border-l-4 border-transparent transition-all ${
+                        el?.isUsed
+                          ? "text-gray-400 bg-gray-50 cursor-not-allowed"
+                          : "text-[#1C1C1C] hover:bg-[#EFF8FF] hover:border-[#0066FE]"
+                      }`}
+                      style={{
+                        fontFamily: 'Inter'
+                      }}
                     >
-                      <DotsThreeOutlineVertical
-                        size={16}
-                        className="text-gray-td-500"
-                      />
+                      Delete
                     </button>
 
-                    {openMenu === el?.uuid && (
-                      <div className="absolute right-16 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50 font-medium overflow-hidden">
-                        <button
-                          onClick={() =>
-                            handleDelete(
-                              el?.uuid,
-                              "Earnings",
-                              "earning",
-                              "delete"
-                            )
-                          }
-                          disabled={el?.isUsed}
-                          className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                            el?.isUsed
-                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                              : "text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500"
-                          }`}
-                          title={el?.isUsed ? "Cannot delete: This component is already assigned to one or more employees" : ""}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleEdit(el?.uuid, "Earnings", "earning");
-                            setOpenMenu(null);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (!el?.isUsed) {
-                              handleChangeActiveStatus(
-                                el?.uuid,
-                                "Earnings",
-                                "earning"
-                              );
-                              setOpenMenu(null);
-                            }
-                          }}
-                          disabled={el?.isUsed}
-                          className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
-                            el?.isUsed
-                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                              : "text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500"
-                          }`}
-                          title={el?.isUsed ? "Cannot change status: This component is already assigned to one or more employees" : ""}
-                        >
-                          Mark as {el?.isActive ? "Inactive" : "Active"}
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      onClick={() => {
+                        handleEdit(el?.uuid, "Earnings", "earning");
+                        setOpenMenu(null);
+                      }}
+                      className="w-full px-4 py-2.5 text-[14px] text-left text-[#1C1C1C] hover:bg-[#EFF8FF] border-l-4 border-transparent hover:border-[#0066FE] transition-all"
+                      style={{
+                        fontFamily: 'Inter'
+                      }}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (!el?.isUsed) {
+                          handleChangeActiveStatus(
+                            el?.uuid,
+                            "Earnings",
+                            "earning"
+                          );
+                          setOpenMenu(null);
+                        }
+                      }}
+                      disabled={el?.isUsed}
+                      className={`w-full px-4 py-2.5 text-[14px] text-left border-l-4 border-transparent transition-all ${
+                        el?.isUsed
+                          ? "text-gray-400 bg-gray-50 cursor-not-allowed"
+                          : "text-[#1C1C1C] hover:bg-[#EFF8FF] hover:border-[#0066FE]"
+                      }`}
+                      style={{
+                        fontFamily: 'Inter'
+                      }}
+                    >
+                      Mark as {el?.isActive ? "Inactive" : "Active"}
+                    </button>
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : 
+                )}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+):
+
       /* Reimbursements Claims Table */
      tableFor === "Reimbursements" ? (
   <div className="w-full h-full">

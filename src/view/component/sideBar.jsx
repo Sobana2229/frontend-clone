@@ -250,7 +250,9 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
             {/* Menu Items */}
             <div className="flex flex-col gap-2">
               {menuItems.map(({ title, to, icon, isDropdown, subMenu }) => {
-                const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
+const isActive = isDropdown 
+  ? (location.pathname === to || location.pathname.startsWith(to + '/'))
+  : location.pathname === to;
                 const isOpen = activeDropdown === title;
                 const isIconSvg = typeof icon === 'string';
                 
