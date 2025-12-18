@@ -264,7 +264,11 @@ const getEmployeesForCard = (cardId) => {
 <div className="flex items-center">
   <div className="flex -space-x-2">
     {(() => {
-      const colors = ['#93C5FD', '#FDBA74', '#86EFAC', '#E9D5FF']; // Light blue, orange, green, purple
+      const colors = [
+        '#CFE5FF',  // First circle - Light blue (Primary - 2/100)
+        '#FDBA74',  // Second circle - Orange
+        '#86EFAC',  // Third circle - Green
+      ];
       const employeeCount = card.employeeCount || 0;
       
       if (employeeCount === 0) {
@@ -289,6 +293,9 @@ const getEmployeesForCard = (cardId) => {
         });
       }
       
+      // Fallback letters when employee data is missing
+      const fallbackLetters = ['Z', 'M', 'u', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+      
       // If 1, 2, or 3 employees - show that exact number with initials
       if (employeeCount <= 3) {
         return Array.from({ length: employeeCount }).map((_, index) => {
@@ -296,11 +303,14 @@ const getEmployeesForCard = (cardId) => {
           return (
             <div 
               key={employee?.id || index}
-              className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center"
+              className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center"
               style={{ backgroundColor: colors[index] }}
             >
-              <span className="text-xs font-semibold text-gray-700">
-                {employee?.firstName?.charAt(0).toUpperCase() || '?'}
+              <span 
+                className="text-[10px] font-semibold"
+                style={{ color: '#0066FE' }}
+              >
+                {employee?.firstName?.charAt(0).toUpperCase() || fallbackLetters[index]}
               </span>
             </div>
           );
@@ -315,20 +325,26 @@ const getEmployeesForCard = (cardId) => {
             return (
               <div 
                 key={employee?.id || index}
-                className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center"
+                className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center"
                 style={{ backgroundColor: colors[index] }}
               >
-                <span className="text-xs font-semibold text-gray-700">
-                  {employee?.firstName?.charAt(0).toUpperCase() || '?'}
+                <span 
+                  className="text-[10px] font-semibold"
+                  style={{ color: '#0066FE' }}
+                >
+                  {employee?.firstName?.charAt(0).toUpperCase() || fallbackLetters[index]}
                 </span>
               </div>
             );
           })}
           <div 
-            className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center"
-            style={{ backgroundColor: colors[3] }}
+            className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center"
+            style={{ backgroundColor: 'rgba(28, 28, 28, 0.1)' }}
           >
-            <span className="text-xs font-semibold text-gray-700">
+            <span 
+              className="text-[10px] font-semibold"
+              style={{ color: '#0066FE' }}
+            >
               +{employeeCount - 3}
             </span>
           </div>

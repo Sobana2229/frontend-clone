@@ -1311,11 +1311,8 @@ function TableReusable({
   </div>
 ) : 
 tableFor === "loans" ? (
-  
-  <div className="w-full h-[80%] pl-7 pr-0 overflow-auto custom-scrollbar">
-
+  <div className="w-full h-[80%] pl-7 pr-0">
     <table className="w-full table-auto border-collapse">
-
       <thead
         className="sticky top-0 z-10 overflow-hidden"
         style={{
@@ -1345,159 +1342,163 @@ tableFor === "loans" ? (
               {el}
             </th>
           ))}
-         
         </tr>
       </thead>
-
-      <tbody className="bg-white">
-        {dataTable?.map((el, idx) => (
-          <tr
-            key={idx}
-            className="hover:bg-gray-50 cursor-pointer transition-colors border-b border-dashed"
-            style={{
-              height: '80px',
-              borderColor: 'rgba(28, 28, 28, 0.1)'
-            }}
-            onClick={() => handleView?.(el?.uuid, "Loans", "loan")}
-          >
-            {/* Employee Name */}
-            <td className="px-6 whitespace-nowrap text-left" style={{ fontFamily: 'Inter' }}>
-              <div className="font-normal text-base" style={{ color: '#1C1C1C' }}>
-                {el?.Employee?.firstName} {el?.Employee?.middleName} {el?.Employee?.lastName}
-              </div>
-            </td>
-
-            {/* Loan Number */}
-            <td className="px-6 whitespace-nowrap text-left text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
-              {el?.loanNumber}
-            </td>
-
-            {/* Loan Name */}
-            <td className="px-6 whitespace-nowrap text-left text-base capitalize" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
-              {el?.LoanName?.name || el?.loanType}
-            </td>
-
-            {/* Status */}
-            <td className="px-6 whitespace-nowrap text-center">
-              <span
-                className="inline-flex items-center justify-center rounded-full"
-                style={{
-                  width: '90px',
-                  height: '30px',
-                  background: el?.loanAmount - el?.amountRepaid === 0 ? 'rgba(28, 28, 28, 0.1)' : '#F5FAFF',
-                  color: el?.loanAmount - el?.amountRepaid === 0 ? 'rgba(28, 28, 28, 0.6)' : '#0066FE',
-                  fontFamily: 'Inter',
-                  fontSize: '16px'
-                }}
-              >
-                {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
-              </span>
-            </td>
-
-            {/* Loan Amount */}
-            <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
-              ${el?.loanAmount?.toLocaleString("en-US") || el?.totalAmount?.toLocaleString("en-US")}
-            </td>
-
-            {/* Amount Repaid */}
-            <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
-              ${el?.amountRepaid?.toLocaleString("en-US")}.0
-            </td>
-
-            {/* Remaining Amount */}
-            <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
-              ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") ||
-                el?.remainingAmount?.toLocaleString("en-US")}
-            </td>
-
-            {/* Actions Menu */}
-            <td className="px-6 whitespace-nowrap text-center">
-              <div className="relative inline-block" ref={openMenu === el?.uuid ? menuRef : null}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenMenu(openMenu === el?.uuid ? null : el?.uuid);
-                  }}
-                  className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-                >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <circle cx="10" cy="4" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
-                    <circle cx="10" cy="10" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
-                    <circle cx="10" cy="16" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
-                  </svg>
-                </button>
-
-                {openMenu === el?.uuid && (
-                  <div
-                    className="absolute right-0 top-full mt-1 w-[200px] bg-white rounded-[7px] z-50"
-                    style={{
-                      boxShadow: '0px 16px 32px -4px rgba(12,12,13,0.1)'
-                    }}
-                  >
-                    {/* EDIT */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleView?.(el?.uuid, "Loans", "loan");
-                        setOpenMenu(null);
-                      }}
-                      className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
-                    >
-                      <span
-                        className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{
-                          background: '#1C1C1C',
-                          borderRadius: '5px 0 0 5px'
-                        }}
-                      />
-                      Edit
-                    </button>
-
-                    {/* RECORD PAYMENT */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit?.(el?.uuid);
-                        setOpenMenu(null);
-                      }}
-                      className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
-                    >
-                      <span
-                        className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{
-                          background: '#1C1C1C',
-                          borderRadius: '5px 0 0 5px'
-                        }}
-                      />
-                      Record Payment
-                    </button>
-
-                    {/* PAUSE INSTALLMENT */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete?.(el?.uuid);
-                        setOpenMenu(null);
-                      }}
-                      className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
-                    >
-                      <span
-                        className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{
-                          background: '#1C1C1C',
-                          borderRadius: '5px 0 0 5px'
-                        }}
-                      />
-                      Pause Installment Deduction
-                    </button>
-                  </div>
-                )}
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
     </table>
+
+    {/* Scrollable tbody wrapper */}
+    <div className="overflow-auto custom-scrollbar" style={{ height: 'calc(100% - 78px)' }}>
+      <table className="w-full table-auto border-collapse">
+        <tbody className="bg-white">
+          {dataTable?.map((el, idx) => (
+            <tr
+              key={idx}
+              className="hover:bg-gray-50 cursor-pointer transition-colors border-b border-dashed"
+              style={{
+                height: '80px',
+                borderColor: 'rgba(28, 28, 28, 0.1)'
+              }}
+              onClick={() => handleView?.(el?.uuid, "Loans", "loan")}
+            >
+              {/* Employee Name */}
+              <td className="px-6 whitespace-nowrap text-left" style={{ fontFamily: 'Inter' }}>
+                <div className="font-normal text-base" style={{ color: '#1C1C1C' }}>
+                  {el?.Employee?.firstName} {el?.Employee?.middleName} {el?.Employee?.lastName}
+                </div>
+              </td>
+
+              {/* Loan Number */}
+              <td className="px-6 whitespace-nowrap text-left text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
+                {el?.loanNumber}
+              </td>
+
+              {/* Loan Name */}
+              <td className="px-6 whitespace-nowrap text-left text-base capitalize" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
+                {el?.LoanName?.name || el?.loanType}
+              </td>
+
+              {/* Status */}
+              <td className="px-6 whitespace-nowrap text-center">
+                <span
+                  className="inline-flex items-center justify-center rounded-full"
+                  style={{
+                    width: '90px',
+                    height: '30px',
+                    background: el?.loanAmount - el?.amountRepaid === 0 ? 'rgba(28, 28, 28, 0.1)' : '#F5FAFF',
+                    color: el?.loanAmount - el?.amountRepaid === 0 ? 'rgba(28, 28, 28, 0.6)' : '#0066FE',
+                    fontFamily: 'Inter',
+                    fontSize: '16px'
+                  }}
+                >
+                  {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
+                </span>
+              </td>
+
+              {/* Loan Amount */}
+              <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: 'rgba(28, 28, 28, 0.6)', fontFamily: 'Inter' }}>
+                ${el?.loanAmount?.toLocaleString("en-US") || el?.totalAmount?.toLocaleString("en-US")}
+              </td>
+
+              {/* Amount Repaid */}
+              <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: '#1C1C1C', fontFamily: 'Inter' }}>
+                ${el?.amountRepaid?.toLocaleString("en-US")}.0
+              </td>
+
+              {/* Remaining Amount */}
+              <td className="px-6 whitespace-nowrap text-right text-base" style={{ color: '#0066FE', fontFamily: 'Inter' }}>
+                ${Math.abs(el?.loanAmount - el?.amountRepaid)?.toLocaleString("en-US") ||
+                  el?.remainingAmount?.toLocaleString("en-US")}
+              </td>
+
+              {/* Actions Menu */}
+              <td className="px-6 whitespace-nowrap text-center">
+                <div className="relative inline-block" ref={openMenu === el?.uuid ? menuRef : null}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenu(openMenu === el?.uuid ? null : el?.uuid);
+                    }}
+                    className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <circle cx="10" cy="4" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
+                      <circle cx="10" cy="10" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
+                      <circle cx="10" cy="16" r="1.8" fill="rgba(28, 28, 28, 0.6)" />
+                    </svg>
+                  </button>
+
+                  {openMenu === el?.uuid && (
+                    <div
+                      className="absolute right-0 top-full mt-1 w-[200px] bg-white rounded-[7px] z-50"
+                      style={{
+                        boxShadow: '0px 16px 32px -4px rgba(12,12,13,0.1)'
+                      }}
+                    >
+                      {/* EDIT */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleView?.(el?.uuid, "Loans", "loan");
+                          setOpenMenu(null);
+                        }}
+                        className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+                      >
+                        <span
+                          className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{
+                            background: '#1C1C1C',
+                            borderRadius: '5px 0 0 5px'
+                          }}
+                        />
+                        Edit
+                      </button>
+
+                      {/* RECORD PAYMENT */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit?.(el?.uuid);
+                          setOpenMenu(null);
+                        }}
+                        className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+                      >
+                        <span
+                          className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{
+                            background: '#1C1C1C',
+                            borderRadius: '5px 0 0 5px'
+                          }}
+                        />
+                        Record Payment
+                      </button>
+
+                      {/* PAUSE INSTALLMENT */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete?.(el?.uuid);
+                          setOpenMenu(null);
+                        }}
+                        className="relative w-full h-[38px] px-4 text-left text-sm flex items-center group hover:bg-[rgba(28,28,28,0.05)]"
+                      >
+                        <span
+                          className="absolute left-0 top-0 h-full w-[7px] opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{
+                            background: '#1C1C1C',
+                            borderRadius: '5px 0 0 5px'
+                          }}
+                        />
+                        Pause Installment Deduction
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </div>
 )
 : tableFor === "loanDetails" ? (

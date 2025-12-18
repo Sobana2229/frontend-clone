@@ -1,4 +1,4 @@
-import { CaretDown, Plus, X, Calendar, Info, ClipboardText, CurrencyCircleDollar, DotsThree, User } from "@phosphor-icons/react";
+import { CaretDown, Plus, X, Calendar, Info, ClipboardText, CurrencyCircleDollar, DotsThree, User, } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import Modal from "react-modal";
@@ -9,6 +9,14 @@ import loanStoreManagements from "../../../store/tdPayroll/loan";
 import SimpleModalMessage from "../simpleModalMessage";
 import { CustomToast } from "../customToast";
 import { toast } from "react-toastify";
+import { 
+  Users2, 
+  FileText, 
+  Activity, 
+  Hash, 
+  PlusCircle, 
+  MoreVertical 
+} from "lucide-react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, handleView, setIsUpdate, setSelectedLoanData, isAdvance, loanNameUuid, isLoanEmployeePortal = false}) {
@@ -238,68 +246,85 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <button 
-                                onClick={handleRecordRepayment}
-                                className="flex items-center justify-center gap-3 px-4 rounded text-white font-medium text-base"
-                                style={{ 
-                                    height: '35px',
-                                    width: '165px',
-                                    background: '#0066FE',
-                                    borderRadius: '5px'
-                                }}
-                            >
-                                <Plus size={18} />
-                                <span>Repayment</span>
-                            </button>
-                            <div className="relative">
-                                <button 
-                                    onClick={() => setOpenMenu(!openMenu)} 
-                                    className="flex items-center justify-center rounded hover:bg-gray-50"
-                                    style={{
-                                        width: '35px',
-                                        height: '35px',
-                                        border: '1px solid rgba(28, 28, 28, 0.4)',
-                                        borderRadius: '8px'
-                                    }}
-                                >
-                                    <DotsThree size={24} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
-                                </button>
-                                {openMenu && (
-                                    <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border overflow-hidden z-50">
-                                        <button
-                                            onClick={() => {
-                                                handleShowForm("edit");
-                                                setOpenMenu(false);
-                                            }}
-                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
-                                            style={{ color: '#1C1C1C' }}
-                                        >
-                                            Edit {loanLabel}
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                handleShowForm("pause");
-                                                setOpenMenu(false);
-                                            }}
-                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
-                                            style={{ color: '#1C1C1C' }}
-                                        >
-                                            Pause Instalment Deduction
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                handleShowForm("delete");
-                                                setOpenMenu(false);
-                                            }}
-                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
-                                            style={{ color: '#1C1C1C' }}
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+    <button 
+        onClick={handleRecordRepayment}
+        className="flex items-center rounded font-medium"
+        style={{ 
+            height: '35px',
+            background: '#0066FE',
+            borderRadius: '5px',
+            overflow: 'hidden'
+        }}
+    >
+        <span className="px-4 text-white text-base">Repayment</span>
+        <div 
+            className="h-full flex items-center justify-center border-l"
+            style={{ 
+                width: '35px',
+                borderLeftColor: 'rgba(255, 255, 255, 0.3)'
+            }}
+        >
+            <div 
+                className="rounded-full flex items-center justify-center"
+                style={{
+                    width: '20px',
+                    height: '20px',
+                    border: '1.5px solid white'
+                }}
+            >
+                <Plus size={12} weight="bold" color="white" />
+            </div>
+        </div>
+    </button>
+    <div className="relative">
+        <button 
+            onClick={() => setOpenMenu(!openMenu)} 
+            className="flex items-center justify-center rounded hover:bg-gray-50"
+            style={{
+                width: '35px',
+                height: '35px',
+                border: '1px solid rgba(28, 28, 28, 0.4)',
+                borderRadius: '8px'
+            }}
+        >
+     <MoreVertical size={20} className="text-neutral-600" />
+        </button>
+        {openMenu && (
+            <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border overflow-hidden z-50">
+                <button
+                    onClick={() => {
+                        handleShowForm("edit");
+                        setOpenMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                    style={{ color: '#1C1C1C' }}
+                >
+                    Edit {loanLabel}
+                </button>
+                <button
+                    onClick={() => {
+                        handleShowForm("pause");
+                        setOpenMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                    style={{ color: '#1C1C1C' }}
+                >
+                    Pause Instalment Deduction
+                </button>
+                <button
+                    onClick={() => {
+                        handleShowForm("delete");
+                        setOpenMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                    style={{ color: '#1C1C1C' }}
+                >
+                    Delete
+                </button>
+            </div>
+        )}
+    </div>
+</div>
                     </div>
                 </div>
                 </div> 
@@ -347,7 +372,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                                 onClick={() => handleView(el?.uuid, loanLabelPlural, loanLabelLowercase)} 
                                                 key={el?.uuid} 
                                                 className={`w-full border-b hover:bg-gray-50 text-left transition-colors ${
-                                                    el?.uuid === tempUuid ? "bg-gray-50 border-l-4" : ""
+                                                    el?.uuid === tempUuid ? "bg-gray-50 " : ""
                                                 }`}
                                                 style={{ 
                                                     padding: '16px',
@@ -386,7 +411,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
 
                         {/* Main Content */}
                         <div className="w-full flex flex-col min-h-0 flex-1">
-                            <div className="flex-1 px-5 space-y-10">
+                            <div className="flex-1 px-5 space-y-6">
                                 <div className="w-full grid grid-cols-4 gap-3" style={{ gridAutoRows: '130px' }}>
                                     {/* Employee Card - spans 2 rows */}
                                     <div className="row-span-2 flex items-center justify-center flex-col space-y-5 rounded-2xl" style={{ background: '#FFE2B8' }}>
@@ -407,7 +432,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Loan Amount */}
-                                    <div className="flex p-8 flex-col rounded-tl-2xl border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                    <div className="flex p-8 flex-col rounded-tl-2xl border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
                                         <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                             {loanLabel} Amount
                                         </h2>
@@ -420,7 +445,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Remaining Amount */}
-                                    <div className="flex p-8 flex-col border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                    <div className="flex p-8 flex-col border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
                                         <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                             Remaining Amount
                                         </h2>
@@ -433,7 +458,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Instalments Remaining */}
-                                    <div className="flex p-8 flex-col rounded-tr-2xl border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                    <div className="flex p-8 flex-col rounded-tr-2xl border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
                                         <div className="w-full flex items-center justify-start gap-2 mb-2">
                                             <h2 className="text-xs font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 Instalment(s) Remaining
@@ -449,7 +474,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Instalment Amount */}
-                                    <div className="flex p-8 flex-col rounded-bl-2xl border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                    <div className="flex p-8 flex-col rounded-bl-2xl border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
                                         <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                             Instalment Amount
                                         </h2>
@@ -462,7 +487,7 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                     </div>
 
                                     {/* Amount Prepaid - spans 2 columns */}
-                                    <div className="col-span-2 flex p-8 flex-col rounded-br-2xl relative border" style={{ background: '#FAFAFA', borderColor: '#E5E7EB' }}>
+                                    <div className="col-span-2 flex p-8 flex-col rounded-br-2xl relative border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
                                         <div className="flex-1">
                                             <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
                                                 Amount Prepaid
@@ -511,11 +536,11 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                 </div>
                                 
                                 {/* Loan Repayment Summary Title */}
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center ">
                                     <h2 className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
                                         LOAN REPAYMENT SUMMARY
                                     </h2>
-                                    <Info size={14} style={{ color: 'rgba(28, 28, 28, 0.6)' }} />
+                                    <Info size={12} style={{ color: 'rgba(28, 28, 28, 0.6)' }} />
                                 </div>
 
                                 {/* Table */}
@@ -555,8 +580,10 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
                                         </div>
 
                                         {/* Table Body */}
-                                        <div className="overflow-y-auto scrollbar-verythin">
-                                            {loanPaymentHistory?.paymentSchedule?.map((payment, idx) => {
+                                        {/* Table Body */}
+<div className="overflow-y-auto scrollbar-verythin" style={{ maxHeight: '400px' }}>
+    {loanPaymentHistory?.paymentSchedule?.map((payment, idx) => {
+                                            
                                                 const isPaid = payment?.status === "paid";
                                                 const isLast = idx === loanPaymentHistory.paymentSchedule.length - 1;
                                                 
