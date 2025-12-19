@@ -26,7 +26,7 @@ import EmployeePortalComponents from "./settingPages/employeePortal";
 import OrganisationSetting from "./settingPages/organisationSetting";
 import SetupConfigurationSetting from "./settingPages/setupConfigurationSetting";
 import { CaretLeft, CaretDown } from "@phosphor-icons/react";
-
+import Logo from "../../../assets/Logo.svg";
 function SettingPages() {
   const [activeIndex, setActiveIndex] = useState("Organisation");
   const [expandedItems, setExpandedItems] = useState({});
@@ -86,19 +86,11 @@ function SettingPages() {
         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center px-2' : 'px-[35px]'} pt-[25px] pb-[50px] flex-shrink-0`}>
           {isSidebarCollapsed ? (
             <div className="w-[45px] h-[45px] rounded-lg flex items-center justify-center">
-              <img 
-                src="/logo.png" 
-                alt="Logo" 
-                className="w-full h-full rounded-lg object-cover"
-              />
+             <img src={Logo} alt="Logo" className="w-11 h-11 rounded-lg object-cover" />
             </div>
           ) : (
             <div className="flex items-center gap-[10px]">
-              <img 
-                src="/logo.png" 
-                alt="TEKYDOCT Logo" 
-                className="w-[45px] h-[45px] rounded-lg object-cover"
-              />
+              <img src={Logo} alt="Logo" className="w-11 h-11 rounded-lg object-cover" />
               <div className="flex flex-col">
                 <span className="text-[10px] font-medium tracking-[0.4px] text-[#EAEAEA] leading-[18px] uppercase">
                   TEKYDOCT

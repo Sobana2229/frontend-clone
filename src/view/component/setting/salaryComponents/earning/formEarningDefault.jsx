@@ -24,7 +24,7 @@ function FormEarningDefault({formData, setFormData, handleInputChange, earningTy
     return (
         <div className="flex gap-8">
             {/* Left Column - Main Fields */}
-            <div className="space-y-6" style={{ width: '750px', flexShrink: 0 }}>
+            <div className="space-y-6" style={{ width: '650px', flexShrink: 0 }}>
                 {/* Earning Name */}
                 <div>
                     <ReuseableInput

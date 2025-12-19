@@ -184,7 +184,7 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
           <div className={`${isSidebarOpen ? "px-6" : "px-6"} pt-6 mb-6`}>
             {!isSidebarOpen ? (
               <div className="w-full flex items-center justify-center">
-                <img src={Logo} alt="Logo" className="w-11 h-11 rounded-lg object-cover" />
+                
               </div>
             ) : (
               <div className="flex items-center gap-1.5">
