@@ -25,11 +25,27 @@ function CustomOption({
     <div
       ref={innerRef}
       {...innerProps}
-      className={`p-3 cursor-pointer ${
-        props.isSelected ? 'bg-blue-600 text-white' : props.isFocused ? 'bg-blue-50' : 'hover:bg-gray-50'
+      className={`p-3 cursor-pointer relative ${
+        props.isSelected ? 'bg-blue-600 text-white' : props.isFocused ? 'bg-gray-100' : 'hover:bg-gray-100'
       }`}
     >
-      {data.label}
+      {(props.isFocused || props.isSelected) && (
+        <div 
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '4px',
+            height: '40px',
+            backgroundColor: '#000000',
+            borderRadius: '0 2px 2px 0'
+          }}
+        />
+      )}
+      <div style={{ paddingLeft: '8px' }}>
+        {data.label}
+      </div>
     </div>
   );
 }
