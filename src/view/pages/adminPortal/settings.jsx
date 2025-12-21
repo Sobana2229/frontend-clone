@@ -27,15 +27,18 @@ import OrganisationSetting from "./settingPages/organisationSetting";
 import SetupConfigurationSetting from "./settingPages/setupConfigurationSetting";
 import { CaretLeft, CaretDown } from "@phosphor-icons/react";
 import Logo from "../../../assets/Logo.svg";
+
 function SettingPages() {
   const [activeIndex, setActiveIndex] = useState("Organisation");
   const [expandedItems, setExpandedItems] = useState({});
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [salaryComponentsTab, setSalaryComponentsTab] = useState(0); // Track active tab within Salary Components
+  const [salaryComponentsTab, setSalaryComponentsTab] = useState(0);
+  const [organisationTab, setOrganisationTab] = useState(0); // Track active tab within Organisation
   const location = useLocation();
 
   // Define which items have sub-menus
   const itemsWithSubMenus = {
+    "Organisation": [ "Organisation Profile", "Work Locations", "Departments", "Designations"],
     "Salary Components": ["Earnings", "Deductions", "Benefits", "Reimbursements"]
   };
 
@@ -67,6 +70,9 @@ function SettingPages() {
     if (parentTitle === "Salary Components") {
       setSalaryComponentsTab(subIdx);
       setActiveIndex("Salary Components");
+    } else if (parentTitle === "Organisation") {
+      setOrganisationTab(subIdx);
+      setActiveIndex("Organisation");
     }
   };
 
@@ -175,7 +181,13 @@ function SettingPages() {
                     
                     <div className="flex flex-col gap-2">
                       {itemsWithSubMenus[el?.title].map((subItem, subIdx) => {
-                        const isSubActive = activeIndex === el?.title && salaryComponentsTab === subIdx;
+                        let isSubActive = false;
+                        if (el?.title === "Salary Components") {
+                          isSubActive = activeIndex === el?.title && salaryComponentsTab === subIdx;
+                        } else if (el?.title === "Organisation") {
+                          isSubActive = activeIndex === el?.title && organisationTab === subIdx;
+                        }
+                        
                         return (
                           <button
                             key={subIdx}
@@ -229,7 +241,7 @@ function SettingPages() {
 
       {/* Main Content Area */}
       <div className="flex-1 h-full overflow-y-auto bg-white">
-        {activeIndex === "Organisation" && <OrganisationSetting />}
+        {activeIndex === "Organisation" && <OrganisationSetting activeTabIndex={organisationTab} />}
         {activeIndex === "Setup & Configuration" && <SetupConfigurationSetting />}
         {activeIndex === "Salary Components" && <SalaryComponents activeTabIndex={salaryComponentsTab} />}
         {activeIndex === "Employee Portal" && <EmployeePortalComponents />}

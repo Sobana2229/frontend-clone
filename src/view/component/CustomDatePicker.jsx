@@ -8,24 +8,31 @@ import "./CustomDatePicker.css";
 
 const CustomInput = forwardRef(
   ({ value, onClick, placeholder, isBorderLeft, borderColor }, ref) => {
+    const getBorderColor = () => {
+      if (borderColor === "red-td-500") return "#dc2626";
+      return borderColor || "#d1d5db";
+    };
+
     return (
       <div
         ref={ref}
         onClick={onClick}
-        className={`relative w-full ${
-          isBorderLeft ? `border-l-4 ${borderColor}` : ""
-        }`}
+        className="relative w-full"
+        style={{
+          borderLeft: isBorderLeft ? `6px solid ${getBorderColor()}` : "none",
+          borderTop: "1px solid #d1d5db",
+          borderRight: "1px solid #d1d5db",
+          borderBottom: "1px solid #d1d5db",
+          borderRadius: "6px"
+        }}
       >
         <input
           type="text"
           value={value || ""}
           placeholder={placeholder}
           readOnly
-          className={`w-full h-[42px] px-3 pr-10 border border-gray-300 rounded-md
-            text-sm text-gray-900 cursor-pointer
-            focus:outline-none focus:ring-1 focus:ring-gray-300
-            ${isBorderLeft ? "pl-4" : ""}
-          `}
+          className="w-full h-[42px] px-3 pr-10 bg-white text-sm text-gray-900 cursor-pointer focus:outline-none"
+          style={{ border: "none", borderRadius: "6px" }}
         />
 
         <CalendarBlank

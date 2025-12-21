@@ -12,7 +12,7 @@ import CustomOption from "../customOption";
 import ReuseableInput from "../reuseableInput";
 import { flagImage } from "../../../../helper/globalHelper";
 import { useLocation } from "react-router-dom";
-
+import CustomDatePicker from "../CustomDatePicker";
 function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComplated=[]}) {
   const { pathname } = useLocation();
   const { 
@@ -48,9 +48,13 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     spkAccountNumber: "",
     stepComplated: Number(step)
   });
+  
+  const [emailError, setEmailError] = useState(false);
+  const [emailValid, setEmailValid] = useState(false);
   const [modalWorkLocations, setModalWorkLocations] = useState(false);
   const [modalDesignation, setModalDesignation] = useState(false);
   const [modalDepartement, setModalDepartement] = useState(false);
+  const [phoneDigitLimit, setPhoneDigitLimit] = useState(7); // Default to Brunei (7 digits)
 
   useEffect(() => {
     if(designationOptions?.length === 0) {
@@ -77,8 +81,19 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     if(!phoneNumberData || phoneNumberData.length === 0) {
       const access_token = localStorage.getItem("accessToken");
       fetchPhoneNumberData(access_token);
+    } else {
+      // Set Brunei as default when data loads
+      const bruneiData = phoneNumberData.find(phone => phone.label === "+673");
+      if (bruneiData && !formData.phoneCode) {
+        setFormData(prev => ({
+          ...prev,
+          phoneCode: bruneiData.label,
+          flagIso: bruneiData.emoji,
+        }));
+        setPhoneDigitLimit(7); // Brunei default
+      }
     }
-  }, []);
+  }, [phoneNumberData]);
 
   useEffect(() => {
     if (formData.citizenCategory && formData.citizenCategory !== "Foreigner") {
@@ -95,13 +110,15 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     }
   }, [formData.citizenCategory]);
 
-  const getIcTypeByCitizenCategory = (category) => {
-    const icTypeMapping = {
-      "Brunei Citizen": "Yellow",
-      "Permanent": "Purple",
-      "Foreigner": "Green"
+  const getPhoneDigitLimit = (phoneCode) => {
+    const digitLimits = {
+      "+91": 10,   // India
+      "+673": 7,   // Brunei
+      "+1": 10,    // USA/Canada
+      "+44": 10,   // UK
+      "+65": 8,    // Singapore
     };
-    return icTypeMapping[category] || "";
+    return digitLimits[phoneCode] || 15; // Default to 15 if not in list
   };
 
   const handleChange = (e) => {
@@ -116,9 +133,34 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     if (name === "isStatutoryComponents" && !checked) {
       updatedFormData.spkAccountNumber = "";
     }
+    
+    // Email validation on change
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value.length > 0) {
+        setEmailValid(emailRegex.test(value));
+        setEmailError(!emailRegex.test(value));
+      } else {
+        setEmailValid(false);
+        setEmailError(false);
+      }
+    }
+    
     setFormData(updatedFormData);
   };
 
+  const handleEmailBlur = () => {
+    setEmailValid(false);
+    setEmailError(false);
+  };
+const getIcTypeByCitizenCategory = (category) => {
+  const icTypeMapping = {
+    "Brunei Citizen": "Yellow",
+    "Permanent": "Purple",
+    "Foreigner": "Green"
+  };
+  return icTypeMapping[category] || "";
+};
   const submitFormBasicDetails = async () => {
     // Validate SPK Account Number for Brunei Citizen and Permanent
     if ((formData.citizenCategory === 'Brunei Citizen' || formData.citizenCategory === 'Permanent') && 
@@ -221,6 +263,7 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
       setModalDesignation(false);
     }
   }
+  
   return (
     <>
       <div className="w-full h-fit px-20 py-10">
@@ -245,8 +288,6 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                 value={formData.middleName}
                 onChange={handleChange}
                 isFocusRing={false}
-                isBorderLeft={true}
-                borderColor={"red-td-500"}
               />
               <ReuseableInput
                 placeholder="last name"
@@ -273,17 +314,26 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
               isBorderLeft={true}
               borderColor={"red-td-500"}
             />
-            <ReuseableInput
-              type="date"
-              label={"Date of Joining"}
-              id="joinDate"
-              name="joinDate"
-              value={formData.joinDate}
-              onChange={handleChange}
-              isFocusRing={false}
-              isBorderLeft={true}
-              borderColor={"red-td-500"}
-            />
+         <div className="flex-1 min-w-50 space-y-2">
+  <label htmlFor="joinDate" className="block text-base font-medium">
+    Date of Joining
+  </label>
+  <CustomDatePicker
+    selected={formData.joinDate ? new Date(formData.joinDate) : null}
+    onChange={(date) => {
+      const formattedDate = date ? date.toISOString().split('T')[0] : '';
+      handleChange({
+        target: {
+          name: 'joinDate',
+          value: formattedDate
+        }
+      });
+    }}
+    placeholder="Select Date of Joining"
+    isBorderLeft={true}
+    borderColor="red-td-500"
+  />
+</div>
           </div>
 
           <div className="w-full flex items-center justify-center space-x-8 pb-5 border-b">
@@ -294,9 +344,12 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
               name="email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleEmailBlur}
               isFocusRing={false}
               isBorderLeft={true}
               borderColor={"red-td-500"}
+              emailValid={emailValid}
+              emailError={emailError}
             />
             <div className="w-[49%] flex flex-col items-start justify-center">
               <label className="block text-base font-medium mb-2" htmlFor="phoneNumber">
@@ -307,6 +360,8 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   options={phoneNumberData}
                   onChange={(selectedOption) => {
                     if (selectedOption) {
+                      const limit = getPhoneDigitLimit(selectedOption.label);
+                      setPhoneDigitLimit(limit);
                       setFormData(prev => ({
                         ...prev,
                         phoneCode: selectedOption.label,
@@ -339,15 +394,10 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                     control: (base, state) => ({
                       ...base,
-                      borderLeftWidth: '6px',
-                      borderLeftColor: '#B91C1C',
                       borderRadius: '6px',
                       borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
                       boxShadow: 'none',
-                      '&:hover': {
-                        borderColor: '#d1d5db',
-                        borderLeftColor: '#B91C1C',
-                      }
+                      
                     }),
                   }}
                   menuPortalTarget={document.body}
@@ -361,14 +411,14 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   value={formData.phoneNumber}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (value.length <= 15) {
+                    if (value.length <= phoneDigitLimit) {
                       handleChange(e);
                     }
                   }}
                   labelUnshow={true}
                   isFocusRing={false}
                   isBorderLeft={true}
-                  borderColor="red-td-500"
+                  borderColor={"red-td-500"}
                 />
               </div>
             </div>
@@ -408,29 +458,51 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   control: (base, state) => ({
                     ...base,
                     borderLeftWidth: '6px',
-                    borderLeftColor: '#B91C1C',
+                    borderLeftColor: '#dc2626',
                     borderRadius: '6px',
-                    borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
+                    borderColor: '#d1d5db',
                     boxShadow: 'none',
                     '&:hover': {
-                      borderColor: '#d1d5db',
-                      borderLeftColor: '#B91C1C',
+                      borderLeftColor: '#dc2626',
                     }
                   }),
                 }}
                 components={{ 
+                  MenuList: ({ children }) => {
+                    const childArray = Array.isArray(children) ? children : [children];
+                    
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
+                          {childArray}
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 12px',
+                            backgroundColor: '#f3f4f6',
+                            borderTop: '1px solid #e5e7eb',
+                            cursor: 'pointer',
+                            fontWeight: 500,
+                            textAlign: 'center',
+                            flexShrink: 0,
+                          }}
+                          onClick={() => setModalWorkLocations(true)}
+                        >
+                          + New Work Location
+                        </div>
+                      </div>
+                    );
+                  },
                   Option: (props) => (
                     <CustomOption 
-                      props={props} 
-                      onCreateNew={() => setModalWorkLocations(true)}
-                      createNewLabel="New Work Location"
+                      props={props}
                     />
                   )
                 }}
                 menuPortalTarget={document.body}
                 filterOption={(option, rawInput) => {
                   if (option.value === "create-new-data") {
-                    return true;
+                    return false;
                   }
                   if (!option.label || typeof option.label !== 'string') {
                     return false;
@@ -459,29 +531,51 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   control: (base, state) => ({
                     ...base,
                     borderLeftWidth: '6px',
-                    borderLeftColor: '#B91C1C',
+                    borderLeftColor: '#dc2626',
                     borderRadius: '8px',
-                    borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
+                    borderColor: '#d1d5db',
                     boxShadow: 'none',
-                    '&:hover': {
-                      borderColor: '#d1d5db',
-                      borderLeftColor: '#B91C1C',
+                  '&:hover': {
+                      borderLeftColor: '#dc2626',
                     }
                   }),
                 }}
                 components={{ 
+                  MenuList: ({ children }) => {
+                    const childArray = Array.isArray(children) ? children : [children];
+                    
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
+                          {childArray}
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 12px',
+                            backgroundColor: '#f3f4f6',
+                            borderTop: '1px solid #e5e7eb',
+                            cursor: 'pointer',
+                            fontWeight: 500,
+                            textAlign: 'center',
+                            flexShrink: 0,
+                          }}
+                          onClick={() => setModalDesignation(true)}
+                        >
+                          + New Designation
+                        </div>
+                      </div>
+                    );
+                  },
                   Option: (props) => (
                     <CustomOption 
-                      props={props} 
-                      onCreateNew={() => setModalDesignation(true)}
-                      createNewLabel="New Designation"
+                      props={props}
                     />
                   )
                 }}
                 menuPortalTarget={document.body}
                 filterOption={(option, rawInput) => {
                   if (option.value === "create-new-data") {
-                    return true;
+                    return false;
                   }
                   return option.label.toLowerCase().includes(rawInput.toLowerCase());
                 }}
@@ -504,29 +598,52 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   control: (base, state) => ({
                     ...base,
                     borderLeftWidth: '6px',
-                    borderLeftColor: '#B91C1C',
+                    borderLeftColor: '#dc2626',
                     borderRadius: '8px',
-                    borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
+                    borderColor: '#d1d5db',
                     boxShadow: 'none',
                     '&:hover': {
-                      borderColor: '#d1d5db',
-                      borderLeftColor: '#B91C1C',
+                      borderLeftColor: '#dc2626',
                     }
+                   
                   }),
                 }}
                 components={{ 
+                  MenuList: ({ children }) => {
+                    const childArray = Array.isArray(children) ? children : [children];
+                    
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
+                          {childArray}
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 12px',
+                            backgroundColor: '#f3f4f6',
+                            borderTop: '1px solid #e5e7eb',
+                            cursor: 'pointer',
+                            fontWeight: 500,
+                            textAlign: 'center',
+                            flexShrink: 0,
+                          }}
+                          onClick={() => setModalDepartement(true)}
+                        >
+                          + New Department
+                        </div>
+                      </div>
+                    );
+                  },
                   Option: (props) => (
                     <CustomOption 
-                      props={props} 
-                      onCreateNew={() => setModalDepartement(true)}
-                      createNewLabel="New Departement"
+                      props={props}
                     />
                   )
                 }}
                 menuPortalTarget={document.body}
                 filterOption={(option, rawInput) => {
                   if (option.value === "create-new-data") {
-                    return true;
+                    return false;
                   }
                   return option.label.toLowerCase().includes(rawInput.toLowerCase());
                 }}
@@ -667,6 +784,14 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   />
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Required Field Indicator */}
+          <div className="w-full flex justify-center mt-6">
+            <div className="flex items-center gap-2 text-sm text-gray-td-600">
+              <div className="w-6 h-6 border-l-4 border-red-td-500"></div>
+              <span>Required Field</span>
             </div>
           </div>
         </div>

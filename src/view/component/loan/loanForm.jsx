@@ -132,6 +132,64 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
     };
 
     const handleSubmit = async () => {
+        // Validation
+        const loanAmount = parseFloat(formData.loanAmount);
+        const instalmentAmount = parseFloat(formData.instalmentAmount);
+
+        if (!loanAmount || loanAmount <= 0) {
+            toast(<CustomToast 
+                message="Loan amount must be greater than 0" 
+                status={"error"} 
+            />, {
+                autoClose: 3000,
+                closeButton: false,
+                hideProgressBar: true,
+                position: "top-center",
+                style: {
+                    background: 'transparent',
+                    boxShadow: 'none',
+                    padding: 0
+                }
+            });
+            return;
+        }
+
+        if (!instalmentAmount || instalmentAmount <= 0) {
+            toast(<CustomToast 
+                message="Instalment amount must be greater than 0" 
+                status={"error"} 
+            />, {
+                autoClose: 3000,
+                closeButton: false,
+                hideProgressBar: true,
+                position: "top-center",
+                style: {
+                    background: 'transparent',
+                    boxShadow: 'none',
+                    padding: 0
+                }
+            });
+            return;
+        }
+
+        if (instalmentAmount > loanAmount) {
+            toast(<CustomToast 
+                message="Instalment amount cannot be greater than loan amount" 
+                status={"error"} 
+            />, {
+                autoClose: 3000,
+                closeButton: false,
+                hideProgressBar: true,
+                position: "top-center",
+                style: {
+                    background: 'transparent',
+                    boxShadow: 'none',
+                    padding: 0
+                }
+            });
+            return;
+        }
+
         const payload = {
             ...formData,
             disbursementDate: formData.disbursementDate ? dayjs(formData.disbursementDate).format('YYYY-MM-DD') : "",
@@ -214,10 +272,22 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
     const loanLabelLowercase = currentIsAdvance ? "advance salary" : "loan";
 
     return (
-        <div className="w-screen h-full overflow-y-auto flex-col flex items-start justify-start bg-white rounded-xl">
+        
+    <div className="w-screen h-screen flex flex-col bg-white rounded-xl overflow-hidden pt-20">
             
-            <div className="w-[100%] p-6 items-start justify-start bg-white">                
-                 <div className="max-w-screen-xl mx-auto px-8 py-8">
+            {/* Fixed Header */}
+            <div className="w-full bg-white border-b border-gray-200 px-8 py-3 flex-shrink-0">
+                <div className="max-w-screen-xl mx-auto pl-50 pt-3">
+                    <h1 className="text-2xl font-semibold text-gray-900">
+                        {isUpdate ? `Update ${loanLabel}` : `Create ${loanLabel}`}
+                    </h1>
+                </div>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
+                <div className="w-[100%] p-6 items-start justify-start bg-white">                
+                 <div className="max-w-screen-xl mx-auto px-2 py-1">
                     <div className="w-full space-y-6 pr-50">
                         <div className="grid grid-cols-1 gap-6">
                              <div className="space-y-2">
@@ -240,13 +310,13 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                                         control: (base, state) => ({
                                         ...base,
                                         borderLeftWidth: '6px',
-                                        borderLeftColor: '#B91C1C',
+                                        borderLeftColor: '#dc2626',
                                         borderRadius: '6px',
                                         borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
                                         boxShadow: 'none',
                                         '&:hover': {
                                             borderColor: '#d1d5db',
-                                            borderLeftColor: '#B91C1C',
+                                            borderLeftColor: '#dc2626',
                                         }
                                         }),
                                     }}
@@ -276,7 +346,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                         <div className="grid grid-cols-1 gap-6">
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
-                                    Employee Name<span className="text-red-500">*</span>
+                                    Employee Name
                                 </label>
                                 <Select
                                     options={dataEmployeesOptions}
@@ -294,13 +364,13 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                                         control: (base, state) => ({
                                         ...base,
                                         borderLeftWidth: '6px',
-                                        borderLeftColor: '#B91C1C',
+                                        borderLeftColor: '#dc2626',
                                         borderRadius: '6px',
                                         borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
                                         boxShadow: 'none',
                                         '&:hover': {
                                             borderColor: '#d1d5db',
-                                            borderLeftColor: '#B91C1C',
+                                            borderLeftColor: '#dc2626',
                                         }
                                         }),
                                     }}
@@ -319,7 +389,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
 
                             <div className="space-y-2">
                                 <label className="block text-xs font-medium text-gray-700">
-                                    {loanLabel} Amount<span className="text-red-500">*</span>
+                                    {loanLabel} Amount
                                     <span className="ml-1 text-gray-400 cursor-help" title="Enter loan amount in rupiah">ⓘ</span>
                                 </label>
                                <div className="relative w-[60%]">
@@ -343,7 +413,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                         {/* UPDATED: Disbursement Date with Custom DatePicker */}
                         <div className="space-y-2">
                             <label className="block text-xs font-medium text-gray-700">
-                                Disbursement Date<span className="text-red-500">*</span>
+                                Disbursement Date
                             </label>
                             <div className="w-[60%]">
                             <CustomDatePicker
@@ -358,7 +428,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
 
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">
-                                Reason<span className="text-red-500">*</span>
+                                Reason
                             </label>
                              <div className="w-[60%]">
                             <ReuseableInput
@@ -371,6 +441,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                                 isFocusRing={false}
                                 isBorderLeft={true}
                                 borderColor="red-td-500"
+                                maxLength={250}
                             />
                             </div>
                         </div>
@@ -382,7 +453,6 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-gray-700">
                                         Deduction Start Date
-                                        <span className="text-red-500">*</span>
                                         <span className="ml-1 text-gray-400 cursor-help" title="Enter EMI deduction start date">ⓘ</span>
                                     </label>
                                      <div className="w-[60%]">
@@ -399,7 +469,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
 
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-gray-700">
-                                        Instalment Amount<span className="text-red-500">*</span>
+                                        Instalment Amount
                                     </label>
                                     <div className="relative">
                                          <div className="w-[60%]">
@@ -445,18 +515,27 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                         </div>
                     )}
                 </div>
-                
-                <div className="max-w-screen-xl mx-auto px-8">
-                    <div className="flex items-center justify-start pt-10 border-t space-x-4">
-                        <ButtonReusable 
-                            title={isUpdate ? "Update" : "Save"} 
-                            action={handleSubmit} 
-                            isLoading={loading} 
-                        />
-                        {!loading && <ButtonReusable title={"Cancel"} action={handleCancel} isBLue={false} />}
-                    </div>
-                </div>
             </div>
+                
+            {/* Fixed Footer with Buttons */}
+           {/* Fixed Footer with Buttons */}
+<div className="w-full bg-white border-t border-gray-200 px-8 py-4 flex-shrink-0 fixed bottom-0 left-0 right-0 z-10 pl-20">
+    <div className="max-w-screen-xl mx-auto flex items-center justify-between pl-20">
+        <div className="flex items-center space-x-4">
+            <ButtonReusable 
+                title={isUpdate ? "Update" : "Save"} 
+                action={handleSubmit} 
+                isLoading={loading} 
+            />
+            {!loading && <ButtonReusable title={"Cancel"} action={handleCancel} isBLue={false} />}
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+            <span className="inline-block w-1 h-4 bg-red-600 mr-2"></span>
+            Indicates Mandatory Fields.
+        </div>
+        <div className="w-32"></div> {/* Spacer to balance the layout */}
+    </div>
+</div>
 
             <Modal
                 isOpen={modalLoans}
@@ -486,6 +565,7 @@ function LoanForm({ setShowForm, isAdvance = false, setSelectedLoanData, data, i
                     data={isAdvance || isLoanAdvance ? "advance-salary" : "loans"}
                 />
             </Modal>
+        </div>
         </div>
     );
 }

@@ -97,6 +97,7 @@ function SalaryDetails({cancel, uuid, isRevise, isAdding, isEditMode, setIsRevis
     const [bonuses, setBonuses] = useState({});
     const [commissions, setCommissions] = useState({});
     const [giftCoupons, setGiftCoupons] = useState({});
+    
     const [formData, setFormData] = useState({
         annualCTC: '',
         basicPercentage: '',
@@ -1079,6 +1080,18 @@ function SalaryDetails({cancel, uuid, isRevise, isAdding, isEditMode, setIsRevis
     }, [dataEmployeeSalaryDetail, salaryComponent, formData.annualCTC, isDataLoaded]);
 
     const handleSubmit = async () => {
+        const totalAnnual = parseFloat(calculations?.total?.annual) || 0;
+    
+    if (totalAnnual <= 0) {
+        toast.error("Total annual amount must be greater than $0. Please add salary components.", {
+            autoClose: 3000,
+            closeButton: false,
+            hideProgressBar: true,
+            position: "top-center",
+            theme: "colored"
+        });
+        return;
+    }
         if (hasCalculationError) {
             return;
         }
