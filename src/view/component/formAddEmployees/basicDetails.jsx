@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import { employeeCitizenCategory, employeeGender } from "../../../../data/dummy";
 import ButtonReusable from "../buttonReusable";
 import Modal from "react-modal";
@@ -13,6 +13,8 @@ import ReuseableInput from "../reuseableInput";
 import { flagImage } from "../../../../helper/globalHelper";
 import { useLocation } from "react-router-dom";
 import CustomDatePicker from "../CustomDatePicker";
+import { MagnifyingGlass } from "@phosphor-icons/react";
+import React, { useEffect, useState } from "react";
 function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComplated=[]}) {
   const { pathname } = useLocation();
   const { 
@@ -356,52 +358,144 @@ const getIcTypeByCitizenCategory = (category) => {
                 Mobile Number
               </label>
               <div className="flex items-center w-full gap-2">
-                <Select
-                  options={phoneNumberData}
-                  onChange={(selectedOption) => {
-                    if (selectedOption) {
-                      const limit = getPhoneDigitLimit(selectedOption.label);
-                      setPhoneDigitLimit(limit);
-                      setFormData(prev => ({
-                        ...prev,
-                        phoneCode: selectedOption.label,
-                        flagIso: selectedOption.emoji,
-                      }));
-                    }
-                  }}
-                  className="w-40 z-20"
-                  value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
-                  formatOptionLabel={(option, context) => (
-                    <div className="flex items-center">
-                      <img 
-                        src={flagImage({ emoji: option.emoji, country: option.country })} 
-                        className="w-6 mr-2 object-contain" 
-                        alt={option.country}
-                      />
-                      {context.context === 'menu' ? (
-                        <span>{option.country} {option.label}</span>
-                      ) : (
-                        <span>{option.label}</span>
-                      )}
-                    </div>
-                  )}
-                  classNames={{
-                    control: () => "!rounded-md !border-2 !border-gray-300 !bg-white !h-full",
-                    valueContainer: () => "!px-2 !py-1",
-                    indicatorsContainer: () => "!px-1",
-                  }}
-                  styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                    control: (base, state) => ({
-                      ...base,
-                      borderRadius: '6px',
-                      borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
-                      boxShadow: 'none',
-                      
-                    }),
-                  }}
-                  menuPortalTarget={document.body}
-                />
+<Select
+  options={phoneNumberData}
+  onChange={(selectedOption) => {
+    if (selectedOption) {
+      const limit = getPhoneDigitLimit(selectedOption.label);
+      setPhoneDigitLimit(limit);
+      setFormData(prev => ({
+        ...prev,
+        phoneCode: selectedOption.label,
+        flagIso: selectedOption.emoji,
+      }));
+    }
+  }}
+  className="w-40 z-20"
+  value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
+  formatOptionLabel={(option, context) => {
+    const flagUrl = flagImage({ emoji: option.emoji, country: option.country });
+    
+    if (context.context === 'menu') {
+      // In dropdown menu: show flag + country name + code
+      return (
+        <div className="flex items-center gap-3 py-1">
+          <div className="w-10 h-7 flex-shrink-0">
+            <img 
+              src={flagUrl} 
+              className="w-full h-full object-cover" 
+              alt={option.country}
+              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }}
+            />
+          </div>
+          <span className="flex-1 font-medium text-gray-900">{option.country}</span>
+          <span className="text-gray-500 text-sm">{option.label}</span>
+        </div>
+      );
+    }
+    
+    // When selected: show only flag + code
+    return (
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-6 flex-shrink-0">
+          <img 
+            src={flagUrl} 
+            className="w-full h-full object-cover" 
+            alt={option.country}
+          />
+        </div>
+        <span>{option.label}</span>
+      </div>
+    );
+  }}
+  components={{
+    MenuList: ({ children, ...props }) => {
+      const [searchValue, setSearchValue] = React.useState('');
+      
+      // Filter options based on search
+      const filteredChildren = React.Children.toArray(children).filter((child) => {
+        if (!searchValue) return true;
+        
+        const option = child.props?.data;
+        if (!option) return true;
+        
+        const search = searchValue.toLowerCase();
+        return (
+          option.country?.toLowerCase().includes(search) ||
+          option.label?.toLowerCase().includes(search)
+        );
+      });
+      
+      return (
+        <div>
+          {/* Search bar */}
+          <div className="sticky top-0 bg-white z-10 p-3 border-b">
+            <div className="relative">
+              <MagnifyingGlass 
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+                size={16}
+              />
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder="Search for countries"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          {/* Filtered options */}
+          <div {...props} style={{ maxHeight: '250px', overflowY: 'auto' }}>
+            {filteredChildren.length > 0 ? (
+              filteredChildren
+            ) : (
+              <div className="p-4 text-center text-gray-500 text-sm">
+                No countries found
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+  }}
+  classNames={{
+    control: () => "!rounded-md !border-2 !border-gray-300 !bg-white !h-full",
+    valueContainer: () => "!px-2 !py-1",
+    indicatorsContainer: () => "!px-1",
+  }}
+  styles={{
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    control: (base, state) => ({
+      ...base,
+      borderRadius: '6px',
+      borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
+      '&:hover': {
+        borderColor: '#3b82f6',
+      }
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '8px',
+      overflow: 'hidden',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected 
+        ? '#eff6ff' 
+        : state.isFocused 
+        ? '#f3f4f6' 
+        : 'white',
+      color: '#111827',
+      padding: '10px 12px',
+      cursor: 'pointer',
+    }),
+  }}
+  menuPortalTarget={document.body}
+  // Important: disable default filtering since we're doing it manually
+  filterOption={null}
+/>
                 
                 <ReuseableInput
                   id="phoneNumber"

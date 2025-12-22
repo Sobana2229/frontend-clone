@@ -246,9 +246,8 @@ function flagEmojiToCountryCode(emoji) {
 
 export const flagImage = ({ emoji, country, className = "" }) => {
   const code = flagEmojiToCountryCode(emoji);
-  return `https://flagcdn.com/w20/${code}.png`
+  return `https://purecatamphetamine.github.io/country-flag-icons/3x2/${code.toUpperCase()}.svg`;
 };
-
 export const getEmployerContributionRate = (monthlySalary) => {
   if (monthlySalary <= 500) {
     return { rate: 0, fixedAmount: 57.50 };
