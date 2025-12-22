@@ -1,4 +1,3 @@
-
 import { employeeCitizenCategory, employeeGender } from "../../../../data/dummy";
 import ButtonReusable from "../buttonReusable";
 import Modal from "react-modal";
@@ -15,6 +14,7 @@ import { useLocation } from "react-router-dom";
 import CustomDatePicker from "../CustomDatePicker";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
+
 function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComplated=[]}) {
   const { pathname } = useLocation();
   const { 
@@ -155,19 +155,22 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     setEmailValid(false);
     setEmailError(false);
   };
-const getIcTypeByCitizenCategory = (category) => {
-  const icTypeMapping = {
-    "Brunei Citizen": "Yellow",
-    "Permanent": "Purple",
-    "Foreigner": "Green"
+
+  const getIcTypeByCitizenCategory = (category) => {
+    const icTypeMapping = {
+      "Brunei Citizen": "Yellow",
+      "Permanent": "Purple",
+      "Foreigner": "Green"
+    };
+    return icTypeMapping[category] || "";
   };
-  return icTypeMapping[category] || "";
-};
+
   const submitFormBasicDetails = async () => {
-    // Validate SPK Account Number for Brunei Citizen and Permanent
-    if ((formData.citizenCategory === 'Brunei Citizen' || formData.citizenCategory === 'Permanent') && 
-        (!formData.spkAccountNumber || formData.spkAccountNumber.trim() === '')) {
-      toast.error("SPK Account Number is required for Brunei Citizen and Permanent residents", {
+    // Sequential validation - check fields in order from top to bottom
+    
+    // 1. First Name
+    if (!formData.firstName || formData.firstName.trim() === '') {
+      toast.error("Please enter First Name", {
         autoClose: 3000,
         closeButton: false,
         hideProgressBar: true,
@@ -177,8 +180,197 @@ const getIcTypeByCitizenCategory = (category) => {
       return;
     }
 
+    // 2. Middle Name is optional, skip
+
+    // 3. Last Name
+    if (!formData.lastName || formData.lastName.trim() === '') {
+      toast.error("Please enter Last Name", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 4. Employee ID
+    if (!formData.employeeId || formData.employeeId.trim() === '') {
+      toast.error("Please enter Employee ID", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 5. Date of Joining
+    if (!formData.joinDate || formData.joinDate.trim() === '') {
+      toast.error("Please select Date of Joining", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 6. Work Email - required and must be valid
+    if (!formData.email || formData.email.trim() === '') {
+      toast.error("Please enter Work Email", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 6b. Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 7. Mobile Number - required
+    if (!formData.phoneNumber || formData.phoneNumber.trim() === '') {
+      toast.error("Please enter Mobile Number", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 7b. Phone Code validation
+    if (!formData.phoneCode) {
+      toast.error("Please select country code for Mobile Number", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 7c. Mobile Number format validation - check digit length
+    const phoneDigitLimit = getPhoneDigitLimit(formData.phoneCode);
+    if (formData.phoneNumber.length < phoneDigitLimit) {
+      toast.error(`Mobile Number must be ${phoneDigitLimit} digits for ${formData.phoneCode}`, {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 7d. Mobile Number - only digits validation
+    const phoneNumberRegex = /^\d+$/;
+    if (!phoneNumberRegex.test(formData.phoneNumber)) {
+      toast.error("Mobile Number must contain only digits", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 8. Gender
+    if (!formData.gender || formData.gender.trim() === '') {
+      toast.error("Please select Gender", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 9. Work Location
+    if (!formData.workLocationUuid || formData.workLocationUuid.trim() === '') {
+      toast.error("Please select Work Location", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 10. Designation
+    if (!formData.designationUuid || formData.designationUuid.trim() === '') {
+      toast.error("Please select Designation", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 11. Department
+    if (!formData.departementUuid || formData.departementUuid.trim() === '') {
+      toast.error("Please select Department", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 12. Citizen Category
+    if (!formData.citizenCategory || formData.citizenCategory.trim() === '') {
+      toast.error("Please select Citizen Category", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // 13. SPK Account Number (only for Brunei Citizen and Permanent with Statutory Components enabled)
+    if ((formData.citizenCategory === 'Brunei Citizen' || formData.citizenCategory === 'Permanent') && 
+        formData.isStatutoryComponents &&
+        (!formData.spkAccountNumber || formData.spkAccountNumber.trim() === '')) {
+      toast.error("Please enter SPK Account Number", {
+        autoClose: 3000,
+        closeButton: false,
+        hideProgressBar: true,
+        position: "top-center",
+        theme: "colored"
+      });
+      return;
+    }
+
+    // All validations passed - proceed with submission
     const access_token = localStorage.getItem("accessToken");
-    const response = await creatEmployee(formData, access_token)
+    const response = await creatEmployee(formData, access_token);
+    
     if(response){
       setTempUuid(response?.uuid);
       toast.success(response?.msg, {
@@ -187,8 +379,8 @@ const getIcTypeByCitizenCategory = (category) => {
         hideProgressBar: true,
         position: "top-center",
         theme: "colored"
-      })
-      setStep(2)
+      });
+      setStep(2);
       setFormData({
         firstName: "",
         middleName: "",
@@ -214,7 +406,7 @@ const getIcTypeByCitizenCategory = (category) => {
         setStepComplated(prev => [...prev, 1]);
       }
     }
-  }
+  };
 
   const handleWorkLocationSelect = async (selectedOption) => {
     if(selectedOption.value == "create-new-data"){
@@ -304,7 +496,8 @@ const getIcTypeByCitizenCategory = (category) => {
             </div>
           </div>
 
-          <div className="w-full flex items-center justify-center space-x-8">
+          <div className="w-full flex flex-wrap items-start gap-8">
+
             <ReuseableInput
               label={"Employee ID"}
               placeholder="Enter Employee ID"
@@ -316,29 +509,30 @@ const getIcTypeByCitizenCategory = (category) => {
               isBorderLeft={true}
               borderColor={"red-td-500"}
             />
-         <div className="flex-1 min-w-50 space-y-2">
-  <label htmlFor="joinDate" className="block text-base font-medium">
-    Date of Joining
-  </label>
-  <CustomDatePicker
-    selected={formData.joinDate ? new Date(formData.joinDate) : null}
-    onChange={(date) => {
-      const formattedDate = date ? date.toISOString().split('T')[0] : '';
-      handleChange({
-        target: {
-          name: 'joinDate',
-          value: formattedDate
-        }
-      });
-    }}
-    placeholder="Select Date of Joining"
-    isBorderLeft={true}
-    borderColor="red-td-500"
-  />
-</div>
+            <div className="flex-1 min-w-50 space-y-2">
+              <label htmlFor="joinDate" className="block text-base font-medium">
+                Date of Joining
+              </label>
+              <CustomDatePicker
+                selected={formData.joinDate ? new Date(formData.joinDate) : null}
+                onChange={(date) => {
+                  const formattedDate = date ? date.toISOString().split('T')[0] : '';
+                  handleChange({
+                    target: {
+                      name: 'joinDate',
+                      value: formattedDate
+                    }
+                  });
+                }}
+                placeholder="Select Date of Joining"
+                isBorderLeft={true}
+                borderColor="red-td-500"
+              />
+            </div>
           </div>
 
-          <div className="w-full flex items-center justify-center space-x-8 pb-5 border-b">
+          <div className="w-full flex flex-wrap items-start gap-8 pb-5 border-b">
+
             <ReuseableInput
               label={"Work Email"}
               placeholder="abc@xyz.com"
@@ -353,178 +547,178 @@ const getIcTypeByCitizenCategory = (category) => {
               emailValid={emailValid}
               emailError={emailError}
             />
-          <div className="w-[49%] flex flex-col items-start justify-center">
-  <label className="block text-base font-medium mb-2" htmlFor="phoneNumber">
-    Mobile Number
-  </label>
-  
-  <div className="relative w-full">
-    <Select
-      options={phoneNumberData}
-      onChange={(selectedOption) => {
-        if (selectedOption) {
-          const limit = getPhoneDigitLimit(selectedOption.label);
-          setPhoneDigitLimit(limit);
-          setFormData(prev => ({
-            ...prev,
-            phoneCode: selectedOption.label,
-            flagIso: selectedOption.emoji,
-          }));
-        }
-      }}
-      className="w-full"
-      value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
-      isSearchable={true}
-      menuIsOpen={undefined}
-      closeMenuOnScroll={false}
-      placeholder="Select country code"
-      formatOptionLabel={(option, context) => {
-        const flagUrl = flagImage({ emoji: option.emoji, country: option.country });
-        
-        if (context.context === 'menu') {
-          const isSelected = formData.phoneCode === option.label;
-          return (
-            <div className="flex items-center justify-between w-full py-2 px-3">
-              <div className="flex items-center gap-3 flex-1">
-                <img 
-                  src={flagUrl} 
-                  className="w-6 h-4 object-cover rounded" 
-                  alt={option.country || option.label}
+            <div className=" w-full md:w-[49%] flex flex-col items-start justify-center">
+              <label className="block text-base font-medium mb-2" htmlFor="phoneNumber">
+                Mobile Number
+              </label>
+              
+              <div className="relative w-full">
+                <Select
+                  options={phoneNumberData}
+                  onChange={(selectedOption) => {
+                    if (selectedOption) {
+                      const limit = getPhoneDigitLimit(selectedOption.label);
+                      setPhoneDigitLimit(limit);
+                      setFormData(prev => ({
+                        ...prev,
+                        phoneCode: selectedOption.label,
+                        flagIso: selectedOption.emoji,
+                      }));
+                    }
+                  }}
+                  className="w-full"
+                  value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
+                  isSearchable={true}
+                  menuIsOpen={undefined}
+                  closeMenuOnScroll={false}
+                  placeholder="Select country code"
+                  formatOptionLabel={(option, context) => {
+                    const flagUrl = flagImage({ emoji: option.emoji, country: option.country });
+                    
+                    if (context.context === 'menu') {
+                      const isSelected = formData.phoneCode === option.label;
+                      return (
+                        <div className="flex items-center justify-between w-full py-2 px-3">
+                          <div className="flex items-center gap-3 flex-1">
+                            <img 
+                              src={flagUrl} 
+                              className="w-6 h-4 object-cover rounded" 
+                              alt={option.country || option.label}
+                            />
+                            <span className="font-medium text-gray-900 text-sm">
+                              {option.country || option.countryName || option.name || option.label}
+                            </span>
+                            <span className="text-gray-500 text-sm">
+                              ({option.label})
+                            </span>
+                          </div>
+                          {isSelected && (
+                            <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                            </svg>
+                          )}
+                        </div>
+                      );
+                    }
+                    
+                    // Selected value - just show flag
+                    return (
+                      <div className="flex items-center gap-2">
+                        <img 
+                          src={flagUrl} 
+                          className="w-6 h-4 object-cover rounded" 
+                          alt={option.country || option.label}
+                        />
+                        <span className="text-sm font-medium">{option.label}</span>
+                      </div>
+                    );
+                  }}
+                  components={{
+                    DropdownIndicator: (props) => (
+                      <div {...props.innerProps} className="px-2">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    ),
+                    MenuList: ({ children, ...props }) => {
+                      return (
+                        <div 
+                          className="custom-scrollbar" 
+                          style={{ 
+                            maxHeight: '350px', 
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
+                            padding: '4px'
+                          }}
+                        >
+                          {children}
+                        </div>
+                      );
+                    },
+                    IndicatorSeparator: () => null,
+                  }}
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (base, state) => ({
+                      ...base,
+                      minHeight: '44px',
+                      borderRadius: '8px',
+                      borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+                      borderWidth: '2px',
+                      borderLeftWidth: '6px',
+                      borderLeftColor: '#dc2626',
+                      boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+                        borderLeftColor: '#dc2626',
+                      }
+                    }),
+                    valueContainer: (base) => ({
+                      ...base,
+                      padding: '2px 12px',
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+                      border: '1px solid #e5e7eb',
+                      marginTop: '4px',
+                    }),
+                    menuList: (base) => ({
+                      ...base,
+                      padding: 0,
+                      maxHeight: '350px',
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused ? '#f3f4f6' : 'white',
+                      color: '#111827',
+                      cursor: 'pointer',
+                      padding: '0',
+                      '&:active': {
+                        backgroundColor: '#e5e7eb',
+                      }
+                    }),
+                  }}
+                  menuPortalTarget={document.body}
+                  filterOption={(option, inputValue) => {
+                    if (!inputValue) return true;
+                    const searchText = inputValue.toLowerCase();
+                    const countryName = (option.data.country || option.data.countryName || option.data.name || '').toLowerCase();
+                    const phoneCode = (option.data.label || '').toLowerCase();
+                    return countryName.includes(searchText) || phoneCode.includes(searchText);
+                  }}
                 />
-                <span className="font-medium text-gray-900 text-sm">
-                  {option.country || option.countryName || option.name || option.label}
-                </span>
-                <span className="text-gray-500 text-sm">
-                  ({option.label})
-                </span>
+                
+                {/* Phone Number Input - MERGED with select - KEEPS YOUR ORIGINAL LOGIC */}
+                <input
+                  type="number"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= phoneDigitLimit) {
+                      handleChange(e);
+                    }
+                  }}
+                  placeholder="Enter Mobile Number"
+                  className="absolute top-0 left-[120px] right-0 h-full pl-3 pr-3 text-sm border-0 rounded-r-lg focus:outline-none focus:ring-0 bg-transparent"
+                  style={{ 
+                    pointerEvents: 'auto',
+                    paddingTop: '2px',
+                    paddingBottom: '2px',
+                  }}
+                />
               </div>
-              {isSelected && (
-                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                </svg>
-              )}
             </div>
-          );
-        }
-        
-        // Selected value - just show flag
-        return (
-          <div className="flex items-center gap-2">
-            <img 
-              src={flagUrl} 
-              className="w-6 h-4 object-cover rounded" 
-              alt={option.country || option.label}
-            />
-            <span className="text-sm font-medium">{option.label}</span>
-          </div>
-        );
-      }}
-      components={{
-        DropdownIndicator: (props) => (
-          <div {...props.innerProps} className="px-2">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        ),
-        MenuList: ({ children, ...props }) => {
-          return (
-            <div 
-              className="custom-scrollbar" 
-              style={{ 
-                maxHeight: '350px', 
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                padding: '4px'
-              }}
-            >
-              {children}
-            </div>
-          );
-        },
-        IndicatorSeparator: () => null,
-      }}
-      styles={{
-        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-        control: (base, state) => ({
-          ...base,
-          minHeight: '44px',
-          borderRadius: '8px',
-          borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
-          borderWidth: '2px',
-          borderLeftWidth: '6px',
-          borderLeftColor: '#dc2626',
-          boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
-          cursor: 'pointer',
-          '&:hover': {
-            borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
-            borderLeftColor: '#dc2626',
-          }
-        }),
-        valueContainer: (base) => ({
-          ...base,
-          padding: '2px 12px',
-        }),
-        menu: (base) => ({
-          ...base,
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-          border: '1px solid #e5e7eb',
-          marginTop: '4px',
-        }),
-        menuList: (base) => ({
-          ...base,
-          padding: 0,
-          maxHeight: '350px',
-        }),
-        option: (base, state) => ({
-          ...base,
-          backgroundColor: state.isFocused ? '#f3f4f6' : 'white',
-          color: '#111827',
-          cursor: 'pointer',
-          padding: '0',
-          '&:active': {
-            backgroundColor: '#e5e7eb',
-          }
-        }),
-      }}
-      menuPortalTarget={document.body}
-      filterOption={(option, inputValue) => {
-        if (!inputValue) return true;
-        const searchText = inputValue.toLowerCase();
-        const countryName = (option.data.country || option.data.countryName || option.data.name || '').toLowerCase();
-        const phoneCode = (option.data.label || '').toLowerCase();
-        return countryName.includes(searchText) || phoneCode.includes(searchText);
-      }}
-    />
-    
-    {/* Phone Number Input - MERGED with select - KEEPS YOUR ORIGINAL LOGIC */}
-    <input
-      type="number"
-      id="phoneNumber"
-      name="phoneNumber"
-      value={formData.phoneNumber}
-      onChange={(e) => {
-        const value = e.target.value;
-        if (value.length <= phoneDigitLimit) {
-          handleChange(e);
-        }
-      }}
-      placeholder="Enter Mobile Number"
-      className="absolute top-0 left-[120px] right-0 h-full pl-3 pr-3 text-sm border-0 rounded-r-lg focus:outline-none focus:ring-0 bg-transparent"
-      style={{ 
-        pointerEvents: 'auto',
-        paddingTop: '2px',
-        paddingBottom: '2px',
-      }}
-    />
-  </div>
-</div>
-
           </div>
 
-          <div className="w-full flex items-center justify-center space-x-8">
+          <div className="w-full flex flex-wrap items-start gap-8">
+
             <ReuseableInput
               label="Gender"
               id="gender"
@@ -541,8 +735,10 @@ const getIcTypeByCitizenCategory = (category) => {
                 <option key={idx} value={gender} className="capitalize">{gender}</option>
               ))}
             </ReuseableInput>
-            <div className="w-[49%] flex flex-col items-start justify-center">
+            
+            <div className=" w-full md:w-[49%] flex flex-col items-start justify-center">
               <label className="block text-base font-medium mb-2" htmlFor="">Work Location</label>
+              
               <Select
                 options={workLocationOptions}
                 onChange={handleWorkLocationSelect}
@@ -567,121 +763,12 @@ const getIcTypeByCitizenCategory = (category) => {
                     }
                   }),
                 }}
-                components={{ 
-                  MenuList: ({ children }) => {
-                    const childArray = Array.isArray(children) ? children : [children];
-                    
-                    return (
-                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
-                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
-                          {childArray}
-                        </div>
-                        <div
-                          style={{
-                            padding: '10px 12px',
-                            backgroundColor: '#f3f4f6',
-                            borderTop: '1px solid #e5e7eb',
-                            cursor: 'pointer',
-                            fontWeight: 500,
-                            textAlign: 'center',
-                            flexShrink: 0,
-                          }}
-                          onClick={() => setModalWorkLocations(true)}
-                        >
-                          + New Work Location
-                        </div>
-                      </div>
-                    );
-                  },
-                  Option: (props) => (
-                    <CustomOption 
-                      props={props}
-                    />
-                  )
-                }}
-                menuPortalTarget={document.body}
-                filterOption={(option, rawInput) => {
-                  if (option.value === "create-new-data") {
-                    return false;
-                  }
-                  if (!option.label || typeof option.label !== 'string') {
-                    return false;
-                  }
-                  return option.label.toLowerCase().includes(rawInput.toLowerCase());
-                }}
-              />
-            </div>
-          </div>
+                />
+ 
 
-          <div className="w-full flex items-center justify-center space-x-8 pb-5 border-b">
-            <div className="w-[49%] flex flex-col items-start justify-center">
-              <label className="block text-base font-medium mb-2" htmlFor="">Designation</label>
-              <Select
-                options={designationOptions}
-                onChange={handleDesignationSelect}
-                className='w-full bg-transparent focus:ring-0 outline-none text-sm'
-                classNames={{
-                  control: () =>
-                    "!rounded-md !bg-white !shadow-none !h-full",
-                  valueContainer: () => "!px-2 !py-1.5",
-                  indicatorsContainer: () => "!px-1",
-                }}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                  control: (base, state) => ({
-                    ...base,
-                    borderLeftWidth: '6px',
-                    borderLeftColor: '#dc2626',
-                    borderRadius: '8px',
-                    borderColor: '#d1d5db',
-                    boxShadow: 'none',
-                  '&:hover': {
-                      borderLeftColor: '#dc2626',
-                    }
-                  }),
-                }}
-                components={{ 
-                  MenuList: ({ children }) => {
-                    const childArray = Array.isArray(children) ? children : [children];
-                    
-                    return (
-                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
-                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
-                          {childArray}
-                        </div>
-                        <div
-                          style={{
-                            padding: '10px 12px',
-                            backgroundColor: '#f3f4f6',
-                            borderTop: '1px solid #e5e7eb',
-                            cursor: 'pointer',
-                            fontWeight: 500,
-                            textAlign: 'center',
-                            flexShrink: 0,
-                          }}
-                          onClick={() => setModalDesignation(true)}
-                        >
-                          + New Designation
-                        </div>
-                      </div>
-                    );
-                  },
-                  Option: (props) => (
-                    <CustomOption 
-                      props={props}
-                    />
-                  )
-                }}
-                menuPortalTarget={document.body}
-                filterOption={(option, rawInput) => {
-                  if (option.value === "create-new-data") {
-                    return false;
-                  }
-                  return option.label.toLowerCase().includes(rawInput.toLowerCase());
-                }}
-              />
+            
             </div>
-            <div className="w-[49%] flex flex-col items-start justify-center">
+            <div className=" w-full md:w-[49%] flex flex-col items-start justify-center">
               <label className="block text-base font-medium mb-2" htmlFor="">Departement</label>
               <Select
                 options={departementOptions}
@@ -749,6 +836,73 @@ const getIcTypeByCitizenCategory = (category) => {
                 }}
               />
             </div>
+                         
+               <div className="w-full md:w-[49%] flex flex-col items-start justify-center">
+  <label className="block text-base font-medium mb-2">
+    Designation
+  </label>
+
+  <Select
+    options={designationOptions}
+    onChange={handleDesignationSelect}
+    className="w-full bg-transparent focus:ring-0 outline-none text-sm"
+    classNames={{
+      control: () =>
+        "!rounded-md !bg-white !shadow-none !h-full",
+      valueContainer: () => "!px-2 !py-1.5",
+      indicatorsContainer: () => "!px-1",
+    }}
+    styles={{
+      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+      control: (base) => ({
+        ...base,
+        borderLeftWidth: '6px',
+        borderLeftColor: '#dc2626',
+        borderRadius: '8px',
+        borderColor: '#d1d5db',
+        boxShadow: 'none',
+        '&:hover': {
+          borderLeftColor: '#dc2626',
+        },
+      }),
+    }}
+    components={{
+      MenuList: ({ children }) => {
+        const childArray = Array.isArray(children) ? children : [children];
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
+              {childArray}
+            </div>
+            <div
+              style={{
+                padding: '10px 12px',
+                backgroundColor: '#f3f4f6',
+                borderTop: '1px solid #e5e7eb',
+                cursor: 'pointer',
+                fontWeight: 500,
+                textAlign: 'center',
+                flexShrink: 0,
+              }}
+              onClick={() => setModalDesignation(true)}
+            >
+              + New Designation
+            </div>
+          </div>
+        );
+      },
+      Option: (props) => <CustomOption props={props} />,
+    }}
+    menuPortalTarget={document.body}
+    filterOption={(option, rawInput) => {
+      if (option.value === "create-new-data") {
+        return false;
+      }
+      return option.label.toLowerCase().includes(rawInput.toLowerCase());
+    }}
+  />
+</div>
           </div>
 
           <div className="w-full flex items-center justify-center space-x-8">
