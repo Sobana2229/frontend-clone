@@ -24,9 +24,9 @@ function FormCustomBonus({formData, setFormData, handleInputChange, earningType 
     };
     
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="flex gap-8">
             {/* Left Column - Main Fields */}
-            <div className="space-y-4">
+            <div className="space-y-4" style={{ width: '750px', flexShrink: 0 }}>
                 {/* Earning Name */}
                 <div>
                     <ReuseableInput

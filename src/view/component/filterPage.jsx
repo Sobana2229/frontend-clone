@@ -9,6 +9,7 @@ import employeeStoreManagements from "../../store/tdPayroll/employee";
 import dayjs from "dayjs";
 import PeriodPicker from "./employeePortal/PeriodPicker";
 import LoanList from "./loan/loanList";
+import { useMemo } from "react";
 import { 
   Users2, 
   FileText, 
@@ -30,6 +31,7 @@ function FilterPage({
     filterFor,
     addData,
     addLoans,
+     dataTable = [],
     setFilter = undefined,
     filter = {},
     onlyAll = false,
@@ -47,11 +49,19 @@ function FilterPage({
     const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
     const [isPeriodDropdownOpen, setIsPeriodDropdownOpen] = useState(false);
     const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+    const [isEmployeeOpen, setIsEmployeeOpen] = useState(false);
+    const [isLoanNameOpen, setIsLoanNameOpen] = useState(false);
+    const [isLoanStatusOpen, setIsLoanStatusOpen] = useState(false);
+    const [isLoanNumberOpen, setIsLoanNumberOpen] = useState(false);
     
     const dropdownRef = useRef(null);
     const employeeDropdownRef = useRef(null);
     const periodDropdownRef = useRef(null);
     const statusDropdownRef = useRef(null);
+    const loanEmployeeRef = useRef(null);
+    const loanNameRef = useRef(null);
+    const loanStatusRef = useRef(null);
+    const loanNumberRef = useRef(null);
 
     const options =
         filterFor === "employee" ? 
@@ -75,6 +85,18 @@ function FilterPage({
             }
             if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target)) {
                 setIsStatusDropdownOpen(false);
+            }
+            if (loanEmployeeRef.current && !loanEmployeeRef.current.contains(event.target)) {
+                setIsEmployeeOpen(false);
+            }
+            if (loanNameRef.current && !loanNameRef.current.contains(event.target)) {
+                setIsLoanNameOpen(false);
+            }
+            if (loanStatusRef.current && !loanStatusRef.current.contains(event.target)) {
+                setIsLoanStatusOpen(false);
+            }
+            if (loanNumberRef.current && !loanNumberRef.current.contains(event.target)) {
+                setIsLoanNumberOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -122,6 +144,37 @@ function FilterPage({
         setIsEmployeeDropdownOpen(false);
     };
 
+    const handleLoanEmployeeSelect = (selectedOption) => {
+        setFilter(prev => ({
+            ...prev,
+            loanEmployeeUuid: selectedOption?.value || null
+        }))
+        setIsEmployeeOpen(false);
+    };
+
+    const handleLoanNameSelect = (loanName) => {
+        setFilter(prev => ({
+            ...prev,
+            loanName: loanName
+        }))
+        setIsLoanNameOpen(false);
+    };
+
+    const handleLoanStatusSelect = (status) => {
+        setFilter(prev => ({
+            ...prev,
+            loanStatus: status
+        }))
+        setIsLoanStatusOpen(false);
+    };
+
+    const handleLoanNumberChange = (e) => {
+        setFilter(prev => ({
+            ...prev,
+            loanNumber: e.target.value
+        }))
+    };
+
     const handleIsSalaryAdvanceSelect = async (selectedOption) => {
         setFilter(prev => ({
             ...prev,
@@ -138,6 +191,28 @@ function FilterPage({
         setIsStatusDropdownOpen(false);
     };
 
+    // Dummy loan names - replace with actual data from your store
+    const loanNameOptions = [
+        "Personal Loan",
+        "Salary Advance",
+        "Emergency Loan",
+        "Education Loan",
+        "Housing Loan"
+    ];
+
+    const loanStatusOptions = ["All", "Active", "Completed", "Pending", "Rejected"];
+const filteredLoans = dataTable?.filter((loan) => {
+    // 1️⃣ Employee filter
+    if (filter.loanEmployeeUuid) {
+        if (loan?.Employee?.uuid !== filter.loanEmployeeUuid) return false;
+    }
+
+    // 2️⃣ Loan Name filter
+    if (filter.loanName) {
+        const loanName = loan?.LoanName?.name || loan?.loanType;
+        if (loanName !== filter.loanName) return false;
+    }
+});
     // ============================================================
     // RENDER FOR CLAIMS SECTION - SIMPLE COMPACT DESIGN
     // ============================================================
@@ -145,11 +220,11 @@ function FilterPage({
     const selectedEmployee = getSelectedValue(dataEmployeesOptions, "employeeUuid");
 
     return (
-        <div className="w-[97%] bg-white px-8 py-4 border-b border-gray-200">
+        <div className="w-[120%] bg-white px-1 py-9 border-gray-200">
             <div className="flex items-center gap-4 w-full">
 
                 {/* FILTER BY */}
-                <span className="text-sm text-gray-500">FILTER BY :</span>
+                <span className="text-sm text-gray-200">FILTER BY :</span>
 
                 {/* Employee Dropdown */}
                 <div className="relative" ref={employeeDropdownRef}>
@@ -279,82 +354,360 @@ function FilterPage({
     );
 }
 
+// ============================================
+// COMPLETE FilterPage.jsx - LOANS SECTION ONLY
+// ============================================
 
-    
-    // ============================================================
-    // RENDER FOR LOAN SECTION - NEW FIGMA DESIGN
-    // ============================================================
-    if (filterFor === "Loans") {
-        return (
-            <div className="w-full">
-                <div className="w-[97%] mx-auto px-4 py-3 bg-white border-y border-gray-200">
-                    <div className="w-full h-[60px] border border-neutral-200 rounded-md bg-white flex items-center px-5 relative">
-                        <span className="text-[14px] font-medium text-neutral-600">
-                            FILTER BY :
-                        </span>
+if (filterFor === "Loans") {
+    const selectedLoanEmployee = getSelectedValue(dataEmployeesOptions, "loanEmployeeUuid");
+    const [employeeSearchTerm, setEmployeeSearchTerm] = useState("");
+    const [loanNameSearchTerm, setLoanNameSearchTerm] = useState("");
 
-                        {/* Employee */}
-                        <div className="flex items-center gap-2 ml-8 cursor-pointer">
-                            <Users2 size={18} className="text-neutral-500" />
-                            <span className="text-[14px] font-medium text-neutral-500">Employee</span>
-                            <CaretDown size={14} className="text-neutral-500" />
-                        </div>
+    // Filter employees based on search
+    const filteredEmployees = dataEmployeesOptions?.filter(employee =>
+        employee.label.toLowerCase().includes(employeeSearchTerm.toLowerCase())
+    ) || [];
 
-                        <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
+    // Get unique loan names from dataTable prop
+    const loanNameOptions = useMemo(() => {
+        if (!dataTable || !Array.isArray(dataTable)) return [];
+        const uniqueNames = [...new Set(
+            dataTable.map(loan => loan?.LoanName?.name || loan?.loanType || loan?.loanName)
+                .filter(Boolean)
+        )];
+        return uniqueNames;
+    }, [dataTable]);
 
-                        {/* Loan Name */}
-                        <div className="flex items-center gap-2 cursor-pointer">
-                            <FileText size={18} className="text-neutral-400" />
-                            <span className="text-[14px] font-medium text-neutral-500">Loan Name</span>
-                            <CaretDown size={14} className="text-neutral-500" />
-                        </div>
+    // Filter loan names based on search
+    const filteredLoanNames = loanNameOptions.filter(name =>
+        name.toLowerCase().includes(loanNameSearchTerm.toLowerCase())
+    );
 
-                        <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
+    return (
+        <div className="w-full pt-12">
+            <div className="w-full mx-auto pl-7 pr-5 pt-10 pb-5 bg-white ">
+                <div className="w-full h-[60px] border border-neutral-200 rounded-md bg-white flex items-center px-5 relative">
+                    <span className="text-[14px] font-medium text-neutral-500">
+                        FILTER BY :
+                    </span>
 
-                        {/* Loan Status */}
-                        <div className="flex items-center gap-2 cursor-pointer">
-                            <Activity size={18} className="text-neutral-400" />
-                            <span className="text-[14px] font-medium text-neutral-500">Loan Status</span>
-                            <CaretDown size={14} className="text-neutral-500" />
-                        </div>
-
-                        <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
-
-                        {/* Loan Number */}
-                        <div className="flex items-center gap-2 cursor-pointer">
-                            <Hash size={18} className="text-neutral-400" />
-                            <span className="text-[14px] font-medium text-neutral-500">Loan Number</span>
-                            <CaretDown size={14} className="text-neutral-500" />
-                        </div>
-
-                        {/* View Loan Repayment */}
-                        <button
-                            className="ml-auto w-[218px] h-[35px] border border-neutral-300 rounded-md flex items-center justify-center text-[14px] text-neutral-700 hover:bg-neutral-100"
+                    {/* Employee Dropdown with Search */}
+                    <div className="relative ml-8" ref={loanEmployeeRef}>
+                        <div 
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => {
+                                setIsEmployeeOpen(!isEmployeeOpen);
+                                setEmployeeSearchTerm("");
+                            }}
                         >
-                            View Loan Repayment
-                        </button>
-
-                        {/* Create Loan */}
-                       <button
-  onClick={() => addData(null,false)}
-  className="ml-4 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700"
->
-  <span className="text-[14px] font-medium">Create Loan</span>
-  <PlusCircle size={18} className="ml-2 text-white" />
-</button>
-
-
-                        {/* 3 dots menu */}
-                        <div className="ml-4 w-[35px] h-[35px] border border-neutral-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors">
-                            <MoreVertical size={20} className="text-neutral-600" />
+                            <Users2 size={18} className="text-neutral-400" />
+                            
+                            {filter.loanEmployeeUuid ? (
+                                <div className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1 rounded-full">
+                                    <Users2 size={16} className="text-white" />
+                                    <span className="text-[13px] font-medium">
+                                        {selectedLoanEmployee?.label}
+                                    </span>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLoanEmployeeSelect({ value: null, label: "All Employees" });
+                                        }}
+                                        className="w-4 h-4 rounded-full border border-white flex items-center justify-center hover:bg-blue-700 ml-1"
+                                    >
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M18 6L6 18M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                    <CaretDown 
+                                        size={14} 
+                                        className="text-white ml-0.5" 
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    <span className="text-[14px] font-medium text-neutral-400">
+                                        Employee
+                                    </span>
+                                    <CaretDown 
+                                        size={14} 
+                                        className={`text-neutral-500 transition-transform ${isEmployeeOpen ? 'rotate-180' : ''}`} 
+                                    />
+                                </>
+                            )}
                         </div>
+
+                        {isEmployeeOpen && (
+                            <div className="absolute top-full mt-2 left-0 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                                <div className="p-2 border-b border-gray-200">
+                                    <div className="relative">
+                                        <svg 
+                                            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                                            width="14" 
+                                            height="14" 
+                                            viewBox="0 0 24 24" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            strokeWidth="2"
+                                        >
+                                            <circle cx="11" cy="11" r="8"/>
+                                            <path d="m21 21-4.35-4.35"/>
+                                        </svg>
+                                        <input
+                                            type="text"
+                                            placeholder="Search employee..."
+                                            value={employeeSearchTerm}
+                                            onChange={(e) => setEmployeeSearchTerm(e.target.value)}
+                                            className="w-full pl-8 pr-3 py-1.5 text-sm border border-blue-500 rounded focus:outline-none focus:border-blue-600"
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="max-h-52 overflow-y-auto">
+                                    {filteredEmployees.length > 0 ? (
+                                        filteredEmployees.map((employee) => (
+                                            <button
+                                                key={employee.value}
+                                                onClick={() => {
+                                                    handleLoanEmployeeSelect(employee);
+                                                    setIsEmployeeOpen(false);
+                                                }}
+                                                className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-100 flex items-center relative ${
+                                                    filter.loanEmployeeUuid === employee.value ? 'bg-gray-100' : ''
+                                                }`}
+                                            >
+                                                {filter.loanEmployeeUuid === employee.value && (
+                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-black rounded-r-full" />
+                                                )}
+                                                <span className={filter.loanEmployeeUuid === employee.value ? 'ml-2' : ''}>
+                                                    {employee.label}
+                                                </span>
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div className="px-3 py-2.5 text-sm text-gray-500 text-center">
+                                            No employees found
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
+
+                    <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
+
+                    {/* Loan Name Dropdown with Search */}
+                    <div className="relative" ref={loanNameRef}>
+                        <div 
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => {
+                                setIsLoanNameOpen(!isLoanNameOpen);
+                                setLoanNameSearchTerm("");
+                            }}
+                        >
+                            <FileText size={18} className="text-neutral-400" />
+                            
+                            {filter.loanName ? (
+                                <div className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1 rounded-full">
+                                    <span className="text-[13px] font-medium">
+                                        {filter.loanName}
+                                    </span>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLoanNameSelect(null);
+                                        }}
+                                        className="w-4 h-4 rounded-full border border-white flex items-center justify-center hover:bg-blue-700"
+                                    >
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M18 6L6 18M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <span className="text-[14px] font-medium text-neutral-400">
+                                        Loan Name
+                                    </span>
+                                    <CaretDown 
+                                        size={14} 
+                                        className={`text-neutral-500 transition-transform ${isLoanNameOpen ? 'rotate-180' : ''}`} 
+                                    />
+                                </>
+                            )}
+                        </div>
+
+                        {isLoanNameOpen && (
+                            <div className="absolute top-full mt-2 left-0 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                                <div className="p-3 border-b border-gray-200">
+                                    <div className="relative">
+                                        <svg 
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                                            width="16" 
+                                            height="16" 
+                                            viewBox="0 0 24 24" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            strokeWidth="2"
+                                        >
+                                            <circle cx="11" cy="11" r="8"/>
+                                            <path d="m21 21-4.35-4.35"/>
+                                        </svg>
+                                        <input
+                                            type="text"
+                                            placeholder="Search loan type..."
+                                            value={loanNameSearchTerm}
+                                            onChange={(e) => setLoanNameSearchTerm(e.target.value)}
+                                            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="max-h-60 overflow-y-auto">
+                                    <button
+                                        onClick={() => {
+                                            handleLoanNameSelect(null);
+                                            setIsLoanNameOpen(false);
+                                        }}
+                                        className="w-full px-4 py-2.5 text-sm text-left hover:bg-gray-100 border-b"
+                                    >
+                                        All Loan Types
+                                    </button>
+                                    {filteredLoanNames.length > 0 ? (
+                                        filteredLoanNames.map((name) => (
+                                            <button
+                                                key={name}
+                                                onClick={() => {
+                                                    handleLoanNameSelect(name);
+                                                    setIsLoanNameOpen(false);
+                                                }}
+                                                className={`w-full px-4 py-2.5 text-sm text-left hover:bg-gray-100 ${
+                                                    filter.loanName === name ? 'bg-blue-50' : ''
+                                                }`}
+                                            >
+                                                {name}
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                                            No loan types found
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
+
+                    {/* Loan Status Dropdown */}
+                    <div className="relative" ref={loanStatusRef}>
+                        <div 
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => setIsLoanStatusOpen(!isLoanStatusOpen)}
+                        >
+                            <Activity size={18} className="text-neutral-400" />
+                            <span className="text-[14px] font-medium text-neutral-400 capitalize">
+                                {filter.loanStatus || "Loan Status"}
+                            </span>
+                            <CaretDown 
+                                size={14} 
+                                className={`text-neutral-500 transition-transform ${isLoanStatusOpen ? 'rotate-180' : ''}`} 
+                            />
+                        </div>
+
+                        {isLoanStatusOpen && (
+                            <div className="absolute top-full mt-2 left-0 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                                {loanStatusOptions.map((status) => (
+                                    <button
+                                        key={status}
+                                        onClick={() => {
+                                            handleLoanStatusSelect(status);
+                                            setIsLoanStatusOpen(false);
+                                        }}
+                                        className="w-full px-4 py-2 text-sm text-left hover:bg-gray-50 capitalize"
+                                    >
+                                        {status}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mx-6 h-6 border-r border-dashed border-neutral-300" />
+
+                    {/* Loan Number Input */}
+                    <div className="relative" ref={loanNumberRef}>
+                        <div 
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => setIsLoanNumberOpen(!isLoanNumberOpen)}
+                        >
+                            <Hash size={18} className="text-neutral-400" />
+                            <span className="text-[14px] font-medium text-neutral-400">
+                                {filter.loanNumber || "Loan Number"}
+                            </span>
+                            <CaretDown size={14} className="text-neutral-500" />
+                        </div>
+
+                        {isLoanNumberOpen && (
+                            <div className="absolute top-full mt-2 left-0 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-3">
+                                <input
+                                    type="text"
+                                    placeholder="Enter loan number"
+                                    value={filter.loanNumber || ""}
+                                    onChange={handleLoanNumberChange}
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                                    autoFocus
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* View Loan Repayment */}
+                    <button
+                        className="ml-auto w-[218px] h-[35px] border border-neutral-300 rounded-md flex items-center justify-center text-[14px] text-neutral-700 hover:bg-neutral-100"
+                    >
+                        View Loan Repayment
+                    </button>
+
+                    {/* Create Loan */}
+                    <button
+                        onClick={() => addData(null, false)}
+                        className="ml-4 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700"
+                    >
+                        <span className="text-[14px] font-medium">Create Loan</span>
+                        <PlusCircle size={18} className="ml-2 text-white" />
+                    </button>
+
+                    {/* 3 dots menu */}
+                    <div 
+                        className="ml-4 w-[35px] h-[35px] border border-neutral-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors"
+                        onClick={() => setIsOpenOptions(!isOpenOptions)}
+                    >
+                        <MoreVertical size={20} className="text-neutral-600" />
+                    </div>
+
+                    {/* Options Dropdown */}
+                    {isOpenOptions && (
+                        <div className="absolute right-4 top-full mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                            {employeePageOptions?.map((option) => (
+                                <button
+                                    key={option}
+                                    onClick={() => setIsOpenOptions(false)}
+                                    className="w-full px-4 py-2 text-sm text-left hover:bg-gray-50"
+                                >
+                                    {option}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
-        );
-    }
-
-    // ============================================================
+        </div>
+    );
+}// ============================================================
     // DEFAULT RENDER FOR OTHER SECTIONS (employee, leave-approval, etc.)
     // ============================================================
        return (
@@ -466,7 +819,7 @@ function FilterPage({
 
                 <div className="flex items-center w-full px-5 py-3 border border-gray-200 bg-white rounded-md">
 
-                    <span className="text-sm text-gray-500 mr-4">FILTER BY :</span>
+                    <span className="text-sm text-gray-300 mr-4">FILTER BY :</span>
 
                     {/* LEAVE APPROVAL ADMIN — Your existing logic inserted into UI */}
                     {filterFor === "leave-approval" && (

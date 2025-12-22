@@ -372,15 +372,15 @@ function FormEarningSalaryComponents({setShowForm, showForm, isCreate, setIsCrea
                             <div className="relative">
                                 <button
                                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                                    className="w-full border-l-4 border-l-red-600 bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-700 flex items-center justify-between"
+                                    className="w-full border-l-[5px] border-l-red-600 bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-700 flex items-center justify-between"
                                 >
                                     <span>{formData.earningType || 'Select'}</span>
                                     <span>▼</span>
                                 </button>
 
                                 {dropdownOpen && (
-                                    <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded mt-1 shadow-lg z-10">
-                                        <div className="p-2 border-b border-gray-200">
+                                    <div className="absolute top-full left-0 right-0 bg-white border border-blue-400 rounded mt-1 shadow-lg z-10">
+                                    
                                             <input
                                                 type="text"
                                                 placeholder="Search..."
@@ -388,7 +388,7 @@ function FormEarningSalaryComponents({setShowForm, showForm, isCreate, setIsCrea
                                                 onChange={(e) => setSearchQuery(e.target.value)}
                                                 className="w-full px-2 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
-                                        </div>
+                                        
                                         <div className="max-h-48 overflow-y-auto">
                                             {filteredEarningTypes.map((item, idx) => (
                                                 <button

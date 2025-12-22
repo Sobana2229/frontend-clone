@@ -62,9 +62,18 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
     { title: "Home", to: "/employee-portal", icon: <HouseIcon size={20} weight="regular" /> },
     { title: "Salary Details", to: "/employee-portal/salary-detail", icon: <MoneyIcon size={20} weight="regular" /> },
     { title: "Leave & Attendance", to: "/employee-portal/leave-attendance", icon: <AddressBook size={20} weight="regular" /> },
-    { title: "Reimbursement", to: "/employee-portal/reimbursement", icon: <MoneyIcon size={20} weight="regular" /> },
+    { title: "Reimbursements", to: "/employee-portal/reimbursement", icon: <CurrencyDollar size={20} weight="regular" /> },
+    { 
+      title: "Benefits", 
+      to: "/employee-portal/loan", 
+      icon: <CurrencyDollar size={20} weight="regular" />,
+      isDropdown: true,
+      subMenu: [
+        { title: "Loans", to: "/employee-portal/loan" },
+        { title: "Advance Salary", to: "/employee-portal/advance-salary" }
+      ]
+    },
     { title: "Documents", to: "/employee-portal/document", icon: <File size={20} weight="regular" /> },
-    { title: "Benefits", to: "/employee-portal/loan", icon: <CurrencyDollar size={20} weight="regular" /> },
   ], []);
 
   const menuItems = useMemo(() => {
@@ -126,7 +135,9 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
       )}
       
       <div
-        className={`h-screen bg-white flex flex-col pt-6 z-50 transition-all duration-300 ease-in-out overflow-hidden border-r border-gray-200 ${
+        className={`h-screen flex flex-col z-50 transition-all duration-300 ease-in-out overflow-hidden border-r ${
+          isEmployeePortal ? 'bg-[#1C1C1C] border-[#1C1C1C]' : 'bg-white border-gray-200'
+        } ${
           isMobile
             ? `${isSidebarOpen ? "fixed inset-y-0 left-0 w-72 translate-x-0" : "fixed inset-y-0 left-0 w-72 -translate-x-full"}`
             : isEmployeePortal
@@ -135,19 +146,19 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
         }`}
       >
         {isEmployeePortal && isSidebarOpen && (
-          <div className="absolute top-4 right-4 md:hidden">
+          <div className="absolute top-4 right-4 md:hidden z-10">
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="p-2 rounded-md hover:bg-gray-100 text-gray-600"
+              className="p-2 rounded-md hover:bg-gray-700 text-gray-400"
             >
               <X size={24} />
             </button>
           </div>
         )}
 
-        {/* Logo Section - Updated to match reference */}
+        {/* Logo Section */}
         {!location.pathname.includes("/employee-portal") && !location.pathname.includes("/setting") && (
-          <div className={`${isSidebarOpen ? "px-6" : "px-4"} mb-8`}>
+          <div className={`${isSidebarOpen ? "px-6" : "px-4"} pt-6 mb-8`}>
             {!isSidebarOpen ? (
               <div className="w-full flex items-center justify-center">
                 <img src={Logo} alt="Logo" className="w-11 h-11 rounded-lg object-cover" />
@@ -168,25 +179,49 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
           </div>
         )}
 
-        <div className="flex flex-col flex-grow overflow-y-auto overflow-x-hidden">
-          {location.pathname.includes("/employee-portal") && (
+        {/* Employee Portal Header Section */}
+        {location.pathname.includes("/employee-portal") && (
+          <div className={`${isSidebarOpen ? "px-6" : "px-6"} pt-6 mb-6`}>
+            {!isSidebarOpen ? (
+              <div className="w-full flex items-center justify-center">
+                
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5">
+                <img src={Logo} alt="Logo" className="w-11 h-11 rounded-lg object-cover" />
+                <div className="flex flex-col justify-center">
+                  <span className="text-[10px] font-medium tracking-[0.4px] text-[#EAEAEA] leading-[18px] uppercase">
+                    TEKYDOCT
+                  </span>
+                  <span className="text-[20px] font-medium text-[#EAEAEA] leading-[30px] -mt-0.5">
+                    PAYROLL
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`flex flex-col flex-grow overflow-y-auto overflow-x-hidden scrollbar-hide`}>
+          {location.pathname.includes("/employee-portal") && isSidebarOpen && (
             <>
+              {/* User Profile Section */}
               <div className="w-full flex flex-col items-center justify-center px-6 mb-6">
-                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-3">
-                  <span className="text-gray-600 text-3xl font-semibold">
-                    {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                <div className="w-[110px] h-[100px] rounded-[25px] border border-[#989898] flex items-center justify-center mb-3">
+                  <span className="text-[#EAEAEA] text-[72px] font-medium leading-[90px] tracking-[-0.02em]">
+                    {user?.firstName?.charAt(0).toUpperCase() || 'V'}
                   </span>
                 </div>
                 <Link 
                   to="/employee-portal/profile-detail" 
-                  className="text-gray-900 hover:text-blue-600 text-base font-medium text-center"
+                  className="text-[#EAEAEA] hover:text-blue-400 text-[20px] font-medium leading-[30px] text-center"
                 >
-                  {user?.firstName?.charAt(0).toUpperCase() + user?.firstName?.slice(1)}{" "}
-                  {user?.middleName?.charAt(0).toUpperCase() + user?.middleName?.slice(1)}{" "}
-                  {user?.lastName?.charAt(0).toUpperCase() + user?.lastName?.slice(1)}
+                  {user?.firstName || 'Vabik'} - {user?.employeeId || '5638'}
                 </Link>
-                <p className="text-gray-500 text-sm">{user?.Designation?.name || 'Employee'}</p>
+                <p className="text-[#C1C1C1] text-[16px] font-normal leading-6">{user?.Designation?.name || 'Project Manager'}</p>
               </div>
+
+              {/* Check In/Out Section */}
               <div className="flex items-center justify-center px-6 mb-6">
                 <CheckInCheckOut isEmployeePortal={location.pathname.includes("/employee-portal")} />
               </div>
@@ -203,10 +238,21 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
               </div>
             )}
 
+            {/* MAIN Label for Employee Portal */}
+            {isSidebarOpen && isEmployeePortal && (
+              <div className="mb-2 px-3">
+                <span className="text-[10px] font-medium tracking-[0.4px] text-[#989898] uppercase leading-3">
+                  MAIN
+                </span>
+              </div>
+            )}
+
             {/* Menu Items */}
             <div className="flex flex-col gap-2">
               {menuItems.map(({ title, to, icon, isDropdown, subMenu }) => {
-                const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
+const isActive = isDropdown 
+  ? (location.pathname === to || location.pathname.startsWith(to + '/'))
+  : location.pathname === to;
                 const isOpen = activeDropdown === title;
                 const isIconSvg = typeof icon === 'string';
                 
@@ -222,9 +268,9 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
                           }
                         }}
                         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                          isActive || isOpen
-                            ? "bg-[rgba(28,28,28,0.05)]"
-                            : "hover:bg-[rgba(28,28,28,0.03)]"
+                          isEmployeePortal
+                            ? (isActive || isOpen ? "bg-white" : "hover:bg-white/10")
+                            : (isActive || isOpen ? "bg-[rgba(28,28,28,0.05)]" : "hover:bg-[rgba(28,28,28,0.03)]")
                         }`}
                         style={{ height: '40px' }}
                       >
@@ -240,23 +286,33 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
                               }}
                             />
                           ) : (
-                            <span className={isActive || isOpen ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"}>
+                            <span className={
+                              isEmployeePortal 
+                                ? (isActive || isOpen ? "text-[#1C1C1C]" : "text-[#ADADAD]")
+                                : (isActive || isOpen ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]")
+                            }>
                               {icon}
                             </span>
                           )}
                           {isSidebarOpen && (
                             <span className={`text-sm font-medium leading-5 ${
-                              isActive || isOpen ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"
+                              isEmployeePortal
+                                ? (isActive || isOpen ? "text-[#1C1C1C]" : "text-[#ADADAD]")
+                                : (isActive || isOpen ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]")
                             }`}>
                               {title}
                             </span>
                           )}
                         </div>
                         {isSidebarOpen && (
-                          <img
-                            src={Arrow}
-                            alt="Arrow"
-                            className="w-6 h-6 transition-transform duration-200"
+                          <CaretDown
+                            size={24}
+                            weight="regular"
+                            className={`transition-transform duration-200 ${
+                              isEmployeePortal
+                                ? (isActive || isOpen ? "text-[#1C1C1C]" : "text-[#ADADAD]")
+                                : (isActive || isOpen ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]")
+                            }`}
                             style={{
                               transform: isOpen ? "rotate(180deg)" : "rotate(0deg)"
                             }}
@@ -271,9 +327,9 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
                           handleMenuClick();
                         }}
                         className={`w-full flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                          isActive
-                            ? "bg-[rgba(28,28,28,0.05)]"
-                            : "hover:bg-[rgba(28,28,28,0.03)]"
+                          isEmployeePortal
+                            ? (isActive ? "bg-white" : "hover:bg-white/10")
+                            : (isActive ? "bg-[rgba(28,28,28,0.05)]" : "hover:bg-[rgba(28,28,28,0.03)]")
                         }`}
                         style={{ height: '40px' }}
                       >
@@ -289,13 +345,19 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
                               }}
                             />
                           ) : (
-                            <span className={isActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"}>
+                            <span className={
+                              isEmployeePortal
+                                ? (isActive ? "text-[#1C1C1C]" : "text-[#ADADAD]")
+                                : (isActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]")
+                            }>
                               {icon}
                             </span>
                           )}
                           {isSidebarOpen && (
                             <span className={`text-sm font-medium leading-5 ${
-                              isActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]"
+                              isEmployeePortal
+                                ? (isActive ? "text-[#1C1C1C]" : "text-[#ADADAD]")
+                                : (isActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.6)]")
                             }`}>
                               {title}
                             </span>
@@ -304,77 +366,66 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
                       </Link>
                     )}
                     
-                   {/* Dropdown Submenu */}
-{isDropdown && isOpen && isSidebarOpen && (
-  <div className="ml-4 mt-2 relative pl-4" style={{ minHeight: subMenu.length * 50 + 'px' }}>
-    {/* Background line */}
-    <div className="absolute left-0 top-0 w-1 rounded" style={{ 
-      height: '100%', 
-      background: '#F2F2F2' 
-    }} />
-    
-    {/* Active indicator line */}
-    {subMenu.find(item => location.pathname === item.to) && (
-      <div 
-        className="absolute left-0 w-1 rounded transition-all duration-250"
-        style={{ 
-          height: '40px',
-          background: '#1C1C1C',
-          top: `${subMenu.findIndex(item => location.pathname === item.to) * 50}px`
-        }}
-      />
-    )}
-    
-    <div className="flex flex-col" style={{ gap: '8px' }}>
-      {subMenu.map((subItem, index) => {
-        const isSubActive = location.pathname === subItem.to;
-        return (
-          <Link
-            key={subItem.title}
-            to={subItem.to}
-            onClick={handleMenuClick}
-            className={`relative pl-3 pr-3 py-2.5 text-sm rounded-lg transition-all duration-200 ${
-              isSubActive
-                ? "bg-[rgba(28,28,28,0.05)]"
-                : "hover:bg-[rgba(28,28,28,0.03)]"
-            }`}
-            style={{ 
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            {isSubActive && (
-              <div 
-                className="absolute rounded"
-                style={{ 
-                  left: '-16px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: '2px',
-                  height: '24px',
-                  background: '#1C1C1C'
-                }}
-              />
-            )}
-            <span className={`text-sm font-medium leading-5 ${
-              isSubActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.5)]"
-            }`}>
-              {subItem.title}
-            </span>
-          </Link>
-        );
-      })}
-    </div>
-  </div>
-)}
+                    {/* Dropdown Submenu */}
+                    {isDropdown && isOpen && isSidebarOpen && (
+                      <div className="ml-4 mt-2 relative pl-4" style={{ minHeight: subMenu.length * 50 + 'px' }}>
+                        {/* Background line */}
+                        <div className="absolute left-0 top-0 w-1 rounded" style={{ 
+                          height: '100%', 
+                          background: isEmployeePortal ? 'rgba(255,255,255,0.1)' : '#F2F2F2'
+                        }} />
+                        
+                        {/* Active indicator line */}
+                        {subMenu.find(item => location.pathname === item.to) && (
+                          <div 
+                            className="absolute left-0 w-1 rounded transition-all duration-250"
+                            style={{ 
+                              height: '40px',
+                              background: isEmployeePortal ? '#FFFFFF' : '#1C1C1C',
+                              top: `${subMenu.findIndex(item => location.pathname === item.to) * 50}px`
+                            }}
+                          />
+                        )}
+                        
+                        <div className="flex flex-col" style={{ gap: '8px' }}>
+                          {subMenu.map((subItem) => {
+                            const isSubActive = location.pathname === subItem.to;
+                            return (
+                              <Link
+                                key={subItem.title}
+                                to={subItem.to}
+                                onClick={handleMenuClick}
+                                className={`relative pl-3 pr-3 py-2.5 text-sm rounded-lg transition-all duration-200 ${
+                                  isEmployeePortal
+                                    ? (isSubActive ? "bg-white" : "hover:bg-white/10")
+                                    : (isSubActive ? "bg-[rgba(28,28,28,0.05)]" : "hover:bg-[rgba(28,28,28,0.03)]")
+                                }`}
+                                style={{ 
+                                  height: '40px',
+                                  display: 'flex',
+                                  alignItems: 'center'
+                                }}
+                              >
+                                <span className={`text-sm font-medium leading-5 ${
+                                  isEmployeePortal
+                                    ? (isSubActive ? "text-[#1C1C1C]" : "text-[#ADADAD]")
+                                    : (isSubActive ? "text-[#1C1C1C]" : "text-[rgba(28,28,28,0.5)]")
+                                }`}>
+                                  {subItem.title}
+                                </span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
 
             {/* Divider */}
-            <div className="my-6 h-0.5 rounded" style={{ background: 'rgba(28,28,28,0.05)' }} />
+            <div className={`my-6 h-0.5 rounded ${isEmployeePortal ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(28,28,28,0.05)]'}`} />
 
             {/* SETTINGS Section */}
             {!isEmployeePortal && (
@@ -416,8 +467,8 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
 
                 {/* Help */}
                 <button 
-                  className="w-[10%] flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-[rgba(28,28,28,0.03)] mt-2"
-                  style={{ height: '250px'}}
+                  className="w-full flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-[rgba(28,28,28,0.03)] mt-2"
+                  style={{ height: '40px'}}
                 >
                   <div className="flex items-center gap-3">
                     <img src={HelpIcon} alt="Help" className="w-5 h-5" style={{ opacity: 0.6 }} />
@@ -430,101 +481,222 @@ function SideBar({ isSidebarOpen, setIsSidebarOpen }) {
                 </button>
               </>
             )}
-          </div>
-        </div>
-        <div className="my-10 h-0.5 rounded" style={{ background: 'rgba(28,28,28,0.05)' }} />
-      <div className="mt-auto border-t border-gray-800">
-          {!location.pathname.includes("/employee-portal") && user?.isEnablePortalAccess && (
-            <button
-              onClick={() => navigate("/employee-portal")}
-              className="w-full flex items-center justify-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              <Users size={20} weight="regular" />
-              {isSidebarOpen && (
-                <span className="text-sm font-medium">Employee Portal</span>
-              )}
-            </button>
-          )}
-          
-          {location.pathname.includes("/employee-portal") && (
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="w-full flex items-center justify-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              {isSidebarOpen && (
-                <span className="text-sm font-medium">Switch to Admin View</span>
-              )}
-            </button>
-          )}
 
-          {isSidebarOpen && (
-            <div className="px-4 py-3 mx-2 mb-2">
-              <div className="flex items-center gap-3">
-                {/* User Avatar */}
-                <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  <span className="text-gray-600 font-medium text-sm">
-                    {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+            {/* Employee Portal Settings */}
+            {isEmployeePortal && isSidebarOpen && (
+              <>
+                <div className="mb-2 px-3">
+                  <span className="text-[10px] font-medium tracking-[0.4px] text-[#989898] uppercase leading-3">
+                    SETTINGS
                   </span>
                 </div>
-                
-                {/* User Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 truncate">
-                    {user?.firstName || 'User'}
+                <Link
+                  to="/employee-portal/settings"
+                  className={`w-full flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                    location.pathname === "/employee-portal/settings"
+                      ? "bg-white"
+                      : "hover:bg-white/10"
+                  }`}
+                  style={{ height: '40px' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <Gear 
+                      size={20}
+                      weight="regular"
+                      className={location.pathname === "/employee-portal/settings" ? "text-[#1C1C1C]" : "text-[#D6D6D6]"}
+                    />
+                    <span className={`text-sm font-medium leading-5 ${
+                      location.pathname === "/employee-portal/settings" ? "text-[#1C1C1C]" : "text-[#D6D6D6]"
+                    }`}>
+                      Settings
+                    </span>
                   </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    {user?.Designation?.name || 'Employee'}
+                </Link>
+
+                {/* Help */}
+                <button 
+                  className="w-full flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-white/10 mt-2"
+                  style={{ height: '40px'}}
+                >
+                  <div className="flex items-center gap-3">
+                    <Question size={20} weight="regular" className="text-[#D6D6D6]" />
+                    <span className="text-sm font-medium leading-5 text-[#D6D6D6]">
+                      Help
+                    </span>
+                  </div>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Section - Admin Portal */}
+        {!isEmployeePortal && (
+          <>
+            <div className="my-10 h-0.5 rounded" style={{ background: 'rgba(28,28,28,0.05)' }} />
+            <div className="mt-auto border-t border-gray-200">
+              {user?.isEnablePortalAccess && (
+                <button
+                  onClick={() => navigate("/employee-portal")}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 transition-colors"
+                >
+                  <Users size={20} weight="regular" />
+                  {isSidebarOpen && (
+                    <span className="text-sm font-medium">Employee Portal</span>
+                  )}
+                </button>
+              )}
+
+              {isSidebarOpen && (
+                <div className="px-4 py-3 mx-2 mb-2">
+                  <div className="flex items-center gap-3">
+                    {/* User Avatar */}
+                    <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
+                      <span className="text-gray-600 font-medium text-sm">
+                        {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                    
+                    {/* User Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900 truncate">
+                        {user?.firstName || 'User'}
+                      </div>
+                      <div className="text-xs text-gray-500 truncate">
+                        {user?.Designation?.name || 'Employee'}
+                      </div>
+                    </div>
+                    
+                    {/* Two Arrows Icon */}
+                    <button
+                      onClick={handleLogout}
+                      className="p-1 hover:bg-gray-100 rounded transition-colors"
+                      title="Logout"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 8L1 10L3 12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M1 10H8" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
+                        <path d="M8 4V2C8 1.44772 8.44772 1 9 1H14C14.5523 1 15 1.44772 15 2V14C15 14.5523 14.5523 15 14 15H9C8.44772 15 8 14.5523 8 14V12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
+                      </svg>
+                    </button>
+                    
+                    {/* Vertical Dashed Line */}
+                    <div className="h-8 w-px border-l border-dashed border-gray-300"></div>
+                    
+                    {/* Person Icon */}
+                    <button className="p-1 hover:bg-gray-100 rounded transition-colors">
+                      <Users size={16} weight="regular" className="text-gray-500" />
+                    </button>
+                    
+                    {/* Small Collapse Arrow */}
+                    {(!isEmployeePortal || !isMobile) && (
+                      <button
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        title="Collapse"
+                      >
+                        <CaretLeft size={14} weight="bold" className="text-gray-500" />
+                      </button>
+                    )}
                   </div>
                 </div>
-                
-                {/* Two Arrows Icon */}
-                <button
-                  onClick={handleLogout}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
-                  title="Logout"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 8L1 10L3 12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M1 10H8" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
-                    <path d="M8 4V2C8 1.44772 8.44772 1 9 1H14C14.5523 1 15 1.44772 15 2V14C15 14.5523 14.5523 15 14 15H9C8.44772 15 8 14.5523 8 14V12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </button>
-                
-                {/* Vertical Dashed Line */}
-                <div className="h-8 w-px border-l border-dashed border-gray-300"></div>
-                
-                {/* Person Icon (Users SVG) */}
-                <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                  <Users size={16} weight="regular" className="text-gray-500" />
-                </button>
-                
-                {/* Small Collapse Arrow */}
-                {(!isEmployeePortal || !isMobile) && (
-                  <button
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-1 hover:bg-gray-100 rounded transition-colors"
-                    title="Collapse"
-                  >
-                    <CaretLeft size={14} weight="bold" className="text-gray-500" />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+              )}
 
+              {/* Show only arrow icon when sidebar is collapsed */}
+              {!isSidebarOpen && (!isEmployeePortal || !isMobile) && (
+                <button
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  className="w-full h-12 flex items-center justify-center transition-colors border-t bg-gray-50 hover:bg-gray-100 border-gray-200"
+                >
+                  <CaretRight size={20} weight="bold" className="text-gray-600" />
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Bottom Section - Employee Portal */}
+        {isEmployeePortal && isSidebarOpen && (
+          <div className="mt-auto">
+            {/* Switch to Admin View Button */}
+            <div className="px-6 mb-4">
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-100 transition-colors rounded shadow-sm"
+              >
+                <span className="text-sm font-semibold text-[#414651]">Switch to Admin View</span>
+              </button>
+            </div>
+
+            {/* User Footer Container */}
+            <div className="flex flex-row justify-center items-center px-4 py-2.5 gap-3 bg-white shadow-sm rounded mx-6 mb-4" style={{ height: '50px' }}>
+              {/* User Avatar */}
+              <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0">
+                <img 
+                  src={user?.avatar || "https://via.placeholder.com/24"} 
+                  alt="User" 
+                  className="w-full h-full rounded object-cover"
+                />
+              </div>
+              
+              {/* User Info */}
+              <div className="flex-1 min-w-0 flex flex-col">
+                <span className="text-sm font-semibold text-[#414651] truncate leading-6">
+                  {user?.firstName || 'Vabik'}
+                </span>
+                <span className="text-xs text-gray-500 truncate leading-4">
+                  {user?.Designation?.name || 'UI Designer'}
+                </span>
+              </div>
+              
+              {/* Dropdown Arrow */}
+              <button 
+                className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+                title="Options"
+              >
+                <CaretDown size={16} weight="bold" className="text-gray-600" />
+              </button>
+              
+              {/* Vertical Dashed Line */}
+              <div className="h-6 w-px border-l border-dashed border-gray-300 flex-shrink-0"></div>
+              
+              {/* Person Icon */}
+              <button className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0">
+                <Users size={16} weight="regular" className="text-gray-500" />
+              </button>
+              
+              {/* Collapse Arrow */}
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+                title="Collapse"
+              >
+                <CaretLeft size={14} weight="bold" className="text-gray-500" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Collapsed state arrow for Employee Portal */}
+      
           {/* Show only arrow icon when sidebar is collapsed */}
           {!isSidebarOpen && (!isEmployeePortal || !isMobile) && (
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="w-full h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors border-t border-gray-200"
+              className={`w-full h-12 flex items-center justify-center transition-colors border-t ${
+                isEmployeePortal
+                  ? 'bg-[#1C1C1C] hover:bg-white/10 border-white/10'
+                  : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
+              }`}
             >
-              <CaretRight size={20} weight="bold" className="text-gray-600" />
+              <CaretRight size={20} weight="bold" className={isEmployeePortal ? 'text-gray-400' : 'text-gray-600'} />
             </button>
           )}
         </div>
-      </div>
-    </Fragment>
-  );
+      
+    
+  </Fragment>
+  
+);    
 }
-
 export default SideBar;

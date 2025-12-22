@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import { employeeCitizenCategory, employeeGender } from "../../../../data/dummy";
 import ButtonReusable from "../buttonReusable";
 import Modal from "react-modal";
@@ -12,7 +12,9 @@ import CustomOption from "../customOption";
 import ReuseableInput from "../reuseableInput";
 import { flagImage } from "../../../../helper/globalHelper";
 import { useLocation } from "react-router-dom";
-
+import CustomDatePicker from "../CustomDatePicker";
+import { MagnifyingGlass } from "@phosphor-icons/react";
+import React, { useEffect, useState } from "react";
 function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComplated=[]}) {
   const { pathname } = useLocation();
   const { 
@@ -48,9 +50,13 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     spkAccountNumber: "",
     stepComplated: Number(step)
   });
+  
+  const [emailError, setEmailError] = useState(false);
+  const [emailValid, setEmailValid] = useState(false);
   const [modalWorkLocations, setModalWorkLocations] = useState(false);
   const [modalDesignation, setModalDesignation] = useState(false);
   const [modalDepartement, setModalDepartement] = useState(false);
+  const [phoneDigitLimit, setPhoneDigitLimit] = useState(7); // Default to Brunei (7 digits)
 
   useEffect(() => {
     if(designationOptions?.length === 0) {
@@ -77,8 +83,19 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     if(!phoneNumberData || phoneNumberData.length === 0) {
       const access_token = localStorage.getItem("accessToken");
       fetchPhoneNumberData(access_token);
+    } else {
+      // Set Brunei as default when data loads
+      const bruneiData = phoneNumberData.find(phone => phone.label === "+673");
+      if (bruneiData && !formData.phoneCode) {
+        setFormData(prev => ({
+          ...prev,
+          phoneCode: bruneiData.label,
+          flagIso: bruneiData.emoji,
+        }));
+        setPhoneDigitLimit(7); // Brunei default
+      }
     }
-  }, []);
+  }, [phoneNumberData]);
 
   useEffect(() => {
     if (formData.citizenCategory && formData.citizenCategory !== "Foreigner") {
@@ -95,13 +112,15 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     }
   }, [formData.citizenCategory]);
 
-  const getIcTypeByCitizenCategory = (category) => {
-    const icTypeMapping = {
-      "Brunei Citizen": "Yellow",
-      "Permanent": "Purple",
-      "Foreigner": "Green"
+  const getPhoneDigitLimit = (phoneCode) => {
+    const digitLimits = {
+      "+91": 10,   // India
+      "+673": 7,   // Brunei
+      "+1": 10,    // USA/Canada
+      "+44": 10,   // UK
+      "+65": 8,    // Singapore
     };
-    return icTypeMapping[category] || "";
+    return digitLimits[phoneCode] || 15; // Default to 15 if not in list
   };
 
   const handleChange = (e) => {
@@ -116,9 +135,34 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
     if (name === "isStatutoryComponents" && !checked) {
       updatedFormData.spkAccountNumber = "";
     }
+    
+    // Email validation on change
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value.length > 0) {
+        setEmailValid(emailRegex.test(value));
+        setEmailError(!emailRegex.test(value));
+      } else {
+        setEmailValid(false);
+        setEmailError(false);
+      }
+    }
+    
     setFormData(updatedFormData);
   };
 
+  const handleEmailBlur = () => {
+    setEmailValid(false);
+    setEmailError(false);
+  };
+const getIcTypeByCitizenCategory = (category) => {
+  const icTypeMapping = {
+    "Brunei Citizen": "Yellow",
+    "Permanent": "Purple",
+    "Foreigner": "Green"
+  };
+  return icTypeMapping[category] || "";
+};
   const submitFormBasicDetails = async () => {
     // Validate SPK Account Number for Brunei Citizen and Permanent
     if ((formData.citizenCategory === 'Brunei Citizen' || formData.citizenCategory === 'Permanent') && 
@@ -221,6 +265,7 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
       setModalDesignation(false);
     }
   }
+  
   return (
     <>
       <div className="w-full h-fit px-20 py-10">
@@ -245,8 +290,6 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                 value={formData.middleName}
                 onChange={handleChange}
                 isFocusRing={false}
-                isBorderLeft={true}
-                borderColor={"red-td-500"}
               />
               <ReuseableInput
                 placeholder="last name"
@@ -273,17 +316,26 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
               isBorderLeft={true}
               borderColor={"red-td-500"}
             />
-            <ReuseableInput
-              type="date"
-              label={"Date of Joining"}
-              id="joinDate"
-              name="joinDate"
-              value={formData.joinDate}
-              onChange={handleChange}
-              isFocusRing={false}
-              isBorderLeft={true}
-              borderColor={"red-td-500"}
-            />
+         <div className="flex-1 min-w-50 space-y-2">
+  <label htmlFor="joinDate" className="block text-base font-medium">
+    Date of Joining
+  </label>
+  <CustomDatePicker
+    selected={formData.joinDate ? new Date(formData.joinDate) : null}
+    onChange={(date) => {
+      const formattedDate = date ? date.toISOString().split('T')[0] : '';
+      handleChange({
+        target: {
+          name: 'joinDate',
+          value: formattedDate
+        }
+      });
+    }}
+    placeholder="Select Date of Joining"
+    isBorderLeft={true}
+    borderColor="red-td-500"
+  />
+</div>
           </div>
 
           <div className="w-full flex items-center justify-center space-x-8 pb-5 border-b">
@@ -294,84 +346,182 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
               name="email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleEmailBlur}
               isFocusRing={false}
               isBorderLeft={true}
               borderColor={"red-td-500"}
+              emailValid={emailValid}
+              emailError={emailError}
             />
-            <div className="w-[49%] flex flex-col items-start justify-center">
-              <label className="block text-base font-medium mb-2" htmlFor="phoneNumber">
-                Mobile Number
-              </label>
-              <div className="flex items-center w-full gap-2">
-                <Select
-                  options={phoneNumberData}
-                  onChange={(selectedOption) => {
-                    if (selectedOption) {
-                      setFormData(prev => ({
-                        ...prev,
-                        phoneCode: selectedOption.label,
-                        flagIso: selectedOption.emoji,
-                      }));
-                    }
-                  }}
-                  className="w-40 z-20"
-                  value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
-                  formatOptionLabel={(option, context) => (
-                    <div className="flex items-center">
-                      <img 
-                        src={flagImage({ emoji: option.emoji, country: option.country })} 
-                        className="w-6 mr-2 object-contain" 
-                        alt={option.country}
-                      />
-                      {context.context === 'menu' ? (
-                        <span>{option.country} {option.label}</span>
-                      ) : (
-                        <span>{option.label}</span>
-                      )}
-                    </div>
-                  )}
-                  classNames={{
-                    control: () => "!rounded-md !border-2 !border-gray-300 !bg-white !h-full",
-                    valueContainer: () => "!px-2 !py-1",
-                    indicatorsContainer: () => "!px-1",
-                  }}
-                  styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                    control: (base, state) => ({
-                      ...base,
-                      borderLeftWidth: '6px',
-                      borderLeftColor: '#B91C1C',
-                      borderRadius: '6px',
-                      borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
-                      boxShadow: 'none',
-                      '&:hover': {
-                        borderColor: '#d1d5db',
-                        borderLeftColor: '#B91C1C',
-                      }
-                    }),
-                  }}
-                  menuPortalTarget={document.body}
+          <div className="w-[49%] flex flex-col items-start justify-center">
+  <label className="block text-base font-medium mb-2" htmlFor="phoneNumber">
+    Mobile Number
+  </label>
+  
+  <div className="relative w-full">
+    <Select
+      options={phoneNumberData}
+      onChange={(selectedOption) => {
+        if (selectedOption) {
+          const limit = getPhoneDigitLimit(selectedOption.label);
+          setPhoneDigitLimit(limit);
+          setFormData(prev => ({
+            ...prev,
+            phoneCode: selectedOption.label,
+            flagIso: selectedOption.emoji,
+          }));
+        }
+      }}
+      className="w-full"
+      value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
+      isSearchable={true}
+      menuIsOpen={undefined}
+      closeMenuOnScroll={false}
+      placeholder="Select country code"
+      formatOptionLabel={(option, context) => {
+        const flagUrl = flagImage({ emoji: option.emoji, country: option.country });
+        
+        if (context.context === 'menu') {
+          const isSelected = formData.phoneCode === option.label;
+          return (
+            <div className="flex items-center justify-between w-full py-2 px-3">
+              <div className="flex items-center gap-3 flex-1">
+                <img 
+                  src={flagUrl} 
+                  className="w-6 h-4 object-cover rounded" 
+                  alt={option.country || option.label}
                 />
-                
-                <ReuseableInput
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="number"
-                  placeholder="Enter Mobile Number"
-                  value={formData.phoneNumber}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length <= 15) {
-                      handleChange(e);
-                    }
-                  }}
-                  labelUnshow={true}
-                  isFocusRing={false}
-                  isBorderLeft={true}
-                  borderColor="red-td-500"
-                />
+                <span className="font-medium text-gray-900 text-sm">
+                  {option.country || option.countryName || option.name || option.label}
+                </span>
+                <span className="text-gray-500 text-sm">
+                  ({option.label})
+                </span>
               </div>
+              {isSelected && (
+                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
+              )}
             </div>
+          );
+        }
+        
+        // Selected value - just show flag
+        return (
+          <div className="flex items-center gap-2">
+            <img 
+              src={flagUrl} 
+              className="w-6 h-4 object-cover rounded" 
+              alt={option.country || option.label}
+            />
+            <span className="text-sm font-medium">{option.label}</span>
+          </div>
+        );
+      }}
+      components={{
+        DropdownIndicator: (props) => (
+          <div {...props.innerProps} className="px-2">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        ),
+        MenuList: ({ children, ...props }) => {
+          return (
+            <div 
+              className="custom-scrollbar" 
+              style={{ 
+                maxHeight: '350px', 
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                padding: '4px'
+              }}
+            >
+              {children}
+            </div>
+          );
+        },
+        IndicatorSeparator: () => null,
+      }}
+      styles={{
+        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+        control: (base, state) => ({
+          ...base,
+          minHeight: '44px',
+          borderRadius: '8px',
+          borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+          borderWidth: '2px',
+          borderLeftWidth: '6px',
+          borderLeftColor: '#dc2626',
+          boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
+          cursor: 'pointer',
+          '&:hover': {
+            borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+            borderLeftColor: '#dc2626',
+          }
+        }),
+        valueContainer: (base) => ({
+          ...base,
+          padding: '2px 12px',
+        }),
+        menu: (base) => ({
+          ...base,
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+          border: '1px solid #e5e7eb',
+          marginTop: '4px',
+        }),
+        menuList: (base) => ({
+          ...base,
+          padding: 0,
+          maxHeight: '350px',
+        }),
+        option: (base, state) => ({
+          ...base,
+          backgroundColor: state.isFocused ? '#f3f4f6' : 'white',
+          color: '#111827',
+          cursor: 'pointer',
+          padding: '0',
+          '&:active': {
+            backgroundColor: '#e5e7eb',
+          }
+        }),
+      }}
+      menuPortalTarget={document.body}
+      filterOption={(option, inputValue) => {
+        if (!inputValue) return true;
+        const searchText = inputValue.toLowerCase();
+        const countryName = (option.data.country || option.data.countryName || option.data.name || '').toLowerCase();
+        const phoneCode = (option.data.label || '').toLowerCase();
+        return countryName.includes(searchText) || phoneCode.includes(searchText);
+      }}
+    />
+    
+    {/* Phone Number Input - MERGED with select - KEEPS YOUR ORIGINAL LOGIC */}
+    <input
+      type="number"
+      id="phoneNumber"
+      name="phoneNumber"
+      value={formData.phoneNumber}
+      onChange={(e) => {
+        const value = e.target.value;
+        if (value.length <= phoneDigitLimit) {
+          handleChange(e);
+        }
+      }}
+      placeholder="Enter Mobile Number"
+      className="absolute top-0 left-[120px] right-0 h-full pl-3 pr-3 text-sm border-0 rounded-r-lg focus:outline-none focus:ring-0 bg-transparent"
+      style={{ 
+        pointerEvents: 'auto',
+        paddingTop: '2px',
+        paddingBottom: '2px',
+      }}
+    />
+  </div>
+</div>
+
           </div>
 
           <div className="w-full flex items-center justify-center space-x-8">
@@ -408,29 +558,51 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   control: (base, state) => ({
                     ...base,
                     borderLeftWidth: '6px',
-                    borderLeftColor: '#B91C1C',
+                    borderLeftColor: '#dc2626',
                     borderRadius: '6px',
-                    borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
+                    borderColor: '#d1d5db',
                     boxShadow: 'none',
                     '&:hover': {
-                      borderColor: '#d1d5db',
-                      borderLeftColor: '#B91C1C',
+                      borderLeftColor: '#dc2626',
                     }
                   }),
                 }}
                 components={{ 
+                  MenuList: ({ children }) => {
+                    const childArray = Array.isArray(children) ? children : [children];
+                    
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
+                          {childArray}
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 12px',
+                            backgroundColor: '#f3f4f6',
+                            borderTop: '1px solid #e5e7eb',
+                            cursor: 'pointer',
+                            fontWeight: 500,
+                            textAlign: 'center',
+                            flexShrink: 0,
+                          }}
+                          onClick={() => setModalWorkLocations(true)}
+                        >
+                          + New Work Location
+                        </div>
+                      </div>
+                    );
+                  },
                   Option: (props) => (
                     <CustomOption 
-                      props={props} 
-                      onCreateNew={() => setModalWorkLocations(true)}
-                      createNewLabel="New Work Location"
+                      props={props}
                     />
                   )
                 }}
                 menuPortalTarget={document.body}
                 filterOption={(option, rawInput) => {
                   if (option.value === "create-new-data") {
-                    return true;
+                    return false;
                   }
                   if (!option.label || typeof option.label !== 'string') {
                     return false;
@@ -459,29 +631,51 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   control: (base, state) => ({
                     ...base,
                     borderLeftWidth: '6px',
-                    borderLeftColor: '#B91C1C',
+                    borderLeftColor: '#dc2626',
                     borderRadius: '8px',
-                    borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
+                    borderColor: '#d1d5db',
                     boxShadow: 'none',
-                    '&:hover': {
-                      borderColor: '#d1d5db',
-                      borderLeftColor: '#B91C1C',
+                  '&:hover': {
+                      borderLeftColor: '#dc2626',
                     }
                   }),
                 }}
                 components={{ 
+                  MenuList: ({ children }) => {
+                    const childArray = Array.isArray(children) ? children : [children];
+                    
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
+                          {childArray}
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 12px',
+                            backgroundColor: '#f3f4f6',
+                            borderTop: '1px solid #e5e7eb',
+                            cursor: 'pointer',
+                            fontWeight: 500,
+                            textAlign: 'center',
+                            flexShrink: 0,
+                          }}
+                          onClick={() => setModalDesignation(true)}
+                        >
+                          + New Designation
+                        </div>
+                      </div>
+                    );
+                  },
                   Option: (props) => (
                     <CustomOption 
-                      props={props} 
-                      onCreateNew={() => setModalDesignation(true)}
-                      createNewLabel="New Designation"
+                      props={props}
                     />
                   )
                 }}
                 menuPortalTarget={document.body}
                 filterOption={(option, rawInput) => {
                   if (option.value === "create-new-data") {
-                    return true;
+                    return false;
                   }
                   return option.label.toLowerCase().includes(rawInput.toLowerCase());
                 }}
@@ -504,29 +698,52 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   control: (base, state) => ({
                     ...base,
                     borderLeftWidth: '6px',
-                    borderLeftColor: '#B91C1C',
+                    borderLeftColor: '#dc2626',
                     borderRadius: '8px',
-                    borderColor: state.isFocused ? '#d1d5db' : '#d1d5db',
+                    borderColor: '#d1d5db',
                     boxShadow: 'none',
                     '&:hover': {
-                      borderColor: '#d1d5db',
-                      borderLeftColor: '#B91C1C',
+                      borderLeftColor: '#dc2626',
                     }
+                   
                   }),
                 }}
                 components={{ 
+                  MenuList: ({ children }) => {
+                    const childArray = Array.isArray(children) ? children : [children];
+                    
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '250px' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', minHeight: '150px' }}>
+                          {childArray}
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 12px',
+                            backgroundColor: '#f3f4f6',
+                            borderTop: '1px solid #e5e7eb',
+                            cursor: 'pointer',
+                            fontWeight: 500,
+                            textAlign: 'center',
+                            flexShrink: 0,
+                          }}
+                          onClick={() => setModalDepartement(true)}
+                        >
+                          + New Department
+                        </div>
+                      </div>
+                    );
+                  },
                   Option: (props) => (
                     <CustomOption 
-                      props={props} 
-                      onCreateNew={() => setModalDepartement(true)}
-                      createNewLabel="New Departement"
+                      props={props}
                     />
                   )
                 }}
                 menuPortalTarget={document.body}
                 filterOption={(option, rawInput) => {
                   if (option.value === "create-new-data") {
-                    return true;
+                    return false;
                   }
                   return option.label.toLowerCase().includes(rawInput.toLowerCase());
                 }}
@@ -667,6 +884,14 @@ function BasicDetails({cancel, setStep, step, setTempUuid, isAdding, setStepComp
                   />
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Required Field Indicator */}
+          <div className="w-full flex justify-center mt-6">
+            <div className="flex items-center gap-2 text-sm text-gray-td-600">
+              <div className="w-6 h-6 border-l-4 border-red-td-500"></div>
+              <span>Required Field</span>
             </div>
           </div>
         </div>

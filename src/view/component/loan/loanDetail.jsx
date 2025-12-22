@@ -1,4 +1,4 @@
-import { CaretDown, Plus, X, Calendar, Info, ClipboardText, CurrencyCircleDollar, DotsThree, User } from "@phosphor-icons/react";
+import { CaretDown, Plus, X, Calendar, Info, ClipboardText, CurrencyCircleDollar, DotsThree, User, } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import Modal from "react-modal";
@@ -9,6 +9,14 @@ import loanStoreManagements from "../../../store/tdPayroll/loan";
 import SimpleModalMessage from "../simpleModalMessage";
 import { CustomToast } from "../customToast";
 import { toast } from "react-toastify";
+import { 
+  Users2, 
+  FileText, 
+  Activity, 
+  Hash, 
+  PlusCircle, 
+  MoreVertical 
+} from "lucide-react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, handleView, setIsUpdate, setSelectedLoanData, isAdvance, loanNameUuid, isLoanEmployeePortal = false}) {
@@ -36,11 +44,9 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
     const [showModalConfirm, setShowModalConfirm] = useState(false);
     const [showModalRecordPayment, setShowModalRecordPayment] = useState(false);
     
-    // NEW: Employee filter state
     const [selectedEmployeeUuid, setSelectedEmployeeUuid] = useState("");
     const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
-    // Pie Chart State
     const [pieChartData, setPieChartData] = useState([]);
 
     const loanLabel = isAdvance ? "Advance Salary" : "Loan";
@@ -92,7 +98,6 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
         return `$${amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
     };
 
-    // NEW: Generate unique employee options from dataList
     const getEmployeeOptions = () => {
         if (!dataList) return [];
         
@@ -112,7 +117,6 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
         return uniqueEmployees.sort((a, b) => a.name.localeCompare(b.name));
     };
 
-    // NEW: Filter dataList based on selected employee
     const getFilteredDataList = () => {
         if (!selectedEmployeeUuid || selectedEmployeeUuid === "all") {
             return dataList;
@@ -120,20 +124,18 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
         return dataList?.filter(loan => loan.employeeUuid === selectedEmployeeUuid) || [];
     };
 
-    // NEW: Handle employee selection
     const handleEmployeeSelect = (employeeUuid) => {
         setSelectedEmployeeUuid(employeeUuid);
         setIsEmployeeDropdownOpen(false);
     };
 
-    // NEW: Get selected employee info
     const getSelectedEmployeeInfo = () => {
         if (!selectedEmployeeUuid || selectedEmployeeUuid === "all") {
-            return "All Employees";
+            return "Employee";
         }
         const employeeOptions = getEmployeeOptions();
         const selected = employeeOptions.find(emp => emp.uuid === selectedEmployeeUuid);
-        return selected ? `${selected.name} (${selected.employeeId})` : "Select an Employee";
+        return selected ? `${selected.name} (${selected.employeeId})` : "Employee";
     };
 
     const handleRecordRepayment = () => {
@@ -183,596 +185,677 @@ function LoanDetail({setShowDetail, setShowFormLoans, data, dataList, tempUuid, 
     const filteredDataList = getFilteredDataList();
 
     return (
-        <div className="w-full flex-col h-screen bg-gray-50 flex">
-            {!isLoanEmployeePortal ?(<div className="w-full flex items-center justify-between border-b border-gray-200 bg-white"
-        >
-                <div className="p-4 h-16 w-[23.9%] flex items-center justify-between border-r">
-                    <div className="flex items-center space-x-2">
-                        <h2 className="text-sm font-medium text-gray-700">All {loanLabelPlural}</h2>
-                        <CaretDown size={16} className="text-gray-500" />
-                    </div>
-                    <button onClick={setShowFormLoans} className="w-8 h-8 rounded bg-blue-td-500 flex items-center justify-center hover:bg-blue-td-600">
-                        <Plus size={16} className="text-white" />
-                    </button>
-                </div>
-
-                {/* Header */}
-                <div className="p-4 w-full h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
-                        <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
-                            {loanData.status}
-                        </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <button 
-                            onClick={handleRecordRepayment}
-                            className="bg-blue-td-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-td-600"
-                        >
-                            Record Repayment
-                        </button>
-                        <div className="relative">
-                            <button onClick={() => setOpenMenu(!openMenu)} className="p-2 border hover:bg-gray-100 rounded">
-                                <DotsThree size={20} className="text-gray-500" />
-                            </button>
-                            {openMenu && (
-                                <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
-                                    <button
-                                        onClick={() => {
-                                            handleShowForm("edit");
-                                            setOpenMenu(false);
-                                        }}
-                                        className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
-                                    >
-                                        Edit {loanLabel}
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            handleShowForm("pause");
-                                            setOpenMenu(false);
-                                        }}
-                                        className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
-                                    >
-                                        Pause Instalment Deduction
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            handleShowForm("delete");
-                                            setOpenMenu(false);
-                                        }}
-                                        className="w-full px-4 py-2 text-left text-sm text-gray-td-700 hover:bg-blue-50 hover:border-l-4 hover:border-blue-td-500 flex items-center"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>) :
-                (
-                    <div className="w-full flex items-center justify-between border-b border-gray-200 bg-white"
-                    >
-
-                        {/* Header */}
-                        <div className="p-4 w-full h-16 flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
-                                <span className="bg-blue-td-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                    {loanData.status}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                )}
+        <div className="w-full flex-col h-screen bg-white flex pt-20 mt-3">
+            <style>{`
+                .scrollbar-verythin::-webkit-scrollbar {
+                    width: 7px;
+                    height: 7px;
+                }
+                .scrollbar-verythin::-webkit-scrollbar-track {
+                    background: rgba(28, 28, 28, 0.05);
+                    border-radius: 4px;
+                }
+                .scrollbar-verythin::-webkit-scrollbar-thumb {
+                    background: rgba(28, 28, 28, 0.5);
+                    border-radius: 4px;
+                }
+            `}</style>
 
             {!isLoanEmployeePortal ? (
-            <div className="w-full flex-1 flex overflow-y-auto bg-gray-td-300 p-5 overflow-hidden">
-                <div className="w-full flex h-full bg-white rounded-xl overflow-hidden">
-                    {/* Left Sidebar */}
-                    <div className="w-[23.5%] border-r border-gray-200 flex flex-col">    
-                        {/* Employee Filter - UPDATED */}
-                        <div className="p-3 border-b border-gray-200 flex-shrink-0 relative">
-                            <button
-                                onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
-                                className="w-full flex items-center justify-between space-x-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 p-2 rounded-md transition-colors"
-                            >
-                                <div className="flex items-center space-x-2">
-                                    <User />
-                                    <span className="truncate">{getSelectedEmployeeInfo()}</span>
-                                </div>
-                                <CaretDown 
-                                    size={12} 
-                                    className={`text-gray-400 transition-transform ${isEmployeeDropdownOpen ? 'rotate-180' : ''}`} 
-                                />
-                            </button>
-                            
-                            {/* Employee Dropdown */}
-                            {isEmployeeDropdownOpen && (
-                                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-                                    {/* All Employees Option */}
-                                    <button
-                                        onClick={() => handleEmployeeSelect("all")}
-                                        className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 border-b border-gray-100 ${
-                                            selectedEmployeeUuid === "all" || !selectedEmployeeUuid ? 'bg-blue-td-50 text-blue-td-600' : 'text-gray-700'
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <span>All Employees</span>
-                                            <span className="text-xs text-gray-500">({dataList?.length || 0} {loanLabelLowercase}s)</span>
-                                        </div>
-                                    </button>
-                                    
-                                    {/* Individual Employee Options */}
-                                    {employeeOptions.map((employee) => (
+                <div className="w-full border-collapse px-5">
+      <div
+    className="w-full bg-white rounded-lg border border-gray-200"
+    style={{ height: '60px' }}
+  >
+    <div className="flex items-center justify-between h-full px-5">
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm font-medium" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                FILTER BY :
+                            </span>
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
+                                    className="flex items-center gap-2.5 px-3 py-1 hover:bg-gray-50 rounded"
+                                >
+                                    <User size={20} style={{ color: 'rgba(28, 28, 28, 0.4)' }} />
+                                    <span className="text-sm font-medium" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                        {getSelectedEmployeeInfo()}
+                                    </span>
+                                    <CaretDown size={14} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
+                                </button>
+                                {isEmployeeDropdownOpen && (
+                                    <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border z-50 max-h-80 overflow-y-auto scrollbar-verythin">
                                         <button
-                                            key={employee.uuid}
-                                            onClick={() => handleEmployeeSelect(employee.uuid)}
-                                            className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 ${
-                                                selectedEmployeeUuid === employee.uuid ? 'bg-blue-td-50 text-blue-td-600' : 'text-gray-700'
-                                            }`}
+                                            onClick={() => handleEmployeeSelect("all")}
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
                                         >
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <div className="font-medium">{employee.name}</div>
-                                                    <div className="text-xs text-gray-500">{employee.employeeId}</div>
-                                                </div>
-                                                <span className="text-xs text-gray-500">({employee.loanCount} {loanLabelLowercase}s)</span>
-                                            </div>
+                                            All Employees
                                         </button>
-                                    ))}
-                                    
-                                    {employeeOptions.length === 0 && (
-                                        <div className="px-3 py-2 text-sm text-gray-500 text-center">
-                                            No employees found
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                        
-                        {/* Filter Info */}
-                        {selectedEmployeeUuid && selectedEmployeeUuid !== "all" && (
-                            <div className="px-3 py-2 bg-blue-td-50 border-b border-gray-200 flex-shrink-0">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="text-blue-td-600">Filtered by employee</span>
-                                    <button
-                                        onClick={() => handleEmployeeSelect("all")}
-                                        className="text-blue-td-600 hover:text-blue-td-800 font-medium"
-                                    >
-                                        Clear filter
-                                    </button>
-                                </div>
+                                        {employeeOptions.map((emp) => (
+                                            <button
+                                                key={emp.uuid}
+                                                onClick={() => handleEmployeeSelect(emp.uuid)}
+                                                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
+                                            >
+                                                {emp.name} ({emp.employeeId})
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        
-                        {/* Loan Items - Scrollable - FILTERED */}
-                        <div className="flex-1 overflow-y-auto">
-                            {filteredDataList.length === 0 ? (
-                                <div className="p-4 text-center text-gray-500 text-sm">
-                                    {selectedEmployeeUuid && selectedEmployeeUuid !== "all" 
-                                        ? `No ${loanLabelLowercase}s found for selected employee`
-                                        : `No ${loanLabelLowercase}s available`
-                                    }
-                                </div>
-                            ) : (
-                                filteredDataList.map((el, idx) => {
-                                    return(
-                                        <button 
-                                            onClick={() => handleView(el?.uuid, loanLabelPlural, loanLabelLowercase)} 
-                                            key={el?.uuid} 
-                                            className={`w-full p-4 border-b border-gray-100 hover:bg-gray-50 text-left ${el?.uuid === tempUuid ? "bg-blue-td-50 border-l-4 border-blue-td-500" : ""}`}
-                                        >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-sm font-medium text-gray-900">
-                                                    {`${el?.Employee?.firstName} ${el?.Employee?.middleName} ${el?.Employee?.lastName}`} ({el?.Employee?.employeeId})
-                                                </span>
-                                                <span className="text-sm font-semibold text-gray-900">
-                                                    {formatCurrency(el?.loanAmount)}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs text-gray-600">
-                                                <div className="flex items-center space-x-2">
-                                                    <span>{el?.LoanName?.name}</span>
-                                                    <span>|</span>
-                                                    <span>{el?.loanNumber}</span>
-                                                </div>
-                                                <span className="text-blue-td-500 px-2 py-1 rounded text-xs font-medium">
-                                                    {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
-                                                </span>
-                                            </div>
-                                        </button>
-                                    );
-                                })
-                            )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+    <button 
+        onClick={handleRecordRepayment}
+        className="flex items-center rounded font-medium"
+        style={{ 
+            height: '35px',
+            background: '#0066FE',
+            borderRadius: '5px',
+            overflow: 'hidden'
+        }}
+    >
+        <span className="px-4 text-white text-base">Repayment</span>
+        <div 
+            className="h-full flex items-center justify-center border-l"
+            style={{ 
+                width: '35px',
+                borderLeftColor: 'rgba(255, 255, 255, 0.3)'
+            }}
+        >
+            <div 
+                className="rounded-full flex items-center justify-center"
+                style={{
+                    width: '20px',
+                    height: '20px',
+                    border: '1.5px solid white'
+                }}
+            >
+                <Plus size={12} weight="bold" color="white" />
+            </div>
+        </div>
+    </button>
+    <div className="relative">
+        <button 
+            onClick={() => setOpenMenu(!openMenu)} 
+            className="flex items-center justify-center rounded hover:bg-gray-50"
+            style={{
+                width: '35px',
+                height: '35px',
+                border: '1px solid rgba(28, 28, 28, 0.4)',
+                borderRadius: '8px'
+            }}
+        >
+     <MoreVertical size={20} className="text-neutral-600" />
+        </button>
+        {openMenu && (
+            <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border overflow-hidden z-50">
+                <button
+                    onClick={() => {
+                        handleShowForm("edit");
+                        setOpenMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                    style={{ color: '#1C1C1C' }}
+                >
+                    Edit {loanLabel}
+                </button>
+                <button
+                    onClick={() => {
+                        handleShowForm("pause");
+                        setOpenMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                    style={{ color: '#1C1C1C' }}
+                >
+                    Pause Instalment Deduction
+                </button>
+                <button
+                    onClick={() => {
+                        handleShowForm("delete");
+                        setOpenMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:border-l-4 hover:border-blue-500"
+                    style={{ color: '#1C1C1C' }}
+                >
+                    Delete
+                </button>
+            </div>
+        )}
+    </div>
+</div>
+                    </div>
+                </div>
+                </div> 
+            ) : (
+                <div className="w-full flex items-center justify-between border-b border-gray-200 bg-white">
+                    <div className="p-4 w-full h-16 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <h1 className="text-lg font-medium text-gray-900">{loanData.loanNumber}</h1>
+                            <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                {loanData.status}
+                            </span>
                         </div>
                     </div>
+                </div>
+            )}
 
-                    {/* Main Content - Same as before */}
-                    <div className="w-full flex flex-col min-h-0 flex-1">
-                        <div className="flex-1 overflow-y-auto p-5 space-y-10">
-                            <div className="w-full grid grid-cols-4 auto-rows-[170px] gap-3">
-                                {/* ini span 2 row */}
-                                <div className="bg-[#FFE2B8] rounded-2xl row-span-2 flex items-center justify-center flex-col space-y-5">
-                                    <div className="w-40 h-40 rounded-full bg-[#FFF3E0] flex items-center justify-center text-6xl font-medium">
-                                    {loanData?.employeeName?.charAt(0).toUpperCase()}
+            {!isLoanEmployeePortal ? (
+                <div className="w-full flex-1 flex overflow-y-auto p-3 overflow-hidden" style={{ background: '#FFFFFF' }}>
+                    <div className="w-full flex h-full bg-white rounded-xl overflow-hidden">
+                        {/* Left Sidebar */}
+                        <div className="flex flex-col" style={{ width: '24.5%', background: '#FFFFFF' }}>    
+                            {/* Dark Header */}
+                            <div className="flex-shrink-0 rounded-t-lg" style={{ 
+                                padding: '28px 14px',
+                                background: '#1C1C1C',
+                                height: '91px'
+                            }}>
+                                <h2 className="text-xl font-medium tracking-wide" style={{ color: '#ADADAD' }}>
+                                    EMPLOYEE LIST
+                                </h2>
+                            </div>
+                            
+                            <div className="flex-1 overflow-y-auto scrollbar-verythin">
+                                {filteredDataList.length === 0 ? (
+                                    <div className="p-4 text-center text-sm" style={{ color: '#1C1C1C' }}>
+                                        {selectedEmployeeUuid && selectedEmployeeUuid !== "all" 
+                                            ? `No ${loanLabelLowercase}s found for selected employee`
+                                            : `No ${loanLabelLowercase}s available`
+                                        }
                                     </div>
-                                    <h1 className="text-2xl font-bold capitalize">{loanData?.employeeName}</h1>
-                                    <p className="text-2xl font-normal">{data?.LoanName?.name}</p>
-                                </div>
+                                ) : (
+                                    filteredDataList.map((el) => {
+                                        return(
+                                            <button 
+                                                onClick={() => handleView(el?.uuid, loanLabelPlural, loanLabelLowercase)} 
+                                                key={el?.uuid} 
+                                                className={`w-full border-b hover:bg-gray-50 text-left transition-colors ${
+                                                    el?.uuid === tempUuid ? "bg-gray-50 " : ""
+                                                }`}
+                                                style={{ 
+                                                    padding: '16px',
+                                                    height: '70px',
+                                                    borderBottom: '1px solid #FFFFFF',
+                                                    borderLeftColor: el?.uuid === tempUuid ? '#0066FE' : 'transparent'
+                                                }}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="text-sm font-normal" style={{ color: '#1C1C1C' }}>
+                                                        {`${el?.Employee?.firstName} ${el?.Employee?.middleName} ${el?.Employee?.lastName}`} ({el?.Employee?.employeeId})
+                                                    </span>
+                                                    <span className="text-base font-semibold" style={{ color: '#1C1C1C' }}>
+                                                        {formatCurrency(el?.loanAmount)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center justify-between text-xs">
+                                                    <div className="flex items-center gap-2" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                        <span>{el?.LoanName?.name}</span>
+                                                        <span>|</span>
+                                                        <span>{el?.loanNumber}</span>
+                                                    </div>
+                                                    <span className="px-2 py-1 rounded text-xs font-normal" style={{
+                                                        background: 'rgba(0, 102, 254, 0.1)',
+                                                        color: 'rgba(0, 102, 254, 0.9)'
+                                                    }}>
+                                                        {el?.loanAmount - el?.amountRepaid === 0 ? "Close" : "Open"}
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </div>
 
-                                <div className="bg-gray-td-50 flex p-12 flex-col rounded-tl-2xl">
-                                    <h2 className="text-gray-td-400 font-medium text-lg text-left">{loanLabel} Amount</h2>
-                                    <h2 className="font-normal text-4xl text-left">
-                                        {new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        }).format(data?.loanAmount ?? 0)}
-                                    </h2>
-                                </div>
-                                <div className="bg-gray-td-50 flex p-12 flex-col rounded-tr-2xl">
-                                    <h2 className="text-gray-td-400 font-medium text-lg text-left">Remaining Amount</h2>
-                                    <h2 className="font-normal text-4xl text-left text-red-td-500">
-                                        {new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
-                                    </h2>
-                                </div>
-                                <div className="bg-gray-td-50 flex p-12 flex-col">
-                                    <div className="w-full flex items-center justify-start space-x-2">
-                                        <h2 className="text-gray-td-400 font-medium text-base text-left">Instalment(s) Remaining</h2>
-                                        <Info className="mt-1" size={20} />
+                        {/* Main Content */}
+                        <div className="w-full flex flex-col min-h-0 flex-1">
+                            <div className="flex-1 px-5 space-y-6">
+                                <div className="w-full grid grid-cols-4 gap-3" style={{ gridAutoRows: '130px' }}>
+                                    {/* Employee Card - spans 2 rows */}
+                                    <div className="row-span-2 flex items-center justify-center flex-col space-y-5 rounded-2xl" style={{ background: '#FFE2B8' }}>
+                                        <div className="w-30 h-30 rounded-full flex items-center justify-center text-6xl font-normal" style={{
+                                            width: '100px',
+                                            height: '100px',
+                                            background: '#FFF3E0',
+                                            color: '#FF8800'
+                                        }}>
+                                            {loanData?.employeeName?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <h1 className="text-xl font-medium capitalize" style={{ color: '#1C1C1C' }}>
+                                            {loanData?.employeeName}
+                                        </h1>
+                                        <p className="text-sm font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                            {data?.LoanName?.name}
+                                        </p>
                                     </div>
-                                    <h2 className="font-normal text-4xl text-left">
-                                        {loanPaymentHistory?.paymentSchedule 
-                                            ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length 
-                                            : 0
-                                        } / {data?.paidOffInstalment + (
-                                            loanPaymentHistory?.paymentSchedule 
-                                            ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length 
-                                            : 0
-                                        )}
-                                    </h2>
-                                </div>
-                                <div className="bg-gray-td-50 flex p-12 flex-col rounded-bl-2xl">
-                                    <h2 className="text-gray-td-400 font-medium text-lg text-left">Instalment Amount</h2>
-                                    <h2 className="font-normal text-4xl text-left">
-                                        {new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        }).format(data?.instalmentAmount ?? 0)}
-                                    </h2>
-                                </div>
 
-                                {/* ini span 2 kolom */}
-                                <div className="bg-gray-td-50 col-span-2 flex p-12 flex-col rounded-br-2xl relative">
-                                    <div className="flex-1">
-                                        <h2 className="text-gray-td-400 font-medium text-lg text-left">Amount Prepaid</h2>
-                                        <h2 className="font-normal text-4xl text-left text-green-td-400">
+                                    {/* Loan Amount */}
+                                    <div className="flex p-8 flex-col rounded-tl-2xl border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
+                                        <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                            {loanLabel} Amount
+                                        </h2>
+                                        <h2 className="font-normal text-2xl" style={{ color: '#1C1C1C' }}>
                                             {new Intl.NumberFormat("en-US", {
                                                 style: "currency",
                                                 currency: "USD",
-                                            }).format(data?.amountRepaid ?? 0)}
+                                            }).format(data?.loanAmount ?? 0)}
                                         </h2>
-                                        <p className="text-gray-td-400">
-                                            Next Instalment Date: <span className="text-black">{loanData?.nextInstalmentDate}</span>
-                                        </p>
                                     </div>
-                                    
-                                    <div className="flex items-center justify-center absolute right-0 top-1/5">
-                                        {/* Semicircle Progress Diagram */}
-                                        <div className="relative">
-                                            <svg
-                                                width="200"
-                                                height="120"
-                                                viewBox="0 0 200 120"
-                                                className="transform"
-                                            >
-                                                {/* Background semicircle */}
-                                                <path
-                                                    d="M 20 100 A 80 80 0 0 1 180 100"
-                                                    fill="none"
-                                                    stroke="#e5e7eb"
-                                                    strokeWidth="16"
-                                                    strokeLinecap="round"
-                                                />
-                                                
-                                                {/* Progress semicircle */}
-                                                <path
-                                                    d="M 20 100 A 80 80 0 0 1 180 100"
-                                                    fill="none"
-                                                    stroke="#f97316"
-                                                    strokeWidth="16"
-                                                    strokeLinecap="round"
-                                                    strokeDasharray={`${Math.PI * 80}`}
-                                                    strokeDashoffset={`${Math.PI * 80 * (1 - (
-                                                        ((data?.amountRepaid || 0) / (data?.loanAmount || 1)) || 0
-                                                    ))}`}
-                                                    className="transition-all duration-1000 ease-out"
-                                                />
-                                            </svg>
-                                            
-                                            {/* Percentage text in center */}
-                                            <div className="absolute inset-0 flex items-end justify-center pb-4">
-                                                <span className="text-3xl font-bold text-gray-900">
-                                                    {Math.round(((data?.amountRepaid || 0) / (data?.loanAmount || 1)) * 100)}%
-                                                </span>
-                                            </div>
-                                        </div>
+
+                                    {/* Remaining Amount */}
+                                    <div className="flex p-8 flex-col border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
+                                        <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                            Remaining Amount
+                                        </h2>
+                                        <h2 className="font-normal text-2xl" style={{ color: '#DC2626' }}>
+                                            {new Intl.NumberFormat("en-US", {
+                                                style: "currency",
+                                                currency: "USD",
+                                            }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
+                                        </h2>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <div className="w-full flex flex-col items-start justify-start space-y-5">
-                                <h1 className="text-xl font-normal">{loanLabel} Repayment Summary</h1>
-                                <div className="w-full flex flex-col items-start justify-start">
-                                    <div className="w-1/4 h-40 bg-[#D9FBEA] rounded-xl">
-                                        <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                            <p>{disbursementLabel} Date</p>
-                                            <p>{loanData?.disbursementDate}</p>
+
+                                    {/* Instalments Remaining */}
+                                    <div className="flex p-8 flex-col rounded-tr-2xl border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
+                                        <div className="w-full flex items-center justify-start gap-2 mb-2">
+                                            <h2 className="text-xs font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Instalment(s) Remaining
+                                            </h2>
+                                            <Info size={14} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
                                         </div>
-                                        <div className="w-full h-0.5 bg-white"></div>
-                                        <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                            <p>{disbursementLabel} Date</p>
-                                            <p>
-                                                {dayjs(data?.disbursementDate)
-                                                    .add(data?.paidOffInstalment ?? 0, "month")
-                                                    .format("DD/MM/YYYY")}
+                                        <h2 className="font-normal" style={{ fontSize: '30px', lineHeight: '38px', color: '#1C1C1C' }}>
+                                            {loanPaymentHistory?.paymentSchedule 
+                                                ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length 
+                                                : 0
+                                            } <span className="text-lg">/ {data?.paidOffInstalment}</span>
+                                        </h2>
+                                    </div>
+
+                                    {/* Instalment Amount */}
+                                    <div className="flex p-8 flex-col rounded-bl-2xl border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
+                                        <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                            Instalment Amount
+                                        </h2>
+                                        <h2 className="font-normal text-2xl" style={{ color: '#1C1C1C' }}>
+                                            {new Intl.NumberFormat("en-US", {
+                                                style: "currency",
+                                                currency: "USD",
+                                            }).format(data?.instalmentAmount ?? 0)}
+                                        </h2>
+                                    </div>
+
+                                    {/* Amount Prepaid - spans 2 columns */}
+                                    <div className="col-span-2 flex p-8 flex-col rounded-br-2xl relative border" style={{ background: '#FFFFFF', borderColor: '#E5E7EB' }}>
+                                        <div className="flex-1">
+                                            <h2 className="text-xs mb-2 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Amount Prepaid
+                                            </h2>
+                                            <h2 className="font-normal text-2xl" style={{ color: '#0FA38B' }}>
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.amountRepaid ?? 0)}
+                                            </h2>
+                                            <p className="text-xs mt-2" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                Next Instalment Date: <span style={{ color: '#1C1C1C' }}>{loanData?.nextInstalmentDate}</span>
                                             </p>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* table history */}
-                            <div className="w-full h-fit p-5">
-                                <TableReusable 
-                                    dataHeaders={loanDetailHeaders} 
-                                    tableFor="loanDetails" 
-                                    dataTable={loanPaymentHistory?.paymentSchedule ? loanPaymentHistory?.paymentSchedule : []}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            ) : (
-                    <div className="w-full flex-1 flex overflow-y-auto bg-gray-td-100 p-5 overflow-hidden">
-                        <div className="w-full flex h-full bg-white rounded-xl overflow-hidden">
-
-                            {/* Main Content - Same as before */}
-                            <div className="w-full flex flex-col min-h-0 flex-1">
-                                <div className="flex-1 overflow-y-auto p-5 space-y-10">
-                                    
-                                    {/* Dashboard or Chart Section */}
-                                    <div className="w-full flex gap-3">
                                         
-                                        {/* Left side - Pie Chart Container*/}
-                                        <div className="flex items-center justify-center bg-gray-td-50 rounded-lg p-8 flex-shrink-0">
-                                            <div className="relative w-48 h-48">
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <PieChart>
-                                                        <Pie
-                                                            data={pieChartData}
-                                                            cx="50%"
-                                                            cy="50%"
-                                                            innerRadius={50}
-                                                            outerRadius={90}
-                                                            paddingAngle={2}
-                                                            dataKey="value"
-                                                            startAngle={90}
-                                                            endAngle={-270}
-                                                        >
-                                                            {pieChartData.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                                            ))}
-                                                        </Pie>
-                                                    </PieChart>
-                                                </ResponsiveContainer>
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="text-2xl font-semibold text-gray-900">
+                                        {/* Progress Circle */}
+                                        <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                                            <div className="relative" style={{ width: '160px', height: '88px' }}>
+                                                <svg width="160" height="88" viewBox="0 0 160 88" className="transform">
+                                                    <path
+                                                        d="M 20 80 A 60 60 0 0 1 140 80"
+                                                        fill="none"
+                                                        stroke="#F6FFFB"
+                                                        strokeWidth="16"
+                                                        strokeLinecap="round"
+                                                    />
+                                                    <path
+                                                        d="M 20 80 A 60 60 0 0 1 140 80"
+                                                        fill="none"
+                                                        stroke="#0FA38B"
+                                                        strokeWidth="16"
+                                                        strokeLinecap="round"
+                                                        strokeDasharray={`${Math.PI * 60}`}
+                                                        strokeDashoffset={`${Math.PI * 60 * (1 - ((data?.amountRepaid || 0) / (data?.loanAmount || 1)))}`}
+                                                        className="transition-all duration-1000"
+                                                    />
+                                                </svg>
+                                                <div className="absolute inset-0 flex items-end justify-center pb-2">
+                                                    <span className="text-2xl font-semibold" style={{ color: '#1C1C1C' }}>
                                                         {Math.round(((data?.amountRepaid || 0) / (data?.loanAmount || 1)) * 100)}%
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Loan Repayment Summary Title */}
+                                <div className="flex items-center ">
+                                    <h2 className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                        LOAN REPAYMENT SUMMARY
+                                    </h2>
+                                    <Info size={12} style={{ color: 'rgba(28, 28, 28, 0.6)' }} />
+                                </div>
 
-                                        {/* Right side - Grid of cards */}
-                                        <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-3">
-                                            
-                                            {/* Row 1 - Three cards */}
-                                            
-                                            {/* Loan Amount */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tl-2xl">
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">{loanLabel} Amount</h2>
-                                                <h2 className="text-gray-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format(data?.loanAmount ?? 0)}
-                                                </h2>
+                                {/* Table */}
+                                <div className="w-full  overflow-y-auto scrollbar-verythin">
+                                    <div className="min-w-full overflow-y-auto scrollbar-verythin">
+                                        {/* Table Header */}
+                                        <div className="flex items-center rounded-t-lg overflow-y-auto scrollbar-verythin" style={{ 
+                                            height: '50px',
+                                            background: '#1C1C1C',
+                                            padding: '0 15px'
+                                        }}>
+                                            <div style={{ width: '141px' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    INSTALMENT STATUS
+                                                </span>
                                             </div>
-
-                                            {/* Remaining Amount */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6">
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">Remaining Amount</h2>
-                                                <h2 className="text-red-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
-                                                </h2>
+                                            <div style={{ width: '185px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    INSTALMENT DATE
+                                                </span>
                                             </div>
-
-                                            {/* Instalments Remaining */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-tr-2xl">
-                                                <div className="flex items-center space-x-2 mb-1">
-                                                    <h2 className="text-gray-td-400 font-normal text-sm mb-1">Instalment(s) Remaining</h2>
-                                                    <Info size={16} className="text-gray-td-400" />
-                                                </div>
-                                                <h2 className="text-gray-td-400 font-normal text-3xl">
-                                                    {loanPaymentHistory?.paymentSchedule
-                                                        ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length
-                                                        : 0}
-                                                    <span className="text-gray-td-400 font-normal text-xl"> / {data?.paidOffInstalment}</span>
-                                                </h2>
+                                            <div style={{ width: '174px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    AMOUNT REPAID
+                                                </span>
                                             </div>
-
-                                            {/* Row 2 - Two cards */}
-                                            
-                                            {/* Instalment Amount */}
-                                            <div className="bg-gray-td-50 flex flex-col justify-center p-6 rounded-bl-2xl">
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">Instalment Amount</h2>
-                                                <h2 className="text-gray-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format(data?.instalmentAmount ?? 0)}
-                                                </h2>
+                                            <div style={{ width: '215px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    TOTAL AMOUNT REPAID
+                                                </span>
                                             </div>
-
-                                            {/* Amount Prepaid - Spans 2 columns */}
-                                            <div className="bg-gray-td-50 col-span-2 flex flex-col justify-center p-6 rounded-br-2xl">                                               
-                                                <h2 className="text-gray-td-400 font-normal text-sm mb-1">Amount Prepaid</h2>
-                                                <h2 className="text-green-td-400 font-normal text-3xl">
-                                                    {new Intl.NumberFormat("en-US", {
-                                                        style: "currency",
-                                                        currency: "USD",
-                                                    }).format(data?.amountRepaid ?? 0)}
-                                                </h2>
-                                                <h2 className="text-gray-td-400 font-normal text-sm mt-1">
-                                                    Next Instalment Date: <span className="text-black">{loanData?.nextInstalmentDate}</span>
-                                                </h2>
+                                            <div style={{ width: '199px', textAlign: 'right' }}>
+                                                <span className="text-xs font-normal" style={{ color: '#ADADAD' }}>
+                                                    REMAINING AMOUNT
+                                                </span>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div className="w-full flex flex-col items-start justify-start space-y-5">
-                                        <h1 className="text-xl font-normal">{loanLabel} Repayment Summary</h1>
-                                        <div className="w-full flex flex-col items-start justify-start">
-                                            <div className="w-1/4 h-40 bg-[#D9FBEA] rounded-xl">
-                                                <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                                    <p>{disbursementLabel} Date</p>
-                                                    <p>{loanData?.disbursementDate}</p>
-                                                </div>
-                                                <div className="w-full h-0.5 bg-white"></div>
-                                                <div className="w-full h-1/2 flex items-center justify-between p-5">
-                                                    <p>{disbursementLabel} Date</p>
-                                                    <p>
-                                                        {dayjs(data?.disbursementDate)
-                                                            .add(data?.paidOffInstalment ?? 0, "month")
-                                                            .format("DD/MM/YYYY")}
-                                                    </p>
-                                                </div>
-                                            </div>
+                                        {/* Table Body */}
+                                        {/* Table Body */}
+<div className="overflow-y-auto scrollbar-verythin" style={{ maxHeight: '400px' }}>
+    {loanPaymentHistory?.paymentSchedule?.map((payment, idx) => {
+                                            
+                                                const isPaid = payment?.status === "paid";
+                                                const isLast = idx === loanPaymentHistory.paymentSchedule.length - 1;
+                                                
+                                                return (
+                                                    <div 
+                                                        key={idx}
+                                                        className="flex items-center relative "
+                                                        style={{ 
+                                                            height: '91px',
+                                                            padding: '0 15px',
+                                                            borderBottom: isLast ? 'none' : '1px dashed rgba(28, 28, 28, 0.1)'
+                                                        }}
+                                                    >
+                                                        {/* Status */}
+                                                        <div style={{ width: '141px' }} className="flex items-center gap-3">
+                                                            <div className="relative flex items-center">
+                                                                <div 
+                                                                    className="rounded-full flex items-center justify-center"
+                                                                    style={{
+                                                                        width: '26px',
+                                                                        height: '26px',
+                                                                        background: isPaid ? '#0066FE' : 'transparent',
+                                                                        border: isPaid ? 'none' : '1px solid rgba(28, 28, 28, 0.6)'
+                                                                    }}
+                                                                >
+                                                                    {isPaid ? (
+                                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                                            <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <span className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                            {idx + 1}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                {/* Connecting Line */}
+                                                                {!isLast && (
+                                                                    <div 
+                                                                        className="absolute left-1/2 -translate-x-1/2"
+                                                                        style={{
+                                                                            top: '26px',
+                                                                            width: '1px',
+                                                                            height: '45px',
+                                                                            borderLeft: isPaid ? '1px solid #0066FE' : '1px dashed rgba(28, 28, 28, 0.2)'
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Date */}
+                                                        <div style={{ width: '185px', textAlign: 'right' }}>
+                                                            <span className="text-sm font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                {dayjs(payment?.date).format("DD/MM/YYYY")}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Amount Repaid */}
+                                                        <div style={{ width: '174px', textAlign: 'right' }}>
+                                                            <span className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                {new Intl.NumberFormat("en-US", {
+                                                                    style: "currency",
+                                                                    currency: "USD",
+                                                                }).format(payment?.amountPaid ?? 0)}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Total Amount Repaid */}
+                                                        <div style={{ width: '215px', textAlign: 'right' }}>
+                                                            <span className="text-base font-normal" style={{ color: 'rgba(28, 28, 28, 0.6)' }}>
+                                                                {new Intl.NumberFormat("en-US", {
+                                                                    style: "currency",
+                                                                    currency: "USD",
+                                                                }).format(payment?.totalAmountPaid ?? 0)}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Remaining Amount */}
+                                                        <div style={{ width: '199px', textAlign: 'right' }}>
+                                                            <span className="text-base font-normal" style={{ color: '#DC2626' }}>
+                                                                {new Intl.NumberFormat("en-US", {
+                                                                    style: "currency",
+                                                                    currency: "USD",
+                                                                }).format(payment?.remainingAmount ?? 0)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-                                    </div>
-
-                                    {/* table history */}
-                                    <div className="w-full h-fit p-5">
-                                        <TableReusable
-                                            dataHeaders={loanDetailHeaders}
-                                            tableFor="loanDetails"
-                                            dataTable={loanPaymentHistory?.paymentSchedule ? loanPaymentHistory?.paymentSchedule : []}
-                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            ) : (
+                <div className="w-full flex-1 flex overflow-y-auto p-5 overflow-hidden" style={{ background: '#F9FAFB' }}>
+                    <div className="w-full flex h-full bg-black rounded-xl overflow-hidden">
+                        <div className="w-full flex flex-col min-h-0 flex-1">
+                            <div className="flex-1 overflow-y-auto p-5 space-y-10">
+                                <div className="w-full flex gap-3">
+                                    <div className="flex items-center justify-center rounded-lg p-8 flex-shrink-0" style={{ background: '#FAFAFA' }}>
+                                        <div className="relative w-48 h-48">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart>
+                                                    <Pie
+                                                        data={pieChartData}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        innerRadius={50}
+                                                        outerRadius={90}
+                                                        paddingAngle={2}
+                                                        dataKey="value"
+                                                        startAngle={90}
+                                                        endAngle={-270}
+                                                    >
+                                                        {pieChartData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                                        ))}
+                                                    </Pie>
+                                                </PieChart>
+                                            </ResponsiveContainer>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className="text-2xl font-semibold text-gray-900">
+                                                    {Math.round(((data?.amountRepaid || 0) / (data?.loanAmount || 1)) * 100)}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-3">
+                                        <div className="flex flex-col justify-center p-6 rounded-tl-2xl" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                {loanLabel} Amount
+                                            </h2>
+                                            <h2 className="text-2xl font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.loanAmount ?? 0)}
+                                            </h2>
+                                        </div>
+
+                                        <div className="flex flex-col justify-center p-6" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Remaining Amount
+                                            </h2>
+                                            <h2 className="text-2xl font-normal" style={{ color: '#DC2626' }}>
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format((data?.loanAmount ?? 0) - (data?.amountRepaid ?? 0))}
+                                            </h2>
+                                        </div>
+
+                                        <div className="flex flex-col justify-center p-6 rounded-tr-2xl" style={{ background: '#FAFAFA' }}>
+                                            <div className="flex items-center space-x-2 mb-1">
+                                                <h2 className="text-xs font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                    Instalment(s) Remaining
+                                                </h2>
+                                                <Info size={14} style={{ color: 'rgba(28, 28, 28, 0.5)' }} />
+                                            </div>
+                                            <h2 className="text-2xl font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                {loanPaymentHistory?.paymentSchedule
+                                                    ? loanPaymentHistory.paymentSchedule.filter(el => el?.status === "paid").length
+                                                    : 0}
+                                                <span className="text-lg"> / {data?.paidOffInstalment}</span>
+                                            </h2>
+                                        </div>
+
+                                        <div className="flex flex-col justify-center p-6 rounded-bl-2xl" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Instalment Amount
+                                            </h2>
+                                            <h2 className="text-2xl font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.instalmentAmount ?? 0)}
+                                            </h2>
+                                        </div>
+
+                                        <div className="flex flex-col justify-center p-6" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Amount Prepaid
+                                            </h2>
+                                            <h2 className="text-2xl font-normal" style={{ color: '#0FA38B' }}>
+                                                {new Intl.NumberFormat("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                }).format(data?.amountRepaid ?? 0)}
+                                            </h2>
+                                        </div>
+
+                                        <div className="flex flex-col justify-center p-6 rounded-br-2xl" style={{ background: '#FAFAFA' }}>
+                                            <h2 className="text-xs mb-1 font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                Next Instalment Date
+                                            </h2>
+                                            <h2 className="text-lg font-normal" style={{ color: 'rgba(28, 28, 28, 0.5)' }}>
+                                                {loanData?.nextInstalmentDate}
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="w-full flex flex-col items-start justify-start space-y-4">
+                                    <div className="flex items-center space-x-2">
+                                        <h1 className="text-base font-normal text-gray-600">
+                                            {loanLabel} Repayment Summary
+                                        </h1>
+                                        <Info size={14} className="text-gray-600" />
+                                    </div>
+
+                                    <div className="w-full max-w-sm rounded-xl overflow-hidden" style={{ background: '#D9FBEA' }}>
+                                        <div className="flex items-center justify-between px-5 py-4">
+                                            <p className="text-sm">{disbursementLabel} Date</p>
+                                            <p className="text-sm font-medium">
+                                                {loanData?.disbursementDate}
+                                            </p>
+                                        </div>
+                                        <div className="w-full h-px bg-white" />
+                                        <div className="flex items-center justify-between px-5 py-4">
+                                            <p className="text-sm">Loan Closing Date</p>
+                                            <p className="text-sm font-medium">
+                                                {loanData?.loanClosingDate}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="w-full">
+                                    <TableReusable
+                                        dataHeaders={loanDetailHeaders}
+                                        tableFor="loanDetails"
+                                        dataTable={
+                                            loanPaymentHistory?.paymentSchedule
+                                                ? loanPaymentHistory.paymentSchedule
+                                                : []
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
-            <Modal
-                isOpen={showModalRecordPayment}
-                contentLabel="Full Screen Modal"
-                ariaHideApp={false}
-                style={{
-                    overlay: {
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1000,
-                    },
-                    content: {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    border: "none",
-                    backgroundColor: "transparent",
-                    padding: 0,
-                    margin: 0,
-                    overflow: "hidden",
-                    },
-                }}>
-                <FormModal
-                    setShowModal={setShowModalRecordPayment} 
-                    formFor="recordPaymentLoan"
-                    titleForm="Record Repayment"
-                    data={data}
+            {/* Modals */}
+            {modalPauseLoans && (
+                <Modal isOpen={modalPauseLoans} onRequestClose={() => setModalPauseLoans(false)}>
+                    {/* Your pause modal content */}
+                </Modal>
+            )}
+            {showModalConfirm && (
+                <SimpleModalMessage
+                    isOpen={showModalConfirm}
+                    onClose={() => setShowModalConfirm(false)}
+                    onConfirm={handleDelete}
+                    message={`Are you sure you want to delete this ${loanLabelLowercase}?`}
                 />
-            </Modal>
-
-            <Modal
-                isOpen={modalPauseLoans}
-                contentLabel="Full Screen Modal"
-                ariaHideApp={false}
-                style={{
-                    overlay: {
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1000,
-                    },
-                    content: {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    border: "none",
-                    backgroundColor: "transparent",
-                    padding: 0,
-                    margin: 0,
-                    overflow: "hidden",
-                    },
-                }}>
+            )}
+            {showModalRecordPayment && (
                 <FormModal
-                    setShowModal={setModalPauseLoans} 
-                    formFor="pauseLoans"
-                    titleForm="pauseLoans"
-                    data={tempUuid}
+                    isOpen={showModalRecordPayment}
+                    onClose={() => setShowModalRecordPayment(false)}
+                    type="recordPayment"
+                    loanData={data}
                 />
-            </Modal>
-
-            <Modal
-                isOpen={showModalConfirm}
-                contentLabel="Full Screen Modal"
-                ariaHideApp={false}
-                style={{
-                overlay: {
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1000,
-                },
-                content: {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    border: "none",
-                    backgroundColor: "transparent",
-                    padding: 0,
-                    margin: 0,
-                    overflow: "hidden",
-                },
-            }}>
-            <SimpleModalMessage
-                setShowModal={setShowModalConfirm} 
-                showModal={showModalConfirm}
-                message={`Are you sure you want to delete ${data?.LoanName?.name} ${loanLabelLowercase} for ${loanData?.employeeName}?`}
-                isDelete={true}
-                modalFor={"loan"}
-                handleConfirm={handleDelete}
-            />
-            </Modal>
+            )}
         </div>
-    );
+    );  
 }
 
 export default LoanDetail;

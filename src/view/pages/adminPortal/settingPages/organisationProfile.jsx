@@ -502,72 +502,159 @@ function OrganisationProfile({handleShowForm}) {
                     </div>
 
                     {/* Bank Name */}
-                    <div className="w-full h-full">
-                        <div className="w-full h-full">
-                            {/* Credit Card */}
-                            <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl">
-                                {/* Gradient Background */}
-                                <div className="absolute inset-0 bg-gradient-to-tr
-                                    from-black from-0%
-                                    via-purple-600 via-200%
-                                    to-blue-900 to-100%"
-                                >
-                                </div>
+                    {/* Bank Name */}
+<div className="w-full h-full">
+    <div className="w-full h-full">
+        {/* Credit Card */}
+        <div className="relative w-full h-full rounded-[30px] overflow-hidden shadow-xl">
+            {/* Base Background - Dark */}
+            <div className="absolute inset-0 bg-[#16084C]"></div>
+            
+            {/* Overlay Background - Darker */}
+            <div className="absolute inset-0 bg-[#080E1D]"></div>
 
-                                {/* Card Content */}
-                                <div className="relative h-full p-6 flex flex-col justify-between text-white">
-                                    {/* Top Section - Bank Name & Contactless */}
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <p className="text-lg font-medium">
-                                                {bankNameOptions?.find(
-                                                    (option) => option.value === formData.bankNameUuid
-                                                )?.label || ""}
-                                            </p>
-                                        </div>
-                                        <div className="flex space-x-1">
-                                            {/* Contactless Symbol */}
-                                            <div className="rotate-90">
-                                                <WifiHighIcon className="text-3xl" />
-                                            </div>
-                                        </div>
-                                    </div>
+            {/* Gradient Blobs */}
+            <div 
+                className="absolute w-[411.47px] h-[358.25px]" 
+                style={{
+                    left: '-113.98px',
+                    top: '-168.82px',
+                    background: '#8F00FF',
+                    filter: 'blur(50.6104px)',
+                    transform: 'matrix(-0.86, -0.51, 0.61, -0.8, 0, 0)',
+                    zIndex: 2
+                }}
+            ></div>
 
-                                    {/* Middle Section - Card Number */}
-                                    <div className="flex-1 flex items-center">
-                                        <div className="text-xl font-mono tracking-wider group cursor-pointer">
-                                            <span className="group-hover:hidden">*** *** ***</span>
-                                            <span className="hidden group-hover:inline">{formData.bankAccountNumber}</span>
-                                        </div>
-                                    </div>
+            <div 
+                className="absolute w-[411.47px] h-[358.25px]" 
+                style={{
+                    left: '96.37px',
+                    top: '-86.43px',
+                    background: 'rgba(32, 81, 254, 0.8)',
+                    filter: 'blur(50.6104px)',
+                    transform: 'matrix(-0.86, -0.51, 0.61, -0.8, 0, 0)',
+                    zIndex: 2
+                }}
+            ></div>
 
-                                    {/* Bottom Section - Company Name */}
-                                    <div className="flex justify-between items-center w-full pt-5">
-                                        <div className="w-full flex items-center justify-between">
-                                            <p className="text-sm font-medium">{formData.bankAccountName}</p>
-                                            <div
-                                                className="px-[9px] py-[9px] relative"
-                                                onMouseEnter={() => setShowTooltip(true)}
-                                                onMouseLeave={() => setShowTooltip(false)}
-                                            >
-                                                <Info className="text-xl" />
-                                                {showTooltip && (
-                                                    <div className="absolute w-[300px] h-fit -top-4 -left-[310px] bg-white text-black font-light p-2 rounded-md space-y-2">
-                                                        <h1 className="text-sm font-medium">Visual Card</h1>
-                                                        <p className="text-xs w-full whitespace-normal">
-                                                            This card is for visual representation only and has no functional use.
-                                                        </p>
-                                                        <div className="absolute w-3 h-3 rotate-45 bg-white top-5 -translate-y-1/2 -right-1"></div>
-                                                    </div>
-                                                )}
-                                            </div>
+            <div 
+                className="absolute w-[384.27px] h-[248.19px]" 
+                style={{
+                    left: '208.05px',
+                    top: '64.46px',
+                    background: 'rgba(36, 79, 234, 0.8)',
+                    filter: 'blur(70.8545px)',
+                    transform: 'matrix(-0.76, -0.66, 0.74, -0.67, 0, 0)',
+                    zIndex: 2
+                }}
+            ></div>
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div 
+                className="absolute w-[353.38px] h-[222.42px]" 
+                style={{
+                    left: '169.29px',
+                    top: '35.47px',
+                    background: 'rgba(18, 72, 255, 0.75)',
+                    filter: 'blur(53.9844px)',
+                    transform: 'matrix(-0.86, -0.51, 0.61, -0.8, 0, 0)',
+                    zIndex: 2
+                }}
+            ></div>
+
+            <div 
+                className="absolute w-[603.11px] h-[248.79px]" 
+                style={{
+                    left: '-10.79px',
+                    top: '-91.62px',
+                    background: '#121212',
+                    filter: 'blur(53.9844px)',
+                    transform: 'matrix(-0.86, -0.51, 0.61, -0.8, 0, 0)',
+                    zIndex: 2
+                }}
+            ></div>
+
+            {/* Noise Texture Overlay */}
+            <div 
+                className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+                style={{
+                    zIndex: 4,
+                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")"
+                }}
+            ></div>
+
+            {/* Card Content */}
+            <div className="relative h-full p-6 flex flex-col justify-between text-white" style={{ zIndex: 3 }}>
+                {/* Top Section - Bank Name & Contactless */}
+                <div className="flex justify-between items-start">
+                    <div>
+                        <p className="text-lg font-medium" style={{ textShadow: '0px 4px 4px rgba(92, 92, 92, 0.25)' }}>
+                            Bank Name
+                        </p>
+                    </div>
+                    <div className="flex space-x-1">
+                        {/* Contactless Symbol */}
+                        <div className="rotate-90">
+                            <WifiHighIcon className="text-3xl" />
                         </div>
                     </div>
+                </div>
+
+                {/* Middle Section - Card Number */}
+                <div className="flex-1 flex items-center">
+                    <div 
+                        className="text-3xl font-bold tracking-wider group cursor-pointer"
+                        style={{
+                            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #FFFFFF 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            textShadow: '0px 2.29088px 4.73px rgba(8, 43, 69, 0.16)',
+                            letterSpacing: '0.04em'
+                        }}
+                    >
+                        <span className="group-hover:hidden">**** **** **** ****</span>
+                        <span className="hidden group-hover:inline">{formData.bankAccountNumber}</span>
+                    </div>
+                </div>
+
+                {/* Bottom Section - Divider & Company Name */}
+                <div className="flex flex-col w-full pt-5 space-y-3">
+                    {/* Divider Line */}
+                    <div 
+                        className="w-full h-[1px]" 
+                        style={{ 
+                            background: 'rgba(249, 249, 249, 0.21)',
+                            transform: 'rotate(-0.99deg)'
+                        }}
+                    ></div>
+                    
+                    <div className="flex justify-between items-center w-full">
+                        <p className="text-sm font-medium" style={{ textShadow: '0px 4px 4px rgba(92, 92, 92, 0.25)' }}>
+                            Your Company Name
+                        </p>
+                        <div
+                            className="px-[9px] py-[9px] relative"
+                            onMouseEnter={() => setShowTooltip(true)}
+                            onMouseLeave={() => setShowTooltip(false)}
+                        >
+                            <Info className="text-xl" />
+                            {showTooltip && (
+                                <div className="absolute w-[300px] h-fit -top-4 -left-[310px] bg-white text-black font-light p-2 rounded-md space-y-2">
+                                    <h1 className="text-sm font-medium">Visual Card</h1>
+                                    <p className="text-xs w-full whitespace-normal">
+                                        This card is for visual representation only and has no functional use.
+                                    </p>
+                                    <div className="absolute w-3 h-3 rotate-45 bg-white top-5 -translate-y-1/2 -right-1"></div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                     {/* Filling Address */}
                     <div className="flex-1 bg-white p-5 rounded-md relative">

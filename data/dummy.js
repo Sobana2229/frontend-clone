@@ -426,7 +426,7 @@ export const subComponentsEmployer = [
 
 export const dropDownSalaryComponents = [ "Earnings", "Deductions", "Benefits", "Reimbursements" ]
 
-export const salaryComponentEarningHeaders = ["Name", "Earning Type", "Calculation Type", "Consider for SPK", "Status", ""]
+export const salaryComponentEarningHeaders = ["Name", "Earning Type", "Calculation Type", "Mode", "Status", ""]
 
 export const salaryComponentReimbursementHeaders = ["Name", "Reimbursement Type", "Maximum Reimbursable Amount", "Status", ""]
 
@@ -681,6 +681,7 @@ export const loanEmployeePortalHeaders = [
     "Loan Amount",
     "Amount Repaid",
     "Remaining Amount",
+    
 ]
 
 export const advanceSalaryEmployeePortalHeaders = [

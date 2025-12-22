@@ -32,8 +32,6 @@ function ReuseableInput({
   cols,
   resize = "vertical",
   isDays = false,
-  emailValid = false,
-  emailError = false,
   // for react-select
   selectOptionsReact = [],
   handleSelectChangeReact,
@@ -55,9 +53,10 @@ function ReuseableInput({
     }
   }
 
-  const getLeftBorderColor = () => {
-    if (!isBorderLeft) return "#d1d5db";
-    return borderColor === "red-td-500" ? "#dc2626" : borderColor || "#1F87FF";
+  const getBorderLeftStyle = () => {
+    if (!isBorderLeft) return {};
+    const color = borderColor || "#DC2626";
+    return { borderLeft: `6px solid ${color}` };
   };
 
   const getResizeClass = () => {
@@ -104,16 +103,13 @@ function ReuseableInput({
             value={value}
             onChange={onChange}
             disabled={isDisabled}
-            style={{
-              borderLeft: `6px solid ${getLeftBorderColor()}`,
-              borderTop: "none",
-              borderRight: "1px solid #d1d5db",
-              borderBottom: "1px solid #d1d5db",
-              borderRadius: "6px"
-            }}
+            style={getBorderLeftStyle()}
             className={`w-full ${
               flagIso ? "pl-14 pe-2" : isIcon ? "pl-10 pe-2" : "px-2"
-            } py-2.5 bg-white text-base ring-0 outline-none`}
+            } py-2.5 ${
+              isInfo ? "border-y border-s rounded-s-md" : "border rounded-md"
+            } bg-white border-${borderColor ? borderColor : "gray-td-300"} text-base ring-0 outline-none
+              ${isBorderLeft ? "border-l-[6px]" : ""}`}
           >
             {children}
           </select>
@@ -163,21 +159,16 @@ function ReuseableInput({
               disabled={isDisabled}
               rows={rows}
               cols={cols}
-              maxLength={250}              style={{ 
-                resize: "vertical",
-                borderLeft: `6px solid ${getLeftBorderColor()}`,
-                borderTop: "none",
-                borderRight: "1px solid #d1d5db",
-                borderBottom: "1px solid #d1d5db",
-                borderRadius: "6px"
-              }}
-             className={`w-full ${
-    flagIso ? "pl-14 pe-2" : isIcon ? "pl-10 pe-2" : "px-2"
-} py-2 bg-white text-base focus:outline-none resize-y
-    ${isFocusRing && "focus:ring-2 focus:ring-blue-td-500"}`}
+              maxLength={1000}
+              style={{ resize: "none", ...getBorderLeftStyle() }}
+              className={`w-full ${
+                flagIso ? "pl-14 pe-2" : isIcon ? "pl-10 pe-2" : "px-2"
+              } py-2 border bg-white border-gray-td-300 rounded-md text-base focus:outline-none ${getResizeClass()}
+                ${isFocusRing && "focus:ring-2 focus:ring-blue-td-500"} 
+                ${isBorderLeft ? "border-l-[6px]" : ""}`}
             />
             <div className="w-full items-center justify-end text-xs flex text-gray-td-400">
-              {value?.length || 0}/250
+              {value?.length || 0}/1000
             </div>
           </div>
           {isInfo && (
@@ -225,12 +216,13 @@ function ReuseableInput({
                   control: (base, state) => ({
                     ...base,
                     borderLeftWidth: '6px',
-                    borderLeftColor: getLeftBorderColor(),
+                    borderLeftColor: borderColor || 'gray-td-300',
                     borderRadius: '6px',
                     borderColor: '#d1d5db',
                     boxShadow: 'none',
                     '&:hover': {
                       borderColor: '#d1d5db',
+                      borderLeftColor: borderColor || '#1F87FF',
                     }
                   }),
                 }}
@@ -283,28 +275,23 @@ function ReuseableInput({
               />
             </div>
           )}
-         <input
-  type={type}
-  id={id}
-  name={name}
-  placeholder={placeholder}
-  value={value}
-  onChange={onChange}
-  onBlur={onBlur}
-  disabled={isDisabled}
-  style={{
-    borderLeft: isDollar || isPercentage || isDays ? "none" : `6px solid ${getLeftBorderColor()}`,
-    borderTop: emailValid ? "2px solid #16a34a" : emailError ? "2px solid #dc2626" : "none",
-    borderRight: emailValid ? "2px solid #16a34a" : emailError ? "2px solid #dc2626" : "1px solid #d1d5db",
-    borderBottom: emailValid ? "2px solid #16a34a" : emailError ? "2px solid #dc2626" : "1px solid #d1d5db",
-    borderRadius: isDollar || isPercentage || isDays ? "0 6px 6px 0" : "6px"
-  }}
-  className={`w-full ${
-    flagIso ? "pl-14 pe-2" : isIcon ? "pl-10 pe-2" : isDollar || isPercentage || isDays ? "pl-14 pr-2" : "px-2"
-  } py-2 bg-white text-base focus:outline-none
-    ${isFocusRing && "focus:ring-2 focus:ring-blue-td-500"}`}
-/>
-
+          <input
+            type={type}
+            id={id}
+            name={name}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            onBlur={onBlur}
+            disabled={isDisabled}
+            style={getBorderLeftStyle()}
+            className={`w-full ${
+              flagIso ? "pl-14 pe-2" : isIcon ? "pl-10 pe-2" : "px-2"
+            } py-2 border bg-white rounded-md text-base focus:outline-none
+              ${type == "number" && isDollar && "ps-10"}
+              ${isFocusRing && "focus:ring-2 focus:ring-blue-td-500"} 
+              ${isBorderLeft ? "border-l-[6px]" : ""}`}
+          />
           {isInfo && (
             <div
               className="absolute text-xl right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
@@ -324,26 +311,26 @@ function ReuseableInput({
             </div>
           )}
 
-         {(isDollar || isPercentage || isDays) && (
-  <div
-    style={{
-      borderLeft: `6px solid ${getLeftBorderColor()}`,
-      borderTop: "1px solid #d1d5db",
-      borderRight: "none",
-      borderBottom: "1px solid #d1d5db",
-      borderRadius: "6px 0 0 6px"
-    }}
-    className="absolute text-xl left-0 top-1/2 transform -translate-y-1/2 h-full px-3 flex items-center justify-center bg-gray-100 text-gray-500"
-  >
-    {isDollar ? (
-      <CurrencyDollar size={18} />
-    ) : isPercentage ? (
-      <Percent size={18} />
-    ) : (
-      <p className="text-sm">Days</p>
-    )}
-  </div>
-)}
+          {(isDollar || isPercentage || isDays) && (
+            <div
+              style={isBorderLeft ? getBorderLeftStyle() : {}}
+              className={`absolute text-xl ${
+                isDollar ? "rounded-l-md left-0" : "rounded-r-md right-0"
+              } top-1/2 transform -translate-y-1/2 h-full px-2 flex items-center justify-center border ${
+                isBorderLeft
+                  ? "border-l-[6px] text-gray-td-400"
+                  : "bg-gray-td-50"
+              }`}
+            >
+              {isDollar ? (
+                <CurrencyDollar size={15} />
+              ) : isPercentage ? (
+                <Percent size={15} />
+              ) : (
+                <p className="text-sm">Days</p>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

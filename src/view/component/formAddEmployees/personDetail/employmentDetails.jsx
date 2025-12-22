@@ -150,6 +150,8 @@ function EmploymentDetails({setFormData, formData, isAdding}) {
                 value={formData.dateOfExit}
                 onChange={handleInputChange}
                 isFocusRing={false}
+                isBorderLeft={true}
+                borderColor={"red-td-500"}
               />
             </div>
           </div>
@@ -215,7 +217,7 @@ function EmploymentDetails({setFormData, formData, isAdding}) {
           <div className="w-full">
             <div className={`${isAdding ? "w-full" : "w-[70%]"} grid grid-cols-2 gap-10`}>
               <ReuseableInput
-                label={"Father’s Name"}
+                label={"Father's Name"}
                 id="FatherName"
                 name="FatherName"
                 value={formData.FatherName}
@@ -223,7 +225,7 @@ function EmploymentDetails({setFormData, formData, isAdding}) {
                 isFocusRing={false}
                 isBorderLeft={true}
                 borderColor={"red-td-500"}
-                placeholder="Enter Your Father’s name"
+                placeholder="Enter Your Father's name"
               />
               <ReuseableInput
                 label="Differently Abled Type"
@@ -312,6 +314,14 @@ function EmploymentDetails({setFormData, formData, isAdding}) {
                   <option key={cityItem?.id} value={cityItem?.id}>{cityItem?.name}</option> 
                 ))}
               </ReuseableInput>            
+            </div>
+          </div>
+
+          {/* Required Field Indicator */}
+          <div className="w-full flex justify-center mt-6">
+            <div className="flex items-center gap-2 text-sm text-gray-td-600">
+              <div className="w-6 h-6 border-l-4 border-red-td-500"></div>
+              <span>Required Field</span>
             </div>
           </div>
         </div>
