@@ -353,169 +353,175 @@ const getIcTypeByCitizenCategory = (category) => {
               emailValid={emailValid}
               emailError={emailError}
             />
-            <div className="w-[49%] flex flex-col items-start justify-center">
-              <label className="block text-base font-medium mb-2" htmlFor="phoneNumber">
-                Mobile Number
-              </label>
-              <div className="flex items-center w-full gap-2">
-<Select
-  options={phoneNumberData}
-  onChange={(selectedOption) => {
-    if (selectedOption) {
-      const limit = getPhoneDigitLimit(selectedOption.label);
-      setPhoneDigitLimit(limit);
-      setFormData(prev => ({
-        ...prev,
-        phoneCode: selectedOption.label,
-        flagIso: selectedOption.emoji,
-      }));
-    }
-  }}
-  className="w-40 z-20"
-  value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
-  formatOptionLabel={(option, context) => {
-    const flagUrl = flagImage({ emoji: option.emoji, country: option.country });
-    
-    if (context.context === 'menu') {
-      // In dropdown menu: show flag + country name + code
-      return (
-        <div className="flex items-center gap-3 py-1">
-          <div className="w-10 h-7 flex-shrink-0">
+          <div className="w-[49%] flex flex-col items-start justify-center">
+  <label className="block text-base font-medium mb-2" htmlFor="phoneNumber">
+    Mobile Number
+  </label>
+  
+  <div className="relative w-full">
+    <Select
+      options={phoneNumberData}
+      onChange={(selectedOption) => {
+        if (selectedOption) {
+          const limit = getPhoneDigitLimit(selectedOption.label);
+          setPhoneDigitLimit(limit);
+          setFormData(prev => ({
+            ...prev,
+            phoneCode: selectedOption.label,
+            flagIso: selectedOption.emoji,
+          }));
+        }
+      }}
+      className="w-full"
+      value={phoneNumberData?.find(option => option.label === formData.phoneCode)}
+      isSearchable={true}
+      menuIsOpen={undefined}
+      closeMenuOnScroll={false}
+      placeholder="Select country code"
+      formatOptionLabel={(option, context) => {
+        const flagUrl = flagImage({ emoji: option.emoji, country: option.country });
+        
+        if (context.context === 'menu') {
+          const isSelected = formData.phoneCode === option.label;
+          return (
+            <div className="flex items-center justify-between w-full py-2 px-3">
+              <div className="flex items-center gap-3 flex-1">
+                <img 
+                  src={flagUrl} 
+                  className="w-6 h-4 object-cover rounded" 
+                  alt={option.country || option.label}
+                />
+                <span className="font-medium text-gray-900 text-sm">
+                  {option.country || option.countryName || option.name || option.label}
+                </span>
+                <span className="text-gray-500 text-sm">
+                  ({option.label})
+                </span>
+              </div>
+              {isSelected && (
+                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
+              )}
+            </div>
+          );
+        }
+        
+        // Selected value - just show flag
+        return (
+          <div className="flex items-center gap-2">
             <img 
               src={flagUrl} 
-              className="w-full h-full object-cover" 
-              alt={option.country}
-              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }}
+              className="w-6 h-4 object-cover rounded" 
+              alt={option.country || option.label}
             />
+            <span className="text-sm font-medium">{option.label}</span>
           </div>
-          <span className="flex-1 font-medium text-gray-900">{option.country}</span>
-          <span className="text-gray-500 text-sm">{option.label}</span>
-        </div>
-      );
-    }
-    
-    // When selected: show only flag + code
-    return (
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-6 flex-shrink-0">
-          <img 
-            src={flagUrl} 
-            className="w-full h-full object-cover" 
-            alt={option.country}
-          />
-        </div>
-        <span>{option.label}</span>
-      </div>
-    );
-  }}
-  components={{
-    MenuList: ({ children, ...props }) => {
-      const [searchValue, setSearchValue] = React.useState('');
-      
-      // Filter options based on search
-      const filteredChildren = React.Children.toArray(children).filter((child) => {
-        if (!searchValue) return true;
-        
-        const option = child.props?.data;
-        if (!option) return true;
-        
-        const search = searchValue.toLowerCase();
-        return (
-          option.country?.toLowerCase().includes(search) ||
-          option.label?.toLowerCase().includes(search)
         );
-      });
-      
-      return (
-        <div>
-          {/* Search bar */}
-          <div className="sticky top-0 bg-white z-10 p-3 border-b">
-            <div className="relative">
-              <MagnifyingGlass 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
-                size={16}
-              />
-              <input
-                type="text"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                placeholder="Search for countries"
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+      }}
+      components={{
+        DropdownIndicator: (props) => (
+          <div {...props.innerProps} className="px-2">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
-          {/* Filtered options */}
-          <div {...props} style={{ maxHeight: '250px', overflowY: 'auto' }}>
-            {filteredChildren.length > 0 ? (
-              filteredChildren
-            ) : (
-              <div className="p-4 text-center text-gray-500 text-sm">
-                No countries found
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-  }}
-  classNames={{
-    control: () => "!rounded-md !border-2 !border-gray-300 !bg-white !h-full",
-    valueContainer: () => "!px-2 !py-1",
-    indicatorsContainer: () => "!px-1",
-  }}
-  styles={{
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-    control: (base, state) => ({
-      ...base,
-      borderRadius: '6px',
-      borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
-      boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
-      '&:hover': {
-        borderColor: '#3b82f6',
-      }
-    }),
-    menu: (base) => ({
-      ...base,
-      borderRadius: '8px',
-      overflow: 'hidden',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected 
-        ? '#eff6ff' 
-        : state.isFocused 
-        ? '#f3f4f6' 
-        : 'white',
-      color: '#111827',
-      padding: '10px 12px',
-      cursor: 'pointer',
-    }),
-  }}
-  menuPortalTarget={document.body}
-  // Important: disable default filtering since we're doing it manually
-  filterOption={null}
-/>
-                
-                <ReuseableInput
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="number"
-                  placeholder="Enter Mobile Number"
-                  value={formData.phoneNumber}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length <= phoneDigitLimit) {
-                      handleChange(e);
-                    }
-                  }}
-                  labelUnshow={true}
-                  isFocusRing={false}
-                  isBorderLeft={true}
-                  borderColor={"red-td-500"}
-                />
-              </div>
+        ),
+        MenuList: ({ children, ...props }) => {
+          return (
+            <div 
+              className="custom-scrollbar" 
+              style={{ 
+                maxHeight: '350px', 
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                padding: '4px'
+              }}
+            >
+              {children}
             </div>
+          );
+        },
+        IndicatorSeparator: () => null,
+      }}
+      styles={{
+        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+        control: (base, state) => ({
+          ...base,
+          minHeight: '44px',
+          borderRadius: '8px',
+          borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+          borderWidth: '2px',
+          borderLeftWidth: '6px',
+          borderLeftColor: '#dc2626',
+          boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
+          cursor: 'pointer',
+          '&:hover': {
+            borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+            borderLeftColor: '#dc2626',
+          }
+        }),
+        valueContainer: (base) => ({
+          ...base,
+          padding: '2px 12px',
+        }),
+        menu: (base) => ({
+          ...base,
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+          border: '1px solid #e5e7eb',
+          marginTop: '4px',
+        }),
+        menuList: (base) => ({
+          ...base,
+          padding: 0,
+          maxHeight: '350px',
+        }),
+        option: (base, state) => ({
+          ...base,
+          backgroundColor: state.isFocused ? '#f3f4f6' : 'white',
+          color: '#111827',
+          cursor: 'pointer',
+          padding: '0',
+          '&:active': {
+            backgroundColor: '#e5e7eb',
+          }
+        }),
+      }}
+      menuPortalTarget={document.body}
+      filterOption={(option, inputValue) => {
+        if (!inputValue) return true;
+        const searchText = inputValue.toLowerCase();
+        const countryName = (option.data.country || option.data.countryName || option.data.name || '').toLowerCase();
+        const phoneCode = (option.data.label || '').toLowerCase();
+        return countryName.includes(searchText) || phoneCode.includes(searchText);
+      }}
+    />
+    
+    {/* Phone Number Input - MERGED with select - KEEPS YOUR ORIGINAL LOGIC */}
+    <input
+      type="number"
+      id="phoneNumber"
+      name="phoneNumber"
+      value={formData.phoneNumber}
+      onChange={(e) => {
+        const value = e.target.value;
+        if (value.length <= phoneDigitLimit) {
+          handleChange(e);
+        }
+      }}
+      placeholder="Enter Mobile Number"
+      className="absolute top-0 left-[120px] right-0 h-full pl-3 pr-3 text-sm border-0 rounded-r-lg focus:outline-none focus:ring-0 bg-transparent"
+      style={{ 
+        pointerEvents: 'auto',
+        paddingTop: '2px',
+        paddingBottom: '2px',
+      }}
+    />
+  </div>
+</div>
+
           </div>
 
           <div className="w-full flex items-center justify-center space-x-8">

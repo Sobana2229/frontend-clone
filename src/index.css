@@ -35,3 +35,20 @@ input[type="number"] {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(28, 28, 28, 0.4);
 }
+.css-1n7v3ny-option::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .css-1n7v3ny-option::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  .css-1n7v3ny-option::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  
+  .css-1n7v3ny-option::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
